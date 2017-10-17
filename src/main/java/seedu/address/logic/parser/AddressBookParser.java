@@ -59,7 +59,7 @@ public class AddressBookParser {
             return new EmailCommandParser().parse(arguments);
 
         case SortCommand.COMMAND_WORD:
-        return new SortCommandParser().parse(arguments);
+            return new SortCommandParser().parse(arguments);
 
         case NextSongCommand.COMMAND_WORD:
             return new NextSongCommand();
