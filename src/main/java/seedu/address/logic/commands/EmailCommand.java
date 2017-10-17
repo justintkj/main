@@ -95,5 +95,4 @@ public class EmailCommand extends Command {
         }
         return new CommandResult("Email successfully sent to : " + personToEmail.getName());
     }
-
 }
