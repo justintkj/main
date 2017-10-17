@@ -8,6 +8,9 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.logic.commands.EmailCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
+/**
+ * Parses input arguments and creates a new EmailCommand object
+ */
 public class EmailCommandParser implements Parser<EmailCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the EmailCommand
@@ -25,7 +28,7 @@ public class EmailCommandParser implements Parser<EmailCommand> {
         String message;
         try {
             index = ParserUtil.parseIndex(splitArgs[0]);
-            String[]Messages = args.trim().split(",");
+            String[] Messages = args.trim().split(",");
             if (Messages.length < 3) {
                 throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EmailCommand.MESSAGE_USAGE));
             }

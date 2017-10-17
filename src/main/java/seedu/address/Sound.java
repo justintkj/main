@@ -30,7 +30,7 @@ public class Sound {
 
     public static String next() {
         curr++;
-        if(curr > 1) {
+        if (curr > 1) {
             curr = 0;
         }
         if (mediaPlayer != null) {

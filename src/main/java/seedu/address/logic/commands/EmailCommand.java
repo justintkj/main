@@ -42,6 +42,7 @@ public class EmailCommand extends Command {
         this.message = message;
     }
 
+    @Override
     public CommandResult execute() throws CommandException {
         List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
 
@@ -62,7 +63,7 @@ public class EmailCommand extends Command {
             for (int i = 0; i < 5; i++) {
                 newLine += System.getProperty("line.separator");
             }
-            String messageText = this.message + newLine + "This is a system generated mail provided by CS2103F09B3 Team.";
+            String messageText = this.message + newLine + "This is a generated mail provided by CS2103F09B3 Team.";
             boolean sessionDebug = false;
 
             Properties props = System.getProperties();
