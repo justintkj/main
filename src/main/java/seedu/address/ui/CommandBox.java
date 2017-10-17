@@ -45,7 +45,7 @@ public class CommandBox extends UiPart<Region> {
         historySnapshot = logic.getHistorySnapshot();
         String[] possibleSuggestion = {"add", "clear", "list",
             "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort name",
-            "sort num", "sort email", "sort address", "sort remark", "next song"};
+            "sort num", "sort email", "sort address", "sort remark", "nextsong"};
         TextFields.bindAutoCompletion(commandTextField, possibleSuggestion);
 
     }

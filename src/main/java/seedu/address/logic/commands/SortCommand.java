@@ -2,12 +2,13 @@ package seedu.address.logic.commands;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 
+
 /**
  * Sorts a the list of persons in alphabetical order
  */
 public class SortCommand extends Command {
     public static final String COMMAND_WORD = "sort";
-    public static final String MESSAGE_SORT_SUCCESS = "Sorted in asceding order: ";
+    public static final String MESSAGE_SORT_SUCCESS = "Sorted in ascending order: ";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Sorts the person identified by the index number used in the last person listing.\n"
@@ -30,7 +31,6 @@ public class SortCommand extends Command {
     public CommandResult execute() throws CommandException {
         model.sortPerson(sortType);
         return new CommandResult(MESSAGE_SORT_SUCCESS + sortType);
-
     }
 
     @Override

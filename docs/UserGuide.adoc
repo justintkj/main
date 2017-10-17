@@ -153,7 +153,7 @@ Format: `nextsong`
 
 Examples:
 
-* `nextsong`
+* `next song`
 Changes to the next Song in the playlist
 
 === Selecting a person : `select`

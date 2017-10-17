@@ -9,12 +9,12 @@ import seedu.address.Sound;
 public class NextSongCommand extends Command {
 
     public static final String COMMAND_WORD = "nextsong";
-    public static final String MESSAGE_SUCCESS = "Next Song Playing.." + Sound.currSong();
+    public static final String MESSAGE_SUCCESS = "Currently Playing..";
 
     @Override
     public CommandResult execute() {
-        Sound.next();
-        return new CommandResult(MESSAGE_SUCCESS);
+        String nextmusic = Sound.next();
+        return new CommandResult(MESSAGE_SUCCESS + nextmusic);
     }
 
 }

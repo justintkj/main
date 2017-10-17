@@ -20,24 +20,18 @@ public class Sound {
     private static ArrayList<String> musicList = new ArrayList<String>(Arrays.asList("FurElise.mp3",
             "KissTheRain.mp3"));
     private static int curr = 0;
-    public static final int NEXTSONG = curr + 1;
     private static String bip;
     private static Media hit;
     private static MediaPlayer mediaPlayer;
-
-    public static String currSong() {
-        return musicList.get(curr);
-    }
 
     /**
      * Plays the next Song on the List
      */
 
-    public static void next() {
-        if (curr < musicList.size() - ONE_LESS) {
-            curr = NEXTSONG;
-        } else {
-            curr = FIRSTSONG;
+    public static String next() {
+        curr++;
+        if(curr > 1) {
+            curr = 0;
         }
         if (mediaPlayer != null) {
             mediaPlayer.stop();
@@ -46,6 +40,7 @@ public class Sound {
             mediaPlayer = new MediaPlayer(hit);
             mediaPlayer.play();
         }
+        return musicList.get(curr);
     }
 
     /**
