@@ -20,7 +20,7 @@ public class SortCommandTest {
     public static final String SORT_NAME_ARG = "name";
     public static final String SORT_EMAIL_ARG = "email";
     public static final String SORT_ADDRESS_ARG = "address";
-    public static final String SORT_NUM_ARG = "num";
+    public static final String SORT_NUM_ARG = "number";
     public static final String SORT_NUM_ARG_CAMELCASE = "NuM";
     private Model model;
     private Model expectedModel;

@@ -14,8 +14,8 @@ public class SortCommandParserTest {
     @Test
     public void parse_validArgs_returnsSortCommand() {
         try {
-            SortCommand newCommand = parser.parse("num");
-            if (newCommand.equals(new SortCommand("num"))) {
+            SortCommand newCommand = parser.parse("number");
+            if (newCommand.equals(new SortCommand("number"))) {
                 assert true;
             } else {
                 assert false;
