@@ -31,7 +31,7 @@ public class ParserUtil {
     public static final String MESSAGE_INSUFFICIENT_PARTS = "Number of parts must be more than 1.";
     public static final String MESSAGE_INVALID_SORT = "Sort type is not a valid sort type.";
     public static final String SORTNAME_ARG = "name";
-    public static final String SORTNUM_ARG = "num";
+    public static final String SORTNUM_ARG = "number";
     public static final String SORTADD_ARG = "address";
     public static final String SORTEMAIL_ARG = "email";
     public static final String SORTREMARK_ARG = "remark";

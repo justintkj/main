@@ -345,6 +345,77 @@ image::UndoRedoActivityDiagram.png[width="200"]
 **Cons:** Requires dealing with commands that have already been undone: We must remember to skip these commands. Violates Single Responsibility Principle and Separation of Concerns as `HistoryManager` now needs to do two different things. +
 // end::undoredo[]
 
+// tag::sort[]
+=== sort mechanism
+
+The sort mechanism is operates from sorting the 'internalList' in 'UniquePersonList' which resides in the model componet. Sort supports reformatting the current list of person according to the user's chosen details in ascending order. Such commands will inherit from `Command`.
+
+With the help of sortCommandParser, the user's sorting type preference will be extracted from the CLI and passed into sortCommand.Invalid sorting type or command will not be sorted, and parseException will be generated:
+
+image::SortCommandDiagram.png[width="800"]
+
+As you can see from the diagram, `SortCommandParser` validates and extract the user's sorting type request. SortCommand will call the model component to sort the 'interalList'. Invalid Commands will be handled by ParseException command to prompt user for a correct sorting type.
+
+Commands that are not sortable are implemented this way:
+[source,java]
+----
+public SortCommand(String sortType) {
+    this.sortType = sortType;
+}
+
+@Override
+public CommandResult execute() throws CommandException {
+    //... list logic ...
+}
+----
+Commands that are not sortable will be handled by ParseException:
+[source,java]
+----
+catch (IllegalValueException ive) {
+    throw new ParseException(
+        String.format(MESSAGE_INVALID_COMMAND_FORMAT, SortCommand.MESSAGE_USAGE));
+}
+----
+
+Suppose that the user has just launched the application. The `internalList` is filled with these four persons. A sample of the outlook of internalist is shown below.
+
+image::OriginalInternalList.png[width="800"]
+
+The user executes a new `SortCommand`, `sort number`, to sort all person in the address book by their phone number. interalList in 'UniquePersonList' should then be sorted.
+
+image::SortedNumberList.png[width="800"]
+
+As the user continues to use the program, the user can request for a different sort command. For example, the user may execute sort name to interalList by their name.
+
+image::OriginalInternalList.png[width="800"]
+
+[NOTE]
+The user may choose to sort the persons by other parameters. The parameters includes : name, number, address, email, remark, birthday.
+
+If a command fails its execution, no sorting will be done and a parse Exception will be used to handle the format for incorrect Commands.
+
+==== Design Considerations
+
+**Aspect:** Implementation of `SortCommand` +
+**Alternative 1 (current choice):** Sort the interalList via `Collections.sort()` and  +
+**Pros:** We will be able to sort using merge or Tim sort which offers a stable and efficient (O(n log n)) efficiency +
+**Cons:** May not be optimal when sorting again after adding one new person only. +
+**Alternative 2:** Implement different algorithm depends on different type or number of persons added +
+**Pros:** Able to obtain optimal efficiency for sorting everytime. +
+**Cons:** Alot of code needed for all the different types of persons added to ensure better efficiency than Tim sort.
+
+---
+
+**Aspect:** Sorting persons based on type +
+**Alternative 1 (current choice):** Uses Lambdas to sort. +
+**Pros:** Clean one line code to compare person to sort. +
+**Cons:** - +
+**Alternative 2:** Individual Comparator for person object based on sorting parameter. +
+*Pros:** Sort the persons based on comparator, more free play to the comparisons in sorting. +
+**Cons:** Less efficient as more context switch is needed, resulting in higher overhead time.
+
+---
+
 === Logging
 
 We are using `java.util.logging` package for logging. The `LogsCenter` class is used to manage the logging levels and logging destinations.
