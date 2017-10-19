@@ -389,6 +389,10 @@ As the user continues to use the program, the user can request for a different s
 
 image::OriginalInternalList.png[width="800"]
 
+The following sequence diagram shows how the sort operation works:
+
+image::SortSequenceDiagram.png[width="800"]
+
 [NOTE]
 The user may choose to sort the persons by other parameters. The parameters includes : name, number, address, email, remark, birthday.
 
