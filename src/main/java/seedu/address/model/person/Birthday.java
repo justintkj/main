@@ -68,4 +68,12 @@ public class Birthday {
         return value.hashCode();
     }
 
+    public int getDay() {
+        return day;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
 }

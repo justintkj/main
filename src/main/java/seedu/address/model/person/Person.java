@@ -134,6 +134,17 @@ public class Person implements ReadOnlyPerson, Comparable<Person> {
     public Birthday getBirthday() {
         return birthday.get();
     }
+
+    @Override
+    public int getDay() {
+        return birthday.get().getDay();
+    }
+
+    @Override
+    public int getMonth() {
+        return birthday.get().getMonth();
+    }
+
     /**
      * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
      * if modification is attempted.

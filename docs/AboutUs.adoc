@@ -4,7 +4,7 @@ ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 :imagesDir: images
 :stylesDir: stylesheets
 
-AddressBook - Level 4 was developed by the https://github.com/orgs/CS2103AUG2017-F09-B3/teams/developers/members[F09-B3]
+PocketBook was developed by the https://github.com/orgs/CS2103AUG2017-F09-B3/teams/developers/members[F09-B3]
 team. +
 This project was developed in AY17/18 Semester 1 for CS2103. +
 {empty} +
@@ -25,7 +25,6 @@ Responsibilities:
 
 * Model
 * Integration
-* Deliverables and deadlines
 * Testing
 * Documentation (Backup)
 * Code Quality (Backup)
@@ -37,19 +36,28 @@ image::justintkj.jpg[width="150", align="left"]
 {empty}[https://github.com/justintkj[github]] [<<justintkj#, portfolio>>]
 
 Role: Developer +
-Responsibilities: Logic + Documentation + Code Quality
+Responsibilities:
 
-'''
-
-=== John Roe
-image::lejolly.jpg[width="150", align="left"]
-{empty}[http://github.com/lejolly[github]] [<<johndoe#, portfolio>>]
-
-Role: Team Lead +
-Responsibilities: UI
+* Logic
+* Documentation
+* Code Quality
 
 '''
 
 === Chua Bok Woon
 image::bokwoon_resized.jpg[width:"150", align="left"]
 {empty}[https://github.com/bokwoon95[github]] [<<johndoe#, portfolio>>]
+
+* UI
+* Deliverables and deadlines
+* Scheduling and tracking (Backup)
+
+'''
+
+=== Jo Brough
+image::jobrough.jpg[width:"150", align="left"]
+{empty}[https://github.com/thehelpfulbees[github]] [<<johndoe#, portfolio>>]
+
+* Storage
+* Scheduling and tracking
+* Testing (Backup)

@@ -1,4 +1,4 @@
-﻿= AddressBook Level 4 - User Guide
+PocketBook - User Guide
 :toc:
 :toc-title:
 :toc-placement: preamble
@@ -12,7 +12,7 @@ ifdef::env-github[]
 endif::[]
 :repoURL: https://github.com/se-edu/addressbook-level4
 
-By: `Team SE-EDU`      Since: `Jun 2016`      Licence: `MIT`
+By: `F09-B3`      Since: `Jun 2016`      Licence: `MIT`
 
 == Quick Start
 
@@ -119,6 +119,22 @@ Returns any person having names `Betsy`, `Tim`, or `John`
 * `f Alpha Bravo Charlie` +
 Returns any person having names `Alpha`, `Bravo`, or `Charlie`
 
+=== Showing all persons in a tag: `show`
+
+Finds all persons in the tag with the name matching the given keyword. +
+Format: `find KEYWORD`
+
+****
+* Only persons in the tag matching the entered keyword exactly will be shown, so searching `friend` will not show persons with the tag `friends`
+* The search is case sensitive, so searching for `Friends` will not show persons with the tag `friends`
+* The command only supports searching for one keyword at a time, so searching for `friends neighbours` will yield neither `friends` nor `neighbours`
+****
+
+Examples:
+
+* `show friends` +
+Returns all persons tagged as `friends`
+
 === Deleting one or more person(s) : `delete` 'd'
 
 Deletes the specified person(s) from the address book. +
@@ -192,7 +208,7 @@ Examples:
 * `sort` +
 Sorts all the persons in alphabetical order.
 
-=== Removing a tag from all persons in addressbook
+=== Removing a tag from all persons in addressbook : `removetag`
 
 Removes the tag that you have entered from all the persons in your addressbook. +
 Format: `removetag TAG`
@@ -225,6 +241,31 @@ Examples:
 
 * `map 1` +
 Selects the 1st person in the results of the `find` command.
+
+=== Adding/Editing Birthday to person : `birthday`
+
+Adds or edits selected person's birthday +
+Format: `birthday INDEX DATE`
+
+****
+* Adds/Edits the birthday of person at the specified `INDEX`.
+* The index refers to the index numbers shown in the most recent listing.
+* The index *must be a positive integers* 1, 2, 3, ...
+* The date refers to the birthday to be added/edited to person.
+* The date must follow the format DD-MM-YYYY (DD = Day, MM = Month, YYYY = Year)
+****
+
+Examples:
+
+* `birthday 2 03-03-2003` +
+Adds/Edits the birthday of the 2nd person in the address book.
+* `birthday 3 remove` +
+Removes the birthday of the 3rd person in the address book.
+
+=== Birthday pop-up
+
+When you first start the app, the app will check through all the birthdays of your contacts and notify you if there
+are any birthdays on that day.
 
 === Listing entered commands : `history`
 
@@ -294,10 +335,19 @@ Clears all entries from the address book. +
 Format: `clear`
 	`c`
 
+=== Program running in background
+
+Closing the app will reduce the app to the background instead of closing it. +
+To open/close the app window, double click on the app icon in the system tray. +
+To exit the app fully, go to File menu and press Exit or right click on the icon in system tray and press Exit.
+
 === Exiting the program : `exit`
 
 Exits the program. +
 Format: `exit`
+
+Alternatively, you may right-click on the icon in your system tray to show the menu
+and press `Exit`.
 
 === Saving the data
 

@@ -146,6 +146,10 @@ public class MainWindow extends UiPart<Region> {
         primaryStage.hide();
     }
 
+    boolean isShowing() {
+        return primaryStage.isShowing();
+    }
+
     private void setTitle(String appTitle) {
         primaryStage.setTitle(appTitle);
     }

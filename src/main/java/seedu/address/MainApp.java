@@ -1,5 +1,16 @@
 package seedu.address;
 
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +32,7 @@ import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.Logic;
 import seedu.address.logic.LogicManager;
 import seedu.address.model.AddressBook;
+import seedu.address.model.BirthdayNotifier;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -71,11 +83,74 @@ public class MainApp extends Application {
 
         ui = new UiManager(logic, config, userPrefs);
 
+        startTray();
+
         Sound.music();
 
         initEventsCenter();
     }
 
+    /**
+     * Start a tray icon running in background
+     */
+    private void startTray() {
+        Platform.setImplicitExit(false);
+        if (!SystemTray.isSupported()) {
+            System.out.println("SystemTray is not supported");
+            return;
+        }
+        Image image = Toolkit.getDefaultToolkit().getImage("src/main/resources/images/address_book_15.png");
+
+        final PopupMenu popup = new PopupMenu();
+        final TrayIcon trayIcon = new TrayIcon(image, "PocketBook", popup);
+        final SystemTray tray = SystemTray.getSystemTray();
+
+        MenuItem exitItem = new MenuItem("Exit");
+        exitItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        stop();
+                    }
+                });
+            }
+        });
+
+        trayIcon.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                if (e.getClickCount() == 2 && !e.isConsumed()) {
+                    e.consume();
+                    if (ui.isShowing()) {
+                        Platform.runLater(new Runnable() {
+                            @Override public void run() {
+                                ui.hide();
+                            }
+                        });
+                    } else {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                ui.show();
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        popup.add(exitItem);
+
+        trayIcon.setPopupMenu(popup);
+
+        try {
+            tray.add(trayIcon);
+        } catch (AWTException e) {
+            System.out.println("TrayIcon could not be added.");
+        }
+    }
     private String getApplicationParameter(String parameterName) {
         Map<String, String> applicationParameters = getParameters().getNamed();
         return applicationParameters.get(parameterName);
@@ -186,6 +261,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) {
         logger.info("Starting AddressBook " + MainApp.VERSION);
         ui.start(primaryStage);
+        new BirthdayNotifier(model.getFilteredPersonList());
     }
 
     @Override
