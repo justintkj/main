@@ -528,6 +528,26 @@ image::BirthdayNotifierActivityDiagram.png[width = "200"]
 ---
 // end::BirthdayNotifier[]
 
+// tag::Fuzzyfinder[]
+=== Fuzzyfinder
+
+The 'fuzzyfind' command largely operates like the 'find' command, with the caveat that it searches all substrings of contact names, not just words of contact names. This can be illustrated with the following example:
+
+    AddressBook contains: Simon, Jim, Chrissi
+    User searches for: Si
+    ---------------------
+    'find' command: returns nothing
+    'fuzzyfind' command: returns Simon, Chrissi (both contain 'si')
+
+Fuzzyfind differs from Find by the predicate being used to test each user input string with each AddressBook Name string. In this case, a new Predicate Subclass called 'NameContainsSubstringsPredicate' was created that uses 'string.contains()' instead of 'string.equals()' to check for the existence of substrings.
+
+Firstly the FuzzfindCommandParser breaks up the user input string by whitespaces and stores each smaller string in a string array. It then initializes a new FuzzyfindCommand object with the aforementioned 'NameContainsSubstringsPredicate' attribute. This results in the predicate being called during the '.execute()' method of the FuzzyCommand class, which will in turn update FilteredList of the current model object. Thus displaying all the users that match the predicate.
+
+Note that a substring match can return a lot more unexpected results than a strict word match, so it is best used if the 'find' command does not return the person you are looking for, or if you cannot remember the exact name of the person.
+
+---
+// end::Fuzzyfinder[]
+
 === Logging
 
 We are using `java.util.logging` package for logging. The `LogsCenter` class is used to manage the logging levels and logging destinations.

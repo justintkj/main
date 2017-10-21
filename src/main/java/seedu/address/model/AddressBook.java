@@ -88,11 +88,15 @@ public class AddressBook implements ReadOnlyAddressBook {
      */
     public void addPerson(ReadOnlyPerson p) throws DuplicatePersonException {
         Person newPerson = new Person(p);
-        syncMasterTagListWith(newPerson);
         // TODO: the tags master list will be updated even though the below line fails.
         // This can cause the tags master list to have additional tags that are not tagged to any person
         // in the person list.
-        persons.add(newPerson);
+        try {
+            persons.add(newPerson);
+        } catch (DuplicatePersonException dpe) {
+            throw new DuplicatePersonException();
+        }
+        syncMasterTagListWith(newPerson);
     }
 
     /**
@@ -110,11 +114,17 @@ public class AddressBook implements ReadOnlyAddressBook {
         requireNonNull(editedReadOnlyPerson);
 
         Person editedPerson = new Person(editedReadOnlyPerson);
-        syncMasterTagListWith(editedPerson);
         // TODO: the tags master list will be updated even though the below line fails.
         // This can cause the tags master list to have additional tags that are not tagged to any person
         // in the person list.
-        persons.setPerson(target, editedPerson);
+        try {
+            persons.setPerson(target, editedPerson);
+        } catch (DuplicatePersonException dpe) {
+            throw new DuplicatePersonException();
+        } catch (PersonNotFoundException pnfe) {
+            throw new PersonNotFoundException();
+        }
+        syncMasterTagListWith(editedPerson);
     }
 
     /**
