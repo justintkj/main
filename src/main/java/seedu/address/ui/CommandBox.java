@@ -37,17 +37,19 @@ public class CommandBox extends UiPart<Region> {
     private TextField commandTextField;
     private ArrayList<String> prevText = new ArrayList<String>();
 
+    private String[] possibleSuggestion = {"add", "clear", "list",
+            "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort"};
+    private String[] possibleSuggestionSort = {"sort name",
+            "sort num", "sort email", "sort address", "sort remark"};
+    private static ArrayList<String> possibleSuggestionAdd = new ArrayList<String> ();
+
     public CommandBox(Logic logic) {
         super(FXML);
         this.logic = logic;
         // calls #setStyleToDefault() whenever there is a change to the text of the command box.
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
         historySnapshot = logic.getHistorySnapshot();
-        String[] possibleSuggestion = {"add", "clear", "list",
-            "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort name",
-            "sort num", "sort email", "sort address", "sort remark", "nextsong"};
-        TextFields.bindAutoCompletion(commandTextField, possibleSuggestion);
-
+        System.out.println(commandTextField.getText());
     }
 
     /**
@@ -83,10 +85,19 @@ public class CommandBox extends UiPart<Region> {
             break;
 
         default:
-            // let JavaFx handle the keypress
+            if(commandTextField.getText().toLowerCase().equals("add")) {
+                TextFields.bindAutoCompletion(commandTextField, possibleSuggestionAdd);
+            } else if(commandTextField.getText().toLowerCase().equals("sort")) {
+                TextFields.bindAutoCompletion(commandTextField, possibleSuggestionSort);
+            }  else {
+                TextFields.bindAutoCompletion(commandTextField, possibleSuggestion);
+            }
+            break;
         }
     }
-
+    public static void setAddSuggestion(String commandWord) {
+        possibleSuggestionAdd.add(commandWord);
+    }
     /**
      * Updates the text field with the previous input in {@code historySnapshot},
      * if there exists a previous input in {@code historySnapshot}

@@ -27,6 +27,7 @@ import seedu.address.logic.commands.ShowCommand;
 import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.ui.CommandBox;
 
 /**
  * Parses user input.
@@ -63,7 +64,9 @@ public class AddressBookParser {
 
         case AddCommand.COMMAND_WORD:
         case AddCommand.COMMAND_ALIAS:
-            return new AddCommandParser().parse(arguments);
+            Command addCommand = new AddCommandParser().parse(arguments);
+            CommandBox.setAddSuggestion(userInput);
+            return addCommand;
 
         case EditCommand.COMMAND_WORD:
         case EditCommand.COMMAND_ALIAS:
