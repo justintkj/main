@@ -27,7 +27,7 @@ public class CommandBox extends UiPart<Region> {
     public static final int ONE_INDEX = 1;
     public static final String ERROR_STYLE_CLASS = "error";
     private static final String FXML = "CommandBox.fxml";
-
+    private static ArrayList<String> possibleSuggestionAdd = new ArrayList<String> ();
 
     private final Logger logger = LogsCenter.getLogger(CommandBox.class);
     private final Logic logic;
@@ -38,10 +38,9 @@ public class CommandBox extends UiPart<Region> {
     private ArrayList<String> prevText = new ArrayList<String>();
 
     private String[] possibleSuggestion = {"add", "clear", "list",
-            "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort"};
+        "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort"};
     private String[] possibleSuggestionSort = {"sort name",
-            "sort num", "sort email", "sort address", "sort remark"};
-    private static ArrayList<String> possibleSuggestionAdd = new ArrayList<String> ();
+        "sort num", "sort email", "sort address", "sort remark"};
 
     public CommandBox(Logic logic) {
         super(FXML);
@@ -85,9 +84,9 @@ public class CommandBox extends UiPart<Region> {
             break;
 
         default:
-            if(commandTextField.getText().toLowerCase().equals("add")) {
+            if (commandTextField.getText().toLowerCase().equals("add")) {
                 TextFields.bindAutoCompletion(commandTextField, possibleSuggestionAdd);
-            } else if(commandTextField.getText().toLowerCase().equals("sort")) {
+            } else if (commandTextField.getText().toLowerCase().equals("sort")) {
                 TextFields.bindAutoCompletion(commandTextField, possibleSuggestionSort);
             }  else {
                 TextFields.bindAutoCompletion(commandTextField, possibleSuggestion);
