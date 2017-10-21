@@ -1,4 +1,4 @@
-= Address Book (Level 4)
+= PocketBook V1.1
 ifdef::env-github,env-browser[:relfileprefix: docs/]
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 
@@ -31,7 +31,7 @@ endif::[]
 
 * Some parts of this sample application were inspired by the excellent http://code.makery.ch/library/javafx-8-tutorial/[Java FX tutorial] by
 _Marco Jakob_.
-* The project is designed by Professor Damith C. Rajapakse and his team from [School of Computing, National University of Singapore](http://www.comp.nus.edu.sg).
-* The project is morphed based on [AddressBook-Level4](https://github.com/nus-cs2103-AY1617S1/addressbook-level4) prepared by the teaching team.
+* The project is designed by Professor Damith C. Rajapakse and his team from http://www.comp.nus.edu.sg[School of Computing, National University of Singapore].
+* The project is morphed based on https://github.com/nus-cs2103-AY1617S1/addressbook-level4[AddressBook-Level4] prepared by the teaching team.
 
 == Licence : link:LICENSE[MIT]

@@ -26,6 +26,8 @@ public interface ReadOnlyPerson {
     ObjectProperty<Birthday> birthdayProperty();
     void setBirthday(Birthday birthday);
     Birthday getBirthday();
+    int getDay();
+    int getMonth();
     ObjectProperty<UniqueTagList> tagProperty();
     Set<Tag> getTags();
 

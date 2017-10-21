@@ -45,6 +45,21 @@ public class UiManager extends ComponentManager implements Ui {
     }
 
     @Override
+    public void show() {
+        mainWindow.show();
+    }
+
+    @Override
+    public void hide() {
+        mainWindow.hide();
+    }
+
+    @Override
+    public boolean isShowing() {
+        return mainWindow.isShowing();
+    }
+
+    @Override
     public void start(Stage primaryStage) {
         logger.info("Starting UI...");
         primaryStage.setTitle(config.getAppTitle());

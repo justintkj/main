@@ -16,7 +16,6 @@ public class Sound {
     private static final Logger logger = LogsCenter.getLogger("Error Sound");
     private static ArrayList<String> musicList = new ArrayList<String>(Arrays.asList("ErrorSound.mp3"));
     private static int curr = 0;
-    private static int index = 0;
     private static String bip;
     private static Media hit;
     private static MediaPlayer mediaPlayer;

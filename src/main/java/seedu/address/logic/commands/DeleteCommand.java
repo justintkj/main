@@ -34,18 +34,17 @@ public class DeleteCommand extends UndoableCommand {
     public CommandResult executeUndoableCommand() throws CommandException {
         List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
         String personsDeleted = "";
-        int i = 0;
 
-        for (Index e : targetIndex) {
-            if (e.getZeroBased() >= lastShownList.size()) {
+        for (int i = targetIndex.length - 1; i >= 0; i--) {
+            if (targetIndex[i].getZeroBased() >= lastShownList.size()) {
                 throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
             }
 
-            ReadOnlyPerson personToDelete = lastShownList.get(e.getZeroBased());
+            ReadOnlyPerson personToDelete = lastShownList.get(targetIndex[i].getZeroBased());
 
             try {
                 model.deletePerson(personToDelete);
-                personsDeleted += " ," + personToDelete.getName();
+                personsDeleted = " ," + personToDelete.getName() + personsDeleted;
             } catch (PersonNotFoundException pnfe) {
                 assert false : "The target person cannot be missing";
             }
