@@ -88,7 +88,7 @@ public class AddCommandParser implements Parser<AddCommand> {
                 Pattern blk = Pattern.compile("blk \\d{1,3}", Pattern.CASE_INSENSITIVE);
                 Matcher blkmatcher = blk.matcher(args);
                 matchFound = matcher.find();
-                if(!matchFound) {
+                if (!matchFound) {
                     matchFound = blkmatcher.find();
                     matcher = blkmatcher;
                 }
@@ -117,7 +117,7 @@ public class AddCommandParser implements Parser<AddCommand> {
                 matcher = postal.matcher(args);
                 matchFound = matcher.find();
                 if (matchFound) {
-                    postalnum = ", "+matcher.group(0);
+                    postalnum = ", " + matcher.group(0);
                 }
                 Pattern phonepattern = Pattern.compile("(\\D|^)\\d{8}(\\D|$)");
                 matcher = phonepattern.matcher(args);
@@ -127,7 +127,7 @@ public class AddCommandParser implements Parser<AddCommand> {
                 } else {
                     throw new IllegalValueException("invalid phone number");
                 }
-                Address address = new Address(blocknum+", "+streetnum+", "+unitnum+postalnum);
+                Address address = new Address(blocknum + ", " + streetnum+", " + unitnum + postalnum);
                 Set<Tag> tagList = new HashSet<>();
                 ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList);
                 return new AddCommand(person);
