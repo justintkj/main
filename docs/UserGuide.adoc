@@ -142,20 +142,6 @@ Deletes the 1st, 2nd and 3rd persons in the results of the `find` command.
 `d 3` +
 Deletes the 3rd person in the results of the `find` command.
 
-=== Changing the Song : `nextsong`
-
-Change the song to the next song on the playlist. +
-Format: `nextsong`
-	`ns`
-****
-* Plays the next song on the playlist
-****
-
-Examples:
-
-* `nextsong`
-Changes to the next Song in the playlist
-
 === Selecting a person : `select`
 
 Selects the person identified by the index number used in the last person listing. +

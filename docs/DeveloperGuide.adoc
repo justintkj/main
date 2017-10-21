@@ -826,7 +826,7 @@ Priorities: High (must have) - `* * \*`, Medium (nice to have) - `* \*`, Low (un
 
 |`* *` |user |add birthday to each person | "remember" birthdays :P
 
-|`* *` |user |Choose current song to be played | adjust between my favourite songs
+|`* *` |user |Have a prompt beep when an incorrect command is entered | a sound reminder that i typed a wrong command
 
 |`* *` |user |able add another user without following strict format | not have to remember/ refer to help for adding a person
 
