@@ -127,7 +127,7 @@ public class AddCommandParser implements Parser<AddCommand> {
                 } else {
                     throw new IllegalValueException("invalid phone number");
                 }
-                Address address = new Address(blocknum + ", " + streetnum+", " + unitnum + postalnum);
+                Address address = new Address(blocknum + ", " + streetnum + ", " + unitnum + postalnum);
                 Set<Tag> tagList = new HashSet<>();
                 ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList);
                 return new AddCommand(person);
