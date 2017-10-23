@@ -1,8 +1,22 @@
 package seedu.address.ui;
 
+import static java.awt.Event.ESCAPE;
+
+import java.awt.*;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
+import javax.xml.soap.Text;
+
+import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
+import impl.org.controlsfx.autocompletion.SuggestionProvider;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
 import javafx.collections.ObservableList;
@@ -37,11 +51,11 @@ public class CommandBox extends UiPart<Region> {
     private TextField commandTextField;
     private ArrayList<String> prevText = new ArrayList<String>();
 
-    private String[] possibleSuggestion = {"add", "clear", "list",
-        "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort"};
-    private String[] possibleSuggestionSort = {"sort name",
+    private static String[] possibleSuggestion = {"add", "clear", "list",
+        "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort", "sort name",
         "sort num", "sort email", "sort address", "sort remark"};
-
+    private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
+    private AutoCompletionBinding autocompletionbinding;
     public CommandBox(Logic logic) {
         super(FXML);
         this.logic = logic;
@@ -49,6 +63,13 @@ public class CommandBox extends UiPart<Region> {
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
         historySnapshot = logic.getHistorySnapshot();
         System.out.println(commandTextField.getText());
+        try {
+            XMLDecoder e = new XMLDecoder(new FileInputStream("Autocomplete.xml"));
+            mainPossibleSuggestion = ((ArrayList<String>)e.readObject());
+            e.close();
+        } catch (Exception ex) {
+        }
+        autocompletionbinding = TextFields.bindAutoCompletion(commandTextField, mainPossibleSuggestion);
     }
 
     /**
@@ -84,18 +105,19 @@ public class CommandBox extends UiPart<Region> {
             break;
 
         default:
-            if (commandTextField.getText().toLowerCase().equals("add")) {
-                TextFields.bindAutoCompletion(commandTextField, possibleSuggestionAdd);
-            } else if (commandTextField.getText().toLowerCase().equals("sort")) {
-                TextFields.bindAutoCompletion(commandTextField, possibleSuggestionSort);
-            }  else {
-                TextFields.bindAutoCompletion(commandTextField, possibleSuggestion);
-            }
-            break;
+
         }
     }
     public static void setAddSuggestion(String commandWord) {
-        possibleSuggestionAdd.add(commandWord);
+        mainPossibleSuggestion.add(commandWord);
+        if(!mainPossibleSuggestion.contains(commandWord)) {
+            try {
+                XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("Autocomplete.xml")));
+                e.writeObject(mainPossibleSuggestion);
+                e.close();
+            } catch (Exception ex) {
+            }
+        }
     }
     /**
      * Updates the text field with the previous input in {@code historySnapshot},
@@ -106,6 +128,7 @@ public class CommandBox extends UiPart<Region> {
         if (!historySnapshot.hasPrevious()) {
             return;
         }
+
 
         replaceText(historySnapshot.previous());
     }
@@ -143,6 +166,8 @@ public class CommandBox extends UiPart<Region> {
             historySnapshot.next();
             // process result of the command
             commandTextField.setText("");
+            autocompletionbinding.dispose();
+            autocompletionbinding = TextFields.bindAutoCompletion(commandTextField, mainPossibleSuggestion);
             logger.info("Result: " + commandResult.feedbackToUser);
             raise(new NewResultAvailableEvent(commandResult.feedbackToUser));
 

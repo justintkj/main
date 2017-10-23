@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_144" class="java.beans.XMLDecoder">
+ <object class="java.util.ArrayList">
+  <void method="add">
+   <string>add</string>
+  </void>
+  <void method="add">
+   <string>clear</string>
+  </void>
+  <void method="add">
+   <string>list</string>
+  </void>
+  <void method="add">
+   <string>edit</string>
+  </void>
+  <void method="add">
+   <string>find</string>
+  </void>
+  <void method="add">
+   <string>delete</string>
+  </void>
+  <void method="add">
+   <string>select</string>
+  </void>
+  <void method="add">
+   <string>history</string>
+  </void>
+  <void method="add">
+   <string>undo</string>
+  </void>
+  <void method="add">
+   <string>redo</string>
+  </void>
+  <void method="add">
+   <string>exit</string>
+  </void>
+  <void method="add">
+   <string>sort</string>
+  </void>
+  <void method="add">
+   <string>sort name</string>
+  </void>
+  <void method="add">
+   <string>sort email</string>
+  </void>
+  <void method="add">
+   <string>sort address</string>
+  </void>
+  <void method="add">
+   <string>sort remark</string>
+  </void>
+  <void method="add">
+   <string>sort birthday</string>
+  </void>
+  <void method="add">
+   <string>delete 13</string>
+  </void>
+  <void method="add">
+   <string>sort number</string>
+  </void>
+ </object>
+</java>

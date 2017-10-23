@@ -78,7 +78,9 @@ public class AddressBookParser {
 
         case DeleteCommand.COMMAND_WORD:
         case DeleteCommand.COMMAND_ALIAS:
-            return new DeleteCommandParser().parse(arguments);
+            Command deleteCommand = new DeleteCommandParser().parse(arguments);
+            CommandBox.setAddSuggestion(userInput);
+            return deleteCommand;
 
         case RemoveTagCommand.COMMAND_WORD:
             return new RemoveTagCommandParser().parse(arguments);
