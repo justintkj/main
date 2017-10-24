@@ -1,6 +1,5 @@
 package seedu.address.ui;
 
-import java.awt.*;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
@@ -37,6 +36,10 @@ public class CommandBox extends UiPart<Region> {
     public static final String ERROR_STYLE_CLASS = "error";
     private static final String FXML = "CommandBox.fxml";
     private static ArrayList<String> possibleSuggestionAdd = new ArrayList<String> ();
+    private static String[] possibleSuggestion = {"add", "clear", "list",
+            "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort", "sort name",
+            "sort num", "sort email", "sort address", "sort remark"};
+    private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
 
     private final Logger logger = LogsCenter.getLogger(CommandBox.class);
     private final Logic logic;
@@ -46,10 +49,6 @@ public class CommandBox extends UiPart<Region> {
     private TextField commandTextField;
     private ArrayList<String> prevText = new ArrayList<String>();
 
-    private static String[] possibleSuggestion = {"add", "clear", "list",
-        "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort", "sort name",
-        "sort num", "sort email", "sort address", "sort remark"};
-    private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
     private AutoCompletionBinding autocompletionbinding;
     public CommandBox(Logic logic) {
         super(FXML);
