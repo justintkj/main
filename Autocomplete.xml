@@ -58,5 +58,11 @@
   <void method="add">
    <string>sort number</string>
   </void>
+  <void method="add">
+   <string>delete 1</string>
+  </void>
+  <void method="add">
+   <string>map 1</string>
+  </void>
  </object>
 </java>
