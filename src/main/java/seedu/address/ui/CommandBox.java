@@ -37,8 +37,8 @@ public class CommandBox extends UiPart<Region> {
     private static final String FXML = "CommandBox.fxml";
     private static ArrayList<String> possibleSuggestionAdd = new ArrayList<String> ();
     private static String[] possibleSuggestion = {"add", "clear", "list",
-            "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort", "sort name",
-            "sort num", "sort email", "sort address", "sort remark"};
+        "edit", "find", "delete", "select", "history", "undo", "redo", "exit", "sort", "sort name",
+        "sort num", "sort email", "sort address", "sort remark"};
     private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
 
     private final Logger logger = LogsCenter.getLogger(CommandBox.class);
