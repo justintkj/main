@@ -1,7 +1,5 @@
 package seedu.address.ui;
 
-import static java.awt.Event.ESCAPE;
-
 import java.awt.*;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -12,10 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import javax.xml.soap.Text;
-
-import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
-import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
@@ -25,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.events.storage.DataSavingExceptionEvent;
 import seedu.address.commons.events.ui.NewResultAvailableEvent;
 import seedu.address.logic.ListElementPointer;
 import seedu.address.logic.Logic;
@@ -65,9 +60,10 @@ public class CommandBox extends UiPart<Region> {
         System.out.println(commandTextField.getText());
         try {
             XMLDecoder e = new XMLDecoder(new FileInputStream("Autocomplete.xml"));
-            mainPossibleSuggestion = ((ArrayList<String>)e.readObject());
+            mainPossibleSuggestion = ((ArrayList<String>) e.readObject());
             e.close();
         } catch (Exception ex) {
+            raise(new DataSavingExceptionEvent(ex));
         }
         autocompletionbinding = TextFields.bindAutoCompletion(commandTextField, mainPossibleSuggestion);
     }
@@ -109,7 +105,7 @@ public class CommandBox extends UiPart<Region> {
         }
     }
     public static void setAddSuggestion(String commandWord) {
-        if(!mainPossibleSuggestion.contains(commandWord)) {
+        if (!mainPossibleSuggestion.contains(commandWord)) {
             try {
                 mainPossibleSuggestion.add(commandWord);
                 System.out.println(commandWord);

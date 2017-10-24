@@ -64,5 +64,8 @@
   <void method="add">
    <string>map 1</string>
   </void>
+  <void method="add">
+   <string>delete 4</string>
+  </void>
  </object>
 </java>
