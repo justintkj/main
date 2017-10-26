@@ -28,12 +28,12 @@ public class EmailCommandParser implements Parser<EmailCommand> {
         String message;
         try {
             index = ParserUtil.parseIndex(splitArgs[0]);
-            String[] Messages = args.trim().split(",");
-            if (Messages.length < 3) {
+            String[] messages = args.trim().split(",");
+            if (messages.length < 3) {
                 throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EmailCommand.MESSAGE_USAGE));
             }
-            subject = (Messages[1]);
-            message = (Messages[2]);
+            subject = (messages[1]);
+            message = (messages[2]);
         } catch (IllegalValueException ive) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EmailCommand.MESSAGE_USAGE));
         }

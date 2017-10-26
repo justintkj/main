@@ -528,6 +528,49 @@ image::BirthdayNotifierActivityDiagram.png[width = "200"]
 ---
 // end::BirthdayNotifier[]
 
+// tag::ShowCommand[]
+=== Find command
+
+The 'find' command was originally used only to search for users by name. Now it can be used to display all members of a single tag. An example of its use is shown below:
+
+    AddressBook contains: Alfred (tagged as friend), Bruce (tagged as colleague), Richard (tagged as both friend and colleague)
+    User enters the command: find t\friend
+    ---------------------
+    The program returns by listing: Alfred and Richard
+
+The FindCommand class itself relies on having a search predicate passed to the constructor as input, so that class required fairly minimal modification to take a predicate of type TagContainsKeywordPredicate as well as NameContainsKeywordsPredicate.
+
+The FindCommandParser includes code to differentiate between a search by name and by tag, and produces either a TagContainsKeywordPredicate or NameContainsKeywordsPredicate as appropriate.
+
+image::FindCommandArchitecture.png[width="800"]
+
+
+==== Design Considerations
+
+**Aspect:** Specificity of user input +
+**Alternative 1 (current choice):** Users are required to enter the full and exact tag name, including case +
+**Pros:** System will not output persons not in the intended tag +
+**Cons:** Inconvenient for users who forget or misinput the exact names of tags +
+**Alternative 2:** System searches all tags that contain the given keyword +
+**Pros:** More convenient to users who do not wish to remember the exact name of every tag +
+**Cons:** May return output that is unintended by the user (e.g. listing members of "girlfriend" when the user searches for "friend") +
+
+---
+
+**Aspect:** Can only search by a single tag at a time +
+**Alternative 1 (current choice):** Users may enter one tag as a keyword by which to search by +
+**Cons:** Users may wish to search for the intersection of a tag and another tag, or a tag and a name (e.g. all friends named John) +
+**Alternative 2:** Searching for multiple tags returns the intersection of those tags +
+**Pros:** Allows users to very easily track down individuals by specifying which groups they are in +
+**Cons:** Makes it difficult to construct complex large subsets of the addressbook +
+**Alternative 3:** Searching for multiple tags returns the union of those tags +
+**Pros:** Useful when one 'category' of persons might be split across multiple tags +
+**Cons:** Makes it difficult to track down individuals by inputting all tags that they are in +
+
+---
+
+// end::ShowCommand[]
+
 // tag::Fuzzyfinder[]
 === Fuzzyfinder
 
