@@ -90,6 +90,7 @@ public class UndoCommand extends Command {
                 || (other instanceof UndoCommand // instanceof handles nulls
                 && this.numUndo == (((UndoCommand) other).numUndo)); // state check
     }
+
     //@@author
     @Override
     public void setData(Model model, CommandHistory commandHistory, UndoRedoStack undoRedoStack) {
