@@ -37,11 +37,11 @@ public class CommandBox extends UiPart<Region> {
 
     public static final String AUTOCOMPLETE_FILE_NAME = "Autocomplete.xml";
     public static final String ERROR_STYLE_CLASS = "error";
-    private static final String FXML = "CommandBox.fxml";
-
     public static final String STORAGE_FILE_NAME = "Autocomplete.xml";
     public static final String ERROR_MESSAGE_CREATE_FILE_FAILED = "Unable to create file Autocomplete.xml";
     public static final String EMPTY_STRING = "";
+
+    private static final String FXML = "CommandBox.fxml";
 
     private static String[] possibleSuggestion = {"add", "birthday", "clear", "list", "help", "removetag", "image",
         "edit", "find", "delete", "select", "favourite", "history", "undo", "redo", "email", "sort", "sort name", "map",
