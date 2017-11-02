@@ -26,8 +26,8 @@ public class FavouriteCommandParserTest {
 
     @Test
     public void parse_validArgs_returnsFavouriteCommand() throws IllegalValueException {
-            assertParseSuccess(parser, FIRST_PERSON, new FavouriteCommand(INDEX_FIRST_PERSON,
-                    new Favourite("true")));
+        assertParseSuccess(parser, FIRST_PERSON, new FavouriteCommand(INDEX_FIRST_PERSON,
+                new Favourite("true")));
     }
 
     @Test
