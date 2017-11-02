@@ -64,7 +64,7 @@ public class CommandBox extends UiPart<Region> {
     }
 
     /**
-     * Updates autocomplete with Autocomplete.xml File 
+     * Updates autocomplete with Autocomplete.xml File
      */
     private void updateAutocomplete() {
         try {
