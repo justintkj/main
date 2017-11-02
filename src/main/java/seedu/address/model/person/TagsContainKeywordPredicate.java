@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 
 import seedu.address.model.tag.Tag;
 
+//@@author thehelpfulbees
+
 /**
  * Tests that a {@code ReadOnlyPerson}'s {@code Name} matches any of the keywords given.
  */
@@ -29,10 +31,6 @@ public class TagsContainKeywordPredicate implements Predicate<ReadOnlyPerson> {
             //else tags.remove();
         }
         return false;
-
-
-        //return keywords.stream()
-        //        .anyMatch(keyword -> StringUtil.containsWordIgnoreCase(person.getName().fullName, keyword));
     }
 
     @Override

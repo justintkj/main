@@ -979,6 +979,8 @@ Priorities: High (must have) - `* * \*`, Medium (nice to have) - `* \*`, Low (un
 
 |`* * *` |user |sort the contact list by Name/contact number/email/address | view the people in ascending order of types of data chosen
 
+|`* *` |user |do a confirmation step before clearing the whole addressbook | no longer accidentally delete all my data
+
 |`* *` |user |see the next closest search results if search fails | find a person without getting their name exactly correct (fuzzy searching)
 
 |`* *` |user |have a quick reference bar pop up whenever a user enters a single word command (e.g. 'add' will show an example of the full add command structure) | use commands without always having to memorise the command structure or always open the help window
@@ -1033,6 +1035,8 @@ Priorities: High (must have) - `* * \*`, Medium (nice to have) - `* \*`, Low (un
 |`*` |user |let other uses add their data in for me by linking over the web |not have to enter in as much data for every contact
 
 |`*` |user |startup the app with a picture/inspirational quote instead of a blank background | decorate the GUI, make it look prettier
+
+|`*` |user |see when I added/last edited a contact to the addressbook | know when the data is out of date
 |=======================================================================
 
 {More to be added}

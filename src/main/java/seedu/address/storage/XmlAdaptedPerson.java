@@ -13,6 +13,7 @@ import seedu.address.model.person.Birthday;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Favourite;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.NumTimesSearched;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.ProfilePicture;
@@ -90,6 +91,7 @@ public class XmlAdaptedPerson {
         final ProfilePicture picture = new ProfilePicture(this.image);
         final Favourite favourite = new Favourite(this.favourite);
         final Set<Tag> tags = new HashSet<>(personTags);
-        return new Person(name, phone, email, address, remark, birthday, tags, picture, favourite);
+        final NumTimesSearched numTimesSearched = new NumTimesSearched();
+        return new Person(name, phone, email, address, remark, birthday, tags, picture, favourite, numTimesSearched);
     }
 }

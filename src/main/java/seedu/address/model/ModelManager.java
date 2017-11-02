@@ -130,8 +130,8 @@ public class ModelManager extends ComponentManager implements Model {
     public void changeImage(ReadOnlyPerson target) throws PersonNotFoundException {
         raise(new ChangeImageEvent(target));
     }
-    //@@author
 
+    //@@author
     @Override
     public boolean equals(Object obj) {
         // short circuit if same object

@@ -70,5 +70,4 @@ public interface Model {
      * Edits the profile picture for selected person
      */
     void changeImage(ReadOnlyPerson target) throws PersonNotFoundException;
-    //@@author
 }

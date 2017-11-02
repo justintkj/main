@@ -21,6 +21,7 @@ import seedu.address.model.person.Birthday;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Favourite;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.NumTimesSearched;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.ProfilePicture;
@@ -109,8 +110,9 @@ public class EditCommand extends UndoableCommand {
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
         ProfilePicture picture = personToEdit.getPicture();
         Favourite favourite = personToEdit.getFavourite();
+        NumTimesSearched numTimesSearched = personToEdit.getNumTimesSearched();
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedRemark, updatedBirthday,
-                updatedTags, picture, favourite);
+                updatedTags, picture, favourite, numTimesSearched);
     }
     //@@author
     @Override

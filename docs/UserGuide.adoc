@@ -1,5 +1,6 @@
-﻿= AddressBook Level 4 - User Guide
-PocketBook - User Guide
+
+= PocketBook - User Guide
+
 :toc:
 :toc-title:
 :toc-placement: preamble

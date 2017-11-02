@@ -92,7 +92,7 @@ public class RedoCommand extends Command {
                 || (other instanceof RedoCommand // instanceof handles nulls
                 && this.numRedo == (((RedoCommand) other).numRedo)); // state check
     }
-    
+
     //@@author
     @Override
     public void setData(Model model, CommandHistory commandHistory, UndoRedoStack undoRedoStack) {
