@@ -1,4 +1,4 @@
-
+﻿
 = PocketBook - User Guide
 
 :toc:
@@ -59,8 +59,8 @@ Format: `help`
 === Adding a person: `add`/'a'
 
 Adds a person to the address book +
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]...` +
-Alternative Format : `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL`
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]... r/REMARK b/BIRTHDAY` +
+Alternative Format : `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL BIRTHDAY`
 
 [TIP]
 A person can have any number of tags (including 0) +
@@ -77,11 +77,11 @@ Email : (1 alphanumericword)@(1 alphanumericword).(1 alphanumericword). Example:
 
 Examples:
 
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 r/Handsome b/11-11-2011`
+* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal r/Swimmer b/ 9-9-2012`
 * `a n/Donald Pua t/friend e/donana@example.com a/Porsche street p/3153357 t/cleaner`
-* `add Jason, Block 111 street 55 #01-111 92008822 jason@example.com`
-* `add Dexter,street 15 Block 12 #01-111 singapore 666999 92008822 jason@example.com 92008822 11-11-2011`
+* `add Jason, Block 111 jurong street 55 #01-111 92008822 jason@example.com`
+* `add Dexter,jurong street 15 Block 12 #01-111 singapore 666999 92008822 jason@example.com 92008822 11-11-2011`
 
 === Listing all persons : `list`
 
