@@ -17,13 +17,16 @@ import seedu.address.model.person.ReadOnlyPerson;
  */
 public class MapWindow extends UiPart<Region> {
 
-    public static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
-    public static final String GOOGLE_SEARCH_URL_SUFFIX = "&cad=h";
+    private static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
+    private static final String GOOGLE_SEARCH_URL_SUFFIX = "&cad=h";
 
     private static final Logger logger = LogsCenter.getLogger(MapWindow.class);
     private static final String ICON = "/images/help_icon.png";
     private static final String FXML = "MapWindow.fxml";
     private static final String TITLE = "Map";
+    private static final String SPACE = " ";
+    private static final String PLUS = "+";
+    private static final String MESSAGE_SHOW_MAP = "Showing map window for selected person.";
 
     @FXML
     private WebView browser;
@@ -38,7 +41,7 @@ public class MapWindow extends UiPart<Region> {
         dialogStage.setMaximized(false);
         FxViewUtil.setStageIcon(dialogStage, ICON);
 
-        String userGuideUrl = GOOGLE_MAPS_URL_PREFIX + person.getAddress().toString().replaceAll(" ", "+")
+        String userGuideUrl = GOOGLE_MAPS_URL_PREFIX + person.getAddress().toString().replaceAll(SPACE, PLUS)
                 + GOOGLE_SEARCH_URL_SUFFIX;
         browser.getEngine().load(userGuideUrl);
     }
@@ -62,7 +65,7 @@ public class MapWindow extends UiPart<Region> {
      * </ul>
      */
     public void show() {
-        logger.fine("Showing map window for selected person.");
+        logger.fine(MESSAGE_SHOW_MAP);
         dialogStage.showAndWait();
     }
 }

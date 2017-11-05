@@ -1,7 +1,8 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.commands.EditCommand.MESSAGE_DUPLICATE_PERSON;
+import static seedu.address.commons.core.Messages.MESSAGE_DUPLICATE_PERSON;
+import static seedu.address.commons.core.Messages.MESSAGE_MISSING_PERSON;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 
 import java.util.List;
@@ -30,9 +31,7 @@ public class RemarkCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_REMARK + "Likes to swim.";
 
-    public static final String MESSAGE_REMARK_SUCCESS = "Remark edited for Person: ";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
-    public static final String MISSING_PERSON = "Person cannot be found";
+    private static final String MESSAGE_REMARK_SUCCESS = "Remark edited for Person: ";
 
     private final Index index;
     private final Remark remark;
@@ -67,7 +66,7 @@ public class RemarkCommand extends UndoableCommand {
         } catch (DuplicatePersonException dpe) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         } catch (PersonNotFoundException pnfe) {
-            throw new AssertionError(MISSING_PERSON);
+            throw new AssertionError(MESSAGE_MISSING_PERSON);
         }
 
         model.updateListToShowAll();

@@ -1,5 +1,5 @@
 # thehelpfulbees
-###### /java/seedu/address/logic/commands/FindCommand.java
+###### \java\seedu\address\logic\commands\FindCommand.java
 ``` java
 
 /**
@@ -20,8 +20,10 @@ public class FindCommand extends Command {
             + "Example: " + COMMAND_WORD + " alice bob charlie \n"
             + "Example: " + COMMAND_WORD + " t\\friend";
 
-    private static final String MESSAGE_DUPLICATE_PERSON_WHEN_UPDATING = "Duplicate person error when updating num times searched.";
-    private static final String MESSAGE_PERSON_NOT_FOUND_WHEN_UPDATING = "Person not found when updating num times searched.";
+    private static final String MESSAGE_DUPLICATE_PERSON_WHEN_UPDATING =
+            "Duplicate person error when updating num times searched.";
+    private static final String MESSAGE_PERSON_NOT_FOUND_WHEN_UPDATING =
+            "Person not found when updating num times searched.";
 
 
     private final Predicate<ReadOnlyPerson> predicate;
@@ -48,7 +50,6 @@ public class FindCommand extends Command {
                 throw new AssertionError(MESSAGE_PERSON_NOT_FOUND_WHEN_UPDATING);
             }
         }
-
         return new CommandResult(getMessageForPersonListShownSummary(filteredPersonList.size()));
     }
 
@@ -65,7 +66,7 @@ public class FindCommand extends Command {
     }
 }
 ```
-###### /java/seedu/address/logic/parser/FindCommandParser.java
+###### \java\seedu\address\logic\parser\FindCommandParser.java
 ``` java
 /**
  * Parses input arguments and creates a new FindCommand object
@@ -97,7 +98,7 @@ public class FindCommandParser implements Parser<FindCommand> {
 
 }
 ```
-###### /java/seedu/address/model/person/NumTimesSearched.java
+###### \java\seedu\address\model\person\NumTimesSearched.java
 ``` java
 /**
  * Counts number of times a person has been searched for
@@ -105,11 +106,12 @@ public class FindCommandParser implements Parser<FindCommand> {
  */
 public class NumTimesSearched {
 
-    private static final String MESSAGE_NUMTIMESSEARCHED_CONSTRAINTS = "Initial value of NumTimesSearched should be >= 0";
+    public static final String MESSAGE_NUM_TIMES_SEARCHED_CONSTRAINTS =
+            "Initial value of NumTimesSearched should be >= 0";
 
-    public static int STARTING_VALUE = 0;
+    private static final int STARTING_VALUE = 0;
 
-    public int value = STARTING_VALUE; //num times searched
+    private int value = STARTING_VALUE; //num times searched
 
     /**
      * Validates given Favourite.
@@ -118,7 +120,7 @@ public class NumTimesSearched {
      */
     public NumTimesSearched(int initialValue) throws IllegalValueException {
         if (!isValidValue(initialValue)) {
-            throw new IllegalValueException(MESSAGE_NUMTIMESSEARCHED_CONSTRAINTS);
+            throw new IllegalValueException(MESSAGE_NUM_TIMES_SEARCHED_CONSTRAINTS);
         }
         this.value = initialValue;
     }
@@ -128,7 +130,7 @@ public class NumTimesSearched {
     }
 
     public void incrementValue() {
-        value ++;
+        value++;
     }
 
     /**
@@ -136,6 +138,17 @@ public class NumTimesSearched {
      */
     public static boolean isValidValue(int value) {
         return (value >= 0);
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue (int newValue) throws IllegalValueException {
+        if (!isValidValue(newValue)) {
+            throw new IllegalValueException(MESSAGE_NUM_TIMES_SEARCHED_CONSTRAINTS);
+        }
+        this.value = newValue;
     }
 
     @Override
@@ -151,11 +164,13 @@ public class NumTimesSearched {
     }
 }
 ```
-###### /java/seedu/address/model/person/Person.java
+###### \java\seedu\address\model\person\Person.java
 ``` java
 
     @Override
-    public NumTimesSearched getNumTimesSearched() {return numTimesSearched.get();};
+    public NumTimesSearched getNumTimesSearched() {
+        return numTimesSearched.get();
+    }
 
     @Override
     public void incrementNumTimesSearched() {
@@ -163,7 +178,7 @@ public class NumTimesSearched {
     }
 
 ```
-###### /java/seedu/address/model/person/TagsContainKeywordPredicate.java
+###### \java\seedu\address\model\person\TagsContainKeywordPredicate.java
 ``` java
 
 /**

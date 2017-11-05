@@ -1,9 +1,9 @@
 # thehelpfulbees
-###### /java/seedu/address/logic/commands/FindCommandTest.java
+###### \java\seedu\address\logic\commands\FindCommandTest.java
 ``` java
 
     @Test
-    public void execute_searchByTag_noPersonFound() throws Exception{
+    public void execute_searchByTag_noPersonFound() throws Exception {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
         FindCommand command = prepareCommand("t\\worstEnemy");
         assertCommandSuccess(command, expectedMessage, Collections.emptyList());
@@ -51,7 +51,8 @@
      *     - the {@code FilteredList<ReadOnlyPerson>} is equal to {@code expectedList}<br>
      *     - the {@code AddressBook} in model remains the same after executing the {@code command}
      */
-    private void assertCommandSuccess(FindCommand command, String expectedMessage, List<ReadOnlyPerson> expectedList) throws Exception {
+    private void assertCommandSuccess(FindCommand command, String expectedMessage, List<ReadOnlyPerson> expectedList)
+            throws Exception {
         AddressBook expectedAddressBook = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute();
 
@@ -61,7 +62,7 @@
     }
 }
 ```
-###### /java/seedu/address/model/person/NumTimesSearchedTest.java
+###### \java\seedu\address\model\person\NumTimesSearchedTest.java
 ``` java
 
 public class NumTimesSearchedTest {
@@ -78,11 +79,11 @@ public class NumTimesSearchedTest {
         assertTrue(NumTimesSearched.isValidValue((1)));
         assertTrue(NumTimesSearched.isValidValue((2)));
         assertTrue(NumTimesSearched.isValidValue((200)));
-}
+    }
 
 }
 ```
-###### /java/seedu/address/model/person/TagsContainKeywordPredicateTest.java
+###### \java\seedu\address\model\person\TagsContainKeywordPredicateTest.java
 ``` java
 
 public class TagsContainKeywordPredicateTest {

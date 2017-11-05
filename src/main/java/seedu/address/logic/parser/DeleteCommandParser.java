@@ -11,26 +11,32 @@ import seedu.address.logic.parser.exceptions.ParseException;
  * Parses input arguments and creates a new DeleteCommand object
  */
 public class DeleteCommandParser implements Parser<DeleteCommand> {
+    private static final String SPACE = " ";
 
     //@@author liliwei25
     /**
      * Parses the given {@code String} of arguments in the context of the DeleteCommand
      * and returns an DeleteCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public DeleteCommand parse(String args) throws ParseException {
         try {
-            String[] arguments = args.trim().split(" ");
-            Index[] index = new Index[arguments.length];
-            int i = 0;
-            for (String e: arguments) {
-                index[i++] = ParserUtil.parseIndex(e);
-            }
+            Index[] index = getIndices(args);
             return new DeleteCommand(index);
         } catch (IllegalValueException ive) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
         }
+    }
+
+    private Index[] getIndices(String args) throws IllegalValueException {
+        String[] arguments = args.trim().split(SPACE);
+        Index[] index = new Index[arguments.length];
+        int count = 0;
+        for (String e: arguments) {
+            index[count++] = ParserUtil.parseIndex(e);
+        }
+        return index;
     }
     //@@author
 }

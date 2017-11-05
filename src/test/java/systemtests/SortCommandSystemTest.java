@@ -1,6 +1,7 @@
 package systemtests;
 
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.BIRTHDAY_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
@@ -17,6 +18,7 @@ import seedu.address.model.person.exceptions.DuplicatePersonException;
 
 //@@author justintkj
 public class SortCommandSystemTest extends AddressBookSystemTest {
+
     @Test
     public void sort() throws Exception {
         Model model = getModel();
@@ -68,7 +70,8 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
         /* Adds a person AMY to the addressBook */
         ReadOnlyPerson toAdd = AMY;
         command = "   " + AddCommand.COMMAND_WORD + "  " + NAME_DESC_AMY + "  " + PHONE_DESC_AMY + " "
-                + EMAIL_DESC_AMY + "   " + ADDRESS_DESC_AMY + "   " + TAG_DESC_FRIEND + " ";
+                + EMAIL_DESC_AMY + "   " + ADDRESS_DESC_AMY + "   " + " r/" + AMY.getRemark().value + " "
+                + BIRTHDAY_DESC_BOB + " " + TAG_DESC_FRIEND + " ";
         assertCommandSuccess(command, toAdd);
         model.addPerson(toAdd);
 

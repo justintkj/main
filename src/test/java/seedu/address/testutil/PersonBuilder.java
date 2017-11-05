@@ -25,9 +25,9 @@ public class PersonBuilder {
     public static final String DEFAULT_PHONE = "85355255";
     public static final String DEFAULT_EMAIL = "alice@gmail.com";
     public static final String DEFAULT_ADDRESS = "123, Jurong West Ave 6, #08-111";
-    public static final String DEFAUT_REMARK = "";
+    public static final String DEFAULT_REMARK = "handsome";
     public static final String DEFAULT_TAGS = "friends";
-    public static final String DEFAULT_PICTURE = "profiles/default.png";
+    public static final String DEFAULT_PICTURE = "default";
     public static final String DEFAULT_BIRTHDAY = "";
     public static final String DEFAULT_FAVOURITE = "false";
     private Person person;
@@ -38,7 +38,7 @@ public class PersonBuilder {
             Phone defaultPhone = new Phone(DEFAULT_PHONE);
             Email defaultEmail = new Email(DEFAULT_EMAIL);
             Address defaultAddress = new Address(DEFAULT_ADDRESS);
-            Remark defaultRemark = new Remark(DEFAUT_REMARK);
+            Remark defaultRemark = new Remark(DEFAULT_REMARK);
             Birthday defaultBirthday = new Birthday(DEFAULT_BIRTHDAY);
             Set<Tag> defaultTags = SampleDataUtil.getTagSet(DEFAULT_TAGS);
             ProfilePicture defaultPicture = new ProfilePicture(DEFAULT_PICTURE);
@@ -118,13 +118,33 @@ public class PersonBuilder {
     }
 
     /**
-     * Sets the {@code Email} of the {@code Person} that we are building.
+     * Sets the {@code Birthday} of the {@code Person} that we are building.
      */
     public PersonBuilder withBirthday (String birthday) {
         try {
             this.person.setBirthday(new Birthday(birthday));
         } catch (IllegalValueException ive) {
             throw new IllegalArgumentException("birthday is expected to be unique.");
+        }
+        return this;
+    }
+
+    /**
+     * Sets the {@code Remark} of the {@code Person} that we are building.
+     */
+    public PersonBuilder withRemark (String remark) {
+        this.person.setRemark(new Remark(remark));
+        return this;
+    }
+
+    /**
+     * Sets the {@code Favourite} of the {@code Person} that we are building.
+     */
+    public PersonBuilder withFavourite (String favourite) {
+        try {
+            this.person.setFavourite(new Favourite(favourite));
+        } catch (IllegalValueException ive) {
+            throw new IllegalArgumentException("Favourite value wrong");
         }
         return this;
     }

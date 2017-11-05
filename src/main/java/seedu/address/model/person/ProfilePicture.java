@@ -2,20 +2,16 @@ package seedu.address.model.person;
 
 import static java.util.Objects.requireNonNull;
 
-import seedu.address.commons.exceptions.IllegalValueException;
-
 //@@author liliwei25
 /**
  * Represents a profile picture for Person
  */
 public class ProfilePicture {
 
-    public final String imageLocation;
+    private final String imageLocation;
 
     /**
-     * Validates given name.
-     *
-     * @throws IllegalValueException if given name string is invalid.
+     * Validates given location of image.
      */
     public ProfilePicture(String location) {
         requireNonNull(location);
@@ -25,6 +21,7 @@ public class ProfilePicture {
     public String getLocation() {
         return imageLocation;
     }
+
     @Override
     public String toString() {
         return imageLocation;

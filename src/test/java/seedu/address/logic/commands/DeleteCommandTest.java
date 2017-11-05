@@ -42,6 +42,23 @@ public class DeleteCommandTest {
     }
 
     @Test
+    public void execute_validIndexUnfilteredListMultiple_success() throws Exception {
+        ReadOnlyPerson firstPersonToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        ReadOnlyPerson secondPersonToDelete = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+
+        DeleteCommand deleteCommand = prepareCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON);
+
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
+                secondPersonToDelete.getName() + ", " + firstPersonToDelete.getName());
+
+        ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(firstPersonToDelete);
+        expectedModel.deletePerson(secondPersonToDelete);
+
+        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
     public void execute_invalidIndexUnfilteredList_throwsCommandException() throws Exception {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         DeleteCommand deleteCommand = prepareCommand(outOfBoundIndex);
@@ -105,8 +122,8 @@ public class DeleteCommandTest {
     /**
      * Returns a {@code DeleteCommand} with the parameter {@code index}.
      */
-    private DeleteCommand prepareCommand(Index index) {
-        DeleteCommand deleteCommand = new DeleteCommand(new Index[] {index});
+    private DeleteCommand prepareCommand(Index... index) {
+        DeleteCommand deleteCommand = new DeleteCommand(index);
         deleteCommand.setData(model, new CommandHistory(), new UndoRedoStack());
         return deleteCommand;
     }

@@ -1,15 +1,9 @@
 package seedu.address.ui;
 
-import java.awt.FileDialog;
-import java.awt.Frame;
 import java.io.File;
 import java.io.IOException;
 
 import java.util.logging.Logger;
-
-import javax.swing.JFileChooser;
-import javax.swing.UIManager;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -22,6 +16,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import seedu.address.commons.core.Config;
@@ -47,6 +42,10 @@ public class MainWindow extends UiPart<Region> {
     private static final String FXML = "MainWindow.fxml";
     private static final int MIN_HEIGHT = 600;
     private static final int MIN_WIDTH = 450;
+    private static final String[] IMAGE_EXTENSIONS = {"*.jpg", "*.png", "*.jpeg"};
+    private static final String BUTTON_DESCRIPTION = "Any Image files";
+    private static final String MESSAGE_COPY_FAILURE = "Failed to copy image";
+    private static final String PNG = ".png";
 
     private final Logger logger = LogsCenter.getLogger(this.getClass());
 
@@ -55,7 +54,6 @@ public class MainWindow extends UiPart<Region> {
 
     // Independent Ui parts residing in this Ui container
     private BrowserPanel browserPanel;
-    private PersonInfoPanel personInfoPanel;
     private PersonListPanel personListPanel;
     private Config config;
     private UserPrefs prefs;
@@ -149,7 +147,7 @@ public class MainWindow extends UiPart<Region> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        personInfoPanel = new PersonInfoPanel();
+        PersonInfoPanel personInfoPanel = new PersonInfoPanel();
         infoPlaceholder.getChildren().add(personInfoPanel.getRoot());
 
         browserPanel = new BrowserPanel();
@@ -217,7 +215,7 @@ public class MainWindow extends UiPart<Region> {
      * Opens the help window.
      */
     @FXML
-    public void handleHelp() {
+    private void handleHelp() {
         HelpWindow helpWindow = new HelpWindow();
         helpWindow.show();
     }
@@ -247,48 +245,31 @@ public class MainWindow extends UiPart<Region> {
      * Opens file browser.
      */
     private void handleImageEvent(ReadOnlyPerson person) {
-        String os = System.getProperty("os.name");
-        if (os.equals("Mac OS X")) {
-            FileDialog fileChooser = new FileDialog((Frame) null);
-            fileChooser.setAlwaysOnTop(true);
-            fileChooser.setAutoRequestFocus(true);
-            fileChooser.setFile("*.jpg;*.jpeg;*.png");
-            fileChooser.setDirectory(new File("data").getPath());
-            fileChooser.setVisible(true);
-            String filename = fileChooser.getDirectory() + fileChooser.getFile();
-            if (fileChooser.getFile() != null) {
-                File selectedFile = new File(filename);
-                try {
-                    imageStorage.saveImage(selectedFile, person.getName().toString());
-                } catch (IOException io) {
-                    logger.warning("failed to copy image");
-                }
-                person.setImage(person.getName().toString() + ".png");
-            }
-        } else {
+        Stage parent = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(BUTTON_DESCRIPTION, IMAGE_EXTENSIONS);
+        fileChooser.getExtensionFilters().add(filter);
+        File result = fileChooser.showOpenDialog(parent);
+        if (result != null) {
             try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                logger.warning("Unable to open file chooser");
+                imageStorage.saveImage(result, person.getName().toString());
+            } catch (IOException io) {
+                logger.warning(MESSAGE_COPY_FAILURE);
             }
-            Frame parent = new Frame();
-            parent.setAlwaysOnTop(true);
-            parent.setAutoRequestFocus(true);
-            JFileChooser fileChooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Any Image files", "jpg", "png", "jpeg");
-            fileChooser.setFileFilter(filter);
-            fileChooser.setCurrentDirectory(new File("data"));
-            int result = fileChooser.showDialog(parent, "Select Image");
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                try {
-                    imageStorage.saveImage(selectedFile, person.getName().toString());
-                } catch (IOException io) {
-                    logger.warning("failed to copy image");
-                }
-                person.setImage(person.getName().toString() + ".png");
-            }
+            person.setImage(person.getName().toString() + PNG);
         }
+    }
+
+    @Subscribe
+    private void handleMapPanelEvent(MapPersonEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event));
+        handleMapEvent(event.getPerson());
+    }
+
+    @Subscribe
+    private void handleChangeImageEvent(ChangeImageEvent event) {
+        logger.info(LogsCenter.getEventHandlingLogMessage(event));
+        handleImageEvent(event.getPerson());
     }
     //@@author
 
@@ -302,23 +283,7 @@ public class MainWindow extends UiPart<Region> {
         handleHelp();
     }
 
-    //@@author liliwei25
-    @Subscribe
-    private void handleMapPanelEvent(MapPersonEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event));
-        handleMapEvent(event.getPerson());
-    }
-    //@@author
-
     void releaseResources() {
         browserPanel.freeResources();
     }
-
-    //@@author liliwei25
-    @Subscribe
-    private void handleChangeImageEvent(ChangeImageEvent event) {
-        logger.info(LogsCenter.getEventHandlingLogMessage(event));
-        handleImageEvent(event.getPerson());
-    }
-    //@@author
 }

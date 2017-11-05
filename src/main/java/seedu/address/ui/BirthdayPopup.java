@@ -19,6 +19,15 @@ import javax.swing.JLabel;
  * Creates a birthday notification
  */
 public class BirthdayPopup {
+    private static final int WIDTH = 300;
+    private static final int MIN_HEIGHT = 125;
+    private static final int INCREMENT = 50;
+    private static final String BIRTHDAY_ALERT = "Birthday Alert!";
+    private static final String ICON_LOCATION = "src/main/resources/images/birthday_cake.png";
+    private static final String ICON_DESCRIPTION = "birthday icon";
+    private static final String CLOSE_BUTTON = "x";
+    private static final String BIRTHDAY_MESSAGE = "There are birthdays today: \n";
+    private static final int DELAY = 5000;
     private JDialog frame = new JDialog();
     private GridBagConstraints constraints = new GridBagConstraints();
 
@@ -32,10 +41,11 @@ public class BirthdayPopup {
 
     /**
      * Creates the dialog for the popup
-     * @param size
+     *
+     * @param size of popup
      */
-    void createFrame(int size) {
-        frame.setSize(300, 125 + size * 50);
+    private void createFrame(int size) {
+        frame.setSize(WIDTH, MIN_HEIGHT + size * INCREMENT);
         frame.setUndecorated(true);
         frame.setLayout(new GridBagLayout());
         Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -47,9 +57,7 @@ public class BirthdayPopup {
     /**
      * Creates the icon for the popup
      */
-    void createIcon() {
-        String header = "Birthday Alert!";
-
+    private void createIcon() {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 1.0f;
@@ -57,8 +65,8 @@ public class BirthdayPopup {
         constraints.insets = new Insets(5, 5, 5, 5);
         constraints.fill = GridBagConstraints.BOTH;
 
-        Icon headingIcon = new ImageIcon("src/main/resources/images/birthday_cake.png", "birthday icon");
-        JLabel headingLabel = new JLabel(header);
+        Icon headingIcon = new ImageIcon(ICON_LOCATION, ICON_DESCRIPTION);
+        JLabel headingLabel = new JLabel(BIRTHDAY_ALERT);
         headingLabel.setIcon(headingIcon);
         headingLabel.setOpaque(false);
         frame.add(headingLabel, constraints);
@@ -67,13 +75,13 @@ public class BirthdayPopup {
     /**
      * Creates the close button for the popup
      */
-    void createCloseButton() {
+    private void createCloseButton() {
         constraints.gridx++;
         constraints.weightx = 0f;
         constraints.weighty = 0f;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.NORTH;
-        JButton closeButton = new JButton(new AbstractAction("x") {
+        JButton closeButton = new JButton(new AbstractAction(CLOSE_BUTTON) {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 frame.dispose();
@@ -86,18 +94,17 @@ public class BirthdayPopup {
 
     /**
      * create the message for all the person with birthday
-     * @param person
+     *
+     * @param person names that have birthdays
      */
     private void createMessage(String[] person) {
-        String message = "There are birthdays today: \n";
-
         constraints.gridx = 0;
         constraints.gridy++;
         constraints.weightx = 1.0f;
         constraints.weighty = 1.0f;
         constraints.insets = new Insets(5, 5, 5, 5);
         constraints.fill = GridBagConstraints.BOTH;
-        JLabel messageLabel = new JLabel(message);
+        JLabel messageLabel = new JLabel(BIRTHDAY_MESSAGE);
         frame.add(messageLabel, constraints);
         for (String e: person) {
             constraints.gridy++;
@@ -111,16 +118,13 @@ public class BirthdayPopup {
      * create a timer for the popup
      */
     private void createPopup() {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000); // time after which pop up will be disappeared.
-                    frame.dispose();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            };
-        }.start();
+        new Thread(() -> {
+            try {
+                Thread.sleep(DELAY);
+                frame.dispose();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }

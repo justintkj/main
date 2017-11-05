@@ -1,6 +1,9 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.core.Messages.MESSAGE_DUPLICATE_PERSON;
+import static seedu.address.commons.core.Messages.MESSAGE_MISSING_PERSON;
+import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
 
@@ -27,8 +30,7 @@ public class BirthdayCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " 1 "
             + "12-05-2016";
 
-    private static final String MESSAGE_BIRTHDAY_PERSON_SUCCESS = "Birthday Updated success!";
-    private static final String MESSAGE_DUPLICATE_PERSON = "Duplicate person in addressbook";
+    public static final String MESSAGE_BIRTHDAY_PERSON_SUCCESS = "Birthday Updated success: %1$s";
 
     private final Index index;
     private final Birthday birthday;
@@ -50,35 +52,48 @@ public class BirthdayCommand extends UndoableCommand {
         }
 
         ReadOnlyPerson personToEdit = lastShownList.get(index.getZeroBased());
-        ReadOnlyPerson editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(),
+        ReadOnlyPerson editedPerson = getEditedPerson(personToEdit);
+
+        updateModel(personToEdit, editedPerson);
+        return new CommandResult(String.format(MESSAGE_BIRTHDAY_PERSON_SUCCESS, editedPerson));
+    }
+
+    /**
+     * Creates a new {@code Person} with new person data
+     *
+     * @param personToEdit {@code Person} with old data
+     * @return {@code Person} with new data
+     */
+    private Person getEditedPerson(ReadOnlyPerson personToEdit) {
+        return new Person(personToEdit.getName(), personToEdit.getPhone(),
                 personToEdit.getEmail(), personToEdit.getAddress(), personToEdit.getRemark(), birthday,
                 personToEdit.getTags(), personToEdit.getPicture(), personToEdit.getFavourite());
+    }
 
+    /**
+     * Updates the model with the updated person
+     *
+     * @param personToEdit Old person data
+     * @param editedPerson New person data
+     * @throws CommandException when the new person already exists in the address book
+     */
+    private void updateModel(ReadOnlyPerson personToEdit, ReadOnlyPerson editedPerson) throws CommandException {
         try {
             model.updatePerson(personToEdit, editedPerson);
         } catch (DuplicatePersonException dpe) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         } catch (PersonNotFoundException pnfe) {
-            throw new AssertionError("The target person cannot be missing");
+            throw new AssertionError(MESSAGE_MISSING_PERSON);
         }
-        //model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.updateListToShowAll();
-        return new CommandResult(String.format(MESSAGE_BIRTHDAY_PERSON_SUCCESS, editedPerson));
     }
 
     @Override
     public boolean equals(Object other) {
-        // short circuit if same object
-        if (other == this) {
-            return true;
-        }
-        // instanceof handles nulls
-        if (!(other instanceof BirthdayCommand)) {
-            return false;
-        }
-
-        // state check
-        BirthdayCommand e = (BirthdayCommand) other;
-        return index.equals(e.index) && birthday.equals(e.birthday);
+        return other == this // short circuit if same object
+                || (other instanceof BirthdayCommand // instanceof handles nulls
+                && index.equals(((BirthdayCommand) other).index)
+                && birthday.equals(((BirthdayCommand) other).birthday));
     }
 }

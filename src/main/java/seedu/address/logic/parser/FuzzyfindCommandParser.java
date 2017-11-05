@@ -8,6 +8,7 @@ import seedu.address.logic.commands.FuzzyfindCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.NameContainsSubstringsPredicate;
 
+//@@author bokwoon95
 /**
  * Parses input arguments and creates a new FuzzyFindCommand object
  */

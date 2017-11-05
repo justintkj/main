@@ -49,7 +49,8 @@ public interface ReadOnlyPerson {
                 && other.getEmail().equals(this.getEmail())
                 && other.getAddress().equals(this.getAddress())
                 && other.getRemark().equals(this.getRemark())
-                && other.getBirthday().equals(this.getBirthday()))
+                && other.getBirthday().equals(this.getBirthday())
+                && other.getPicture().equals(this.getPicture()))
                 && other.getFavourite().equals(this.getFavourite());
     }
 
@@ -69,9 +70,9 @@ public interface ReadOnlyPerson {
                 .append(getRemark())
                 .append(" Birthday: ")
                 .append(getBirthday())
-                .append(" Tags: ")
                 .append(" Favourite: ")
-                .append(getFavourite());
+                .append(getFavourite().toString())
+                .append(" Tags: ");
         getTags().forEach(builder::append);
         return builder.toString();
     }
