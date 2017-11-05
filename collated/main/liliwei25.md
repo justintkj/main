@@ -1,5 +1,5 @@
 # liliwei25
-###### /java/seedu/address/commons/events/ui/ChangeImageEvent.java
+###### \java\seedu\address\commons\events\ui\ChangeImageEvent.java
 ``` java
 /**
  * Represents a image changing function call by user
@@ -21,7 +21,7 @@ public class ChangeImageEvent extends BaseEvent {
     }
 }
 ```
-###### /java/seedu/address/commons/events/ui/MapPersonEvent.java
+###### \java\seedu\address\commons\events\ui\MapPersonEvent.java
 ``` java
 /**
  * Represents a mapping function call by user
@@ -44,7 +44,7 @@ public class MapPersonEvent extends BaseEvent {
     }
 }
 ```
-###### /java/seedu/address/logic/commands/BirthdayCommand.java
+###### \java\seedu\address\logic\commands\BirthdayCommand.java
 ``` java
 /**
  * Adds or Edits birthday field of selected person
@@ -59,8 +59,9 @@ public class BirthdayCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " 1 "
             + "12-05-2016";
 
-    private static final String MESSAGE_BIRTHDAY_PERSON_SUCCESS = "Birthday Updated success!";
-    private static final String MESSAGE_DUPLICATE_PERSON = "Duplicate person in addressbook";
+    public static final String MESSAGE_BIRTHDAY_PERSON_SUCCESS = "Birthday Updated success: %1$s";
+    public static final String MESSAGE_DUPLICATE_PERSON = "Duplicate person in addressbook";
+    public static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
 
     private final Index index;
     private final Birthday birthday;
@@ -82,44 +83,37 @@ public class BirthdayCommand extends UndoableCommand {
         }
 
         ReadOnlyPerson personToEdit = lastShownList.get(index.getZeroBased());
-        ReadOnlyPerson editedPerson = personToEdit;
-        editedPerson.setBirthday(birthday);
+        ReadOnlyPerson editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(),
+                personToEdit.getEmail(), personToEdit.getAddress(), personToEdit.getRemark(), birthday,
+                personToEdit.getTags(), personToEdit.getPicture(), personToEdit.getFavourite());
 
         try {
             model.updatePerson(personToEdit, editedPerson);
         } catch (DuplicatePersonException dpe) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         } catch (PersonNotFoundException pnfe) {
-            throw new AssertionError("The target person cannot be missing");
+            throw new AssertionError(MESSAGE_MISSING_PERSON);
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        model.updateListToShowAll();
         return new CommandResult(String.format(MESSAGE_BIRTHDAY_PERSON_SUCCESS, editedPerson));
     }
 
     @Override
     public boolean equals(Object other) {
-        // short circuit if same object
-        if (other == this) {
-            return true;
-        }
-        // instanceof handles nulls
-        if (!(other instanceof BirthdayCommand)) {
-            return false;
-        }
-
-        // state check
-        BirthdayCommand e = (BirthdayCommand) other;
-        return index.equals(e.index) && birthday.equals(e.birthday);
+        return other == this // short circuit if same object
+                || (other instanceof BirthdayCommand // instanceof handles nulls
+                && index.equals(((BirthdayCommand)other).index)
+                && birthday.equals(((BirthdayCommand)other).birthday));
     }
 }
 ```
-###### /java/seedu/address/logic/commands/DeleteCommand.java
+###### \java\seedu\address\logic\commands\DeleteCommand.java
 ``` java
     @Override
     public CommandResult executeUndoableCommand() throws CommandException {
         List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
-        String personsDeleted = "";
-
+        StringJoiner joiner = new StringJoiner(", ");
         for (int i = targetIndex.length - 1; i >= 0; i--) {
             if (targetIndex[i].getZeroBased() >= lastShownList.size()) {
                 throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
@@ -129,17 +123,16 @@ public class BirthdayCommand extends UndoableCommand {
 
             try {
                 model.deletePerson(personToDelete);
-                personsDeleted = " ," + personToDelete.getName() + personsDeleted;
+                joiner.add(personToDelete.getName().toString());
             } catch (PersonNotFoundException pnfe) {
-                assert false : "The target person cannot be missing";
+                assert false : MESSAGE_MISSING_PERSON;
             }
         }
 
-        return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS,
-                personsDeleted.substring(2, personsDeleted.length())));
+        return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, joiner.toString()));
     }
 ```
-###### /java/seedu/address/logic/commands/EditCommand.java
+###### \java\seedu\address\logic\commands\EditCommand.java
 ``` java
     /**
      * Creates and returns a {@code Person} with the details of {@code personToEdit}
@@ -153,8 +146,8 @@ public class BirthdayCommand extends UndoableCommand {
         Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
-        Remark updatedRemark = personToEdit.getRemark();
-        Birthday updatedBirthday = personToEdit.getBirthday();
+        Remark updatedRemark = editPersonDescriptor.getRemark().orElse(personToEdit.getRemark());
+        Birthday updatedBirthday = editPersonDescriptor.getBirthday().orElse(personToEdit.getBirthday());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
         ProfilePicture picture = personToEdit.getPicture();
         Favourite favourite = personToEdit.getFavourite();
@@ -163,7 +156,7 @@ public class BirthdayCommand extends UndoableCommand {
                 updatedTags, picture, favourite, numTimesSearched);
     }
 ```
-###### /java/seedu/address/logic/commands/ImageCommand.java
+###### \java\seedu\address\logic\commands\ImageCommand.java
 ``` java
 /**
  * Command to add/edit/remove image of Person
@@ -177,13 +170,16 @@ public class ImageCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " 1";
 
     public static final String MESSAGE_IMAGE_SUCCESS = "Changed Profile Picture: %1$s";
-
+    public static final String MESSAGE_DUPLICATE_PERSON = "Duplicate person in addressbook";
     public static final String DEFAULT = "default";
+    private static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
 
     public final Index index;
     public final boolean remove;
 
     public ImageCommand(Index index, boolean remove) {
+        requireNonNull(index);
+
         this.index = index;
         this.remove = remove;
     }
@@ -196,25 +192,24 @@ public class ImageCommand extends UndoableCommand {
         }
 
         ReadOnlyPerson personToEdit = lastShownList.get(index.getZeroBased());
-        if (remove) {
-            Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
-                    personToEdit.getAddress(), personToEdit.getRemark(), personToEdit.getBirthday(),
-                    personToEdit.getTags(), new ProfilePicture(DEFAULT), personToEdit.getFavourite());
-            try {
+        try {
+            if (remove) {
+                Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
+                        personToEdit.getAddress(), personToEdit.getRemark(), personToEdit.getBirthday(),
+                        personToEdit.getTags(), new ProfilePicture(DEFAULT), personToEdit.getFavourite());
                 model.updatePerson(personToEdit, editedPerson);
-            } catch (PersonNotFoundException | DuplicatePersonException pnfe) {
-                assert false : "The target person cannot be missing";
-            }
-        } else {
-            try {
+            } else {
                 model.changeImage(personToEdit);
                 ReadOnlyPerson edited = lastShownList.get(index.getZeroBased());
                 model.updatePerson(personToEdit, edited);
-            } catch (PersonNotFoundException | DuplicatePersonException pnfe) {
-                assert false : "The target person cannot be missing";
             }
+        } catch (DuplicatePersonException dpe) {
+            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        } catch (PersonNotFoundException pnfe) {
+            assert false : MESSAGE_MISSING_PERSON;
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        model.updateListToShowAll();
         return new CommandResult(String.format(MESSAGE_IMAGE_SUCCESS, personToEdit));
     }
 
@@ -226,7 +221,7 @@ public class ImageCommand extends UndoableCommand {
     }
 }
 ```
-###### /java/seedu/address/logic/commands/MapCommand.java
+###### \java\seedu\address\logic\commands\MapCommand.java
 ``` java
 /**
  *  Shows a person's address on Google Maps in browser
@@ -238,6 +233,7 @@ public class MapCommand extends UndoableCommand {
             + "Parameters: INDEX (must be a positive integer) "
             + "Example: " + COMMAND_WORD + " 1 ";
     public static final String MESSAGE_MAP_SHOWN_SUCCESS = "Map for Person: %1$s";
+    private static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
 
     public final Index index;
 
@@ -258,7 +254,7 @@ public class MapCommand extends UndoableCommand {
         try {
             model.mapPerson(personToShow);
         } catch (PersonNotFoundException pnfe) {
-            assert false : "The target person cannot be missing";
+            assert false : MESSAGE_MISSING_PERSON;
         }
 
         return new CommandResult(String.format(MESSAGE_MAP_SHOWN_SUCCESS, personToShow));
@@ -272,7 +268,7 @@ public class MapCommand extends UndoableCommand {
     }
 }
 ```
-###### /java/seedu/address/logic/commands/RemoveTagCommand.java
+###### \java\seedu\address\logic\commands\RemoveTagCommand.java
 ``` java
 /**
  * Removes the specified tag from all persons in addressbook
@@ -290,6 +286,7 @@ public class RemoveTagCommand extends UndoableCommand {
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
 
     public static final String MESSAGE_TAG_NOT_FOUND = "Specified tag is not found";
+    public static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
 
     public final Tag target;
 
@@ -312,13 +309,12 @@ public class RemoveTagCommand extends UndoableCommand {
                 Person editedPerson = new Person(person.getName(), person.getPhone(), person.getEmail(),
                         person.getAddress(), person.getRemark(), person.getBirthday(), updatedTags,
                         person.getPicture(), person.getFavourite(), person.getNumTimesSearched());
-
                 try {
                     model.updatePerson(person, editedPerson);
                 } catch (DuplicatePersonException dpe) {
                     throw new CommandException(MESSAGE_DUPLICATE_PERSON);
                 } catch (PersonNotFoundException pnfe) {
-                    throw new AssertionError("The target person cannot be missing");
+                    throw new AssertionError(MESSAGE_MISSING_PERSON);
                 }
             }
         }
@@ -334,7 +330,7 @@ public class RemoveTagCommand extends UndoableCommand {
     }
 }
 ```
-###### /java/seedu/address/logic/parser/BirthdayCommandParser.java
+###### \java\seedu\address\logic\parser\BirthdayCommandParser.java
 ``` java
 /**
  * Parses arguments and returns BirthdayCommand
@@ -367,7 +363,7 @@ public class BirthdayCommandParser implements Parser<BirthdayCommand> {
     }
 }
 ```
-###### /java/seedu/address/logic/parser/DeleteCommandParser.java
+###### \java\seedu\address\logic\parser\DeleteCommandParser.java
 ``` java
     /**
      * Parses the given {@code String} of arguments in the context of the DeleteCommand
@@ -389,7 +385,7 @@ public class BirthdayCommandParser implements Parser<BirthdayCommand> {
         }
     }
 ```
-###### /java/seedu/address/logic/parser/ImageCommandParser.java
+###### \java\seedu\address\logic\parser\ImageCommandParser.java
 ``` java
 /**
  * Parses input arguments and creates a new ImageCommand object
@@ -416,7 +412,7 @@ public class ImageCommandParser implements Parser<ImageCommand> {
     }
 }
 ```
-###### /java/seedu/address/logic/parser/MapCommandParser.java
+###### \java\seedu\address\logic\parser\MapCommandParser.java
 ``` java
 /**
  * Parses input arguments and creates a new MapCommand object
@@ -438,7 +434,7 @@ public class MapCommandParser implements Parser<MapCommand> {
     }
 }
 ```
-###### /java/seedu/address/logic/parser/RemoveTagCommandParser.java
+###### \java\seedu\address\logic\parser\RemoveTagCommandParser.java
 ``` java
 /**
  * Parses input arguments and creates a new RemoveTagCommand object
@@ -460,7 +456,7 @@ public class RemoveTagCommandParser implements Parser<RemoveTagCommand> {
     }
 }
 ```
-###### /java/seedu/address/MainApp.java
+###### \java\seedu\address\MainApp.java
 ``` java
     /**
      * Start a tray icon running in background
@@ -524,13 +520,13 @@ public class RemoveTagCommandParser implements Parser<RemoveTagCommand> {
         }
     }
 ```
-###### /java/seedu/address/model/AddressBook.java
+###### \java\seedu\address\model\AddressBook.java
 ``` java
     public void removeTag(Tag t) throws UniqueTagList.TagNotFoundException {
         tags.remove(t);
     }
 ```
-###### /java/seedu/address/model/BirthdayNotifier.java
+###### \java\seedu\address\model\BirthdayNotifier.java
 ``` java
 /**
  * Checks current date against birthday of all persons
@@ -556,7 +552,7 @@ public class BirthdayNotifier {
     }
 }
 ```
-###### /java/seedu/address/model/Model.java
+###### \java\seedu\address\model\Model.java
 ``` java
     /**
      * Deletes the given tag from all persons in addressbook
@@ -574,7 +570,7 @@ public class BirthdayNotifier {
     void changeImage(ReadOnlyPerson target) throws PersonNotFoundException;
 }
 ```
-###### /java/seedu/address/model/ModelManager.java
+###### \java\seedu\address\model\ModelManager.java
 ``` java
     @Override
     public void removeTag(Tag target) throws UniqueTagList.TagNotFoundException {
@@ -593,7 +589,7 @@ public class BirthdayNotifier {
     }
 
 ```
-###### /java/seedu/address/model/person/Birthday.java
+###### \java\seedu\address\model\person\Birthday.java
 ``` java
 /**
  * Represents a Person's birthday in the address book.
@@ -695,7 +691,7 @@ public class Birthday {
 
 }
 ```
-###### /java/seedu/address/model/person/ProfilePicture.java
+###### \java\seedu\address\model\person\ProfilePicture.java
 ``` java
 /**
  * Represents a profile picture for Person
@@ -735,7 +731,7 @@ public class ProfilePicture {
     }
 }
 ```
-###### /java/seedu/address/storage/XmlImageStorage.java
+###### \java\seedu\address\storage\XmlImageStorage.java
 ``` java
 /**
  * Creates folder to store all images saved by user
@@ -775,7 +771,7 @@ public class XmlImageStorage {
     }
 }
 ```
-###### /java/seedu/address/ui/BirthdayPopup.java
+###### \java\seedu\address\ui\BirthdayPopup.java
 ``` java
 /**
  * Creates a birthday notification
@@ -887,7 +883,7 @@ public class BirthdayPopup {
     }
 }
 ```
-###### /java/seedu/address/ui/MainWindow.java
+###### \java\seedu\address\ui\MainWindow.java
 ``` java
     /**
      * Opens the map window.
@@ -901,51 +897,25 @@ public class BirthdayPopup {
      * Opens file browser.
      */
     private void handleImageEvent(ReadOnlyPerson person) {
-        String os = System.getProperty("os.name");
-        if (os.equals("Mac OS X")) {
-            FileDialog fileChooser = new FileDialog((Frame) null);
-            fileChooser.setAlwaysOnTop(true);
-            fileChooser.setAutoRequestFocus(true);
-            fileChooser.setFile("*.jpg;*.jpeg;*.png");
-            fileChooser.setDirectory(new File("data").getPath());
-            fileChooser.setVisible(true);
-            String filename = fileChooser.getDirectory() + fileChooser.getFile();
-            if (fileChooser.getFile() != null) {
-                File selectedFile = new File(filename);
-                try {
-                    imageStorage.saveImage(selectedFile, person.getName().toString());
-                } catch (IOException io) {
-                    logger.warning("failed to copy image");
-                }
-                person.setImage(person.getName().toString() + ".png");
-            }
-        } else {
+        Stage parent = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter filter =
+                new FileChooser.ExtensionFilter("Any Image files", "*.jpg", "*.png", "*.jpeg");
+        fileChooser.getExtensionFilters().add(filter);
+        File result = fileChooser.showOpenDialog(parent);
+        if (result != null) {
             try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                logger.warning("Unable to open file chooser");
+                imageStorage.saveImage(result, person.getName().toString());
+            } catch (IOException io) {
+                logger.warning("failed to copy image");
             }
-            Frame parent = new Frame();
-            parent.setAlwaysOnTop(true);
-            parent.setAutoRequestFocus(true);
-            JFileChooser fileChooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Any Image files", "jpg", "png", "jpeg");
-            fileChooser.setFileFilter(filter);
-            fileChooser.setCurrentDirectory(new File("data"));
-            int result = fileChooser.showDialog(parent, "Select Image");
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                try {
-                    imageStorage.saveImage(selectedFile, person.getName().toString());
-                } catch (IOException io) {
-                    logger.warning("failed to copy image");
-                }
-                person.setImage(person.getName().toString() + ".png");
-            }
+            person.setImage(person.getName().toString() + ".png");
+        } else {
+            raise(new NewResultAvailableEvent("Image Change Cancelled"));
         }
     }
 ```
-###### /java/seedu/address/ui/MainWindow.java
+###### \java\seedu\address\ui\MainWindow.java
 ``` java
     @Subscribe
     private void handleMapPanelEvent(MapPersonEvent event) {
@@ -953,7 +923,7 @@ public class BirthdayPopup {
         handleMapEvent(event.getPerson());
     }
 ```
-###### /java/seedu/address/ui/MainWindow.java
+###### \java\seedu\address\ui\MainWindow.java
 ``` java
     @Subscribe
     private void handleChangeImageEvent(ChangeImageEvent event) {
@@ -961,7 +931,7 @@ public class BirthdayPopup {
         handleImageEvent(event.getPerson());
     }
 ```
-###### /java/seedu/address/ui/MapWindow.java
+###### \java\seedu\address\ui\MapWindow.java
 ``` java
 /**
  * Shows the map in a pop-up browser
@@ -1018,7 +988,7 @@ public class MapWindow extends UiPart<Region> {
     }
 }
 ```
-###### /java/seedu/address/ui/PersonInfoPanel.java
+###### \java\seedu\address\ui\PersonInfoPanel.java
 ``` java
 /**
  * Shows the selected Person's info
@@ -1103,7 +1073,7 @@ public class PersonInfoPanel extends UiPart<Region> {
     }
 }
 ```
-###### /resources/view/BrightTheme.css
+###### \resources\view\BrightTheme.css
 ``` css
 .background {
     -fx-background-color: derive(#efefef, 20%);
@@ -1476,7 +1446,7 @@ public class PersonInfoPanel extends UiPart<Region> {
 }
 
 ```
-###### /resources/view/MainWindow.fxml
+###### \resources\view\MainWindow.fxml
 ``` fxml
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" >
   <stylesheets>
@@ -1526,13 +1496,13 @@ public class PersonInfoPanel extends UiPart<Region> {
   <StackPane fx:id="statusbarPlaceholder" VBox.vgrow="NEVER" />
 </VBox>
 ```
-###### /resources/view/MapWindow.fxml
+###### \resources\view\MapWindow.fxml
 ``` fxml
 <StackPane fx:id="mapWindowRoot" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <WebView fx:id="browser" />
 </StackPane>
 ```
-###### /resources/view/PersonInfoPanel.fxml
+###### \resources\view\PersonInfoPanel.fxml
 ``` fxml
 <VBox xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <GridPane fx:id="personInfoPanel" styleClass="grid-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">

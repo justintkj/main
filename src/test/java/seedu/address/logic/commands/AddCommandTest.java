@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static seedu.address.commons.core.Messages.MESSAGE_DUPLICATE_PERSON;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class AddCommandTest {
         Person validPerson = new PersonBuilder().build();
 
         thrown.expect(CommandException.class);
-        thrown.expectMessage(AddCommand.MESSAGE_DUPLICATE_PERSON);
+        thrown.expectMessage(MESSAGE_DUPLICATE_PERSON);
 
         getAddCommandForPerson(validPerson, modelStub).execute();
     }

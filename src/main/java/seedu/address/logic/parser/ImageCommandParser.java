@@ -12,23 +12,34 @@ import seedu.address.logic.parser.exceptions.ParseException;
  * Parses input arguments and creates a new ImageCommand object
  */
 public class ImageCommandParser implements Parser<ImageCommand> {
+
+    private static final String REMOVE = "remove";
+    private static final boolean REMOVE_IMAGE = true;
+    private static final String SPACE = " ";
+    private static final int INDEX_POS = 0;
+    private static final int SELECT_POS = 1;
+
     /**
      * Parses the given {@code String} of arguments in the context of the ImageCommand
      * and returns an ImageCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public ImageCommand parse(String args) throws ParseException {
-        String[] splitArgs = args.trim().split(" ");
         try {
-            Index index = ParserUtil.parseIndex(splitArgs[0]);
-            if (splitArgs.length > 1 && splitArgs[1].toLowerCase().equals("remove")) {
-                return new ImageCommand(index, true);
-            } else {
-                return new ImageCommand(index, false);
-            }
+            return getImageCommand(args);
         } catch (IllegalValueException ive) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ImageCommand.MESSAGE_USAGE));
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ImageCommand.MESSAGE_USAGE));
+        }
+    }
+
+    private ImageCommand getImageCommand(String args) throws IllegalValueException {
+        String[] splitArgs = args.trim().split(SPACE);
+        Index index = ParserUtil.parseIndex(splitArgs[INDEX_POS]);
+        if (splitArgs.length > 1 && splitArgs[SELECT_POS].toLowerCase().equals(REMOVE)) {
+            return new ImageCommand(index, REMOVE_IMAGE);
+        } else {
+            return new ImageCommand(index, !REMOVE_IMAGE);
         }
     }
 }

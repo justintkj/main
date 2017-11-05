@@ -118,6 +118,7 @@ public class Person implements ReadOnlyPerson, Comparable<Person> {
         return address.get();
     }
 
+    //@@author liliwei25
     @Override
     public void setRemark(Remark remark) {
         this.remark.set(requireNonNull(remark));
@@ -225,8 +226,7 @@ public class Person implements ReadOnlyPerson, Comparable<Person> {
 
     @Override
     public int compareTo(Person otherPerson) {
-        int toChange = this.name.toString().toUpperCase().compareTo(otherPerson.name.toString().toUpperCase());
-        return toChange;
+        return this.name.toString().toUpperCase().compareTo(otherPerson.name.toString().toUpperCase());
     }
 
     @Override

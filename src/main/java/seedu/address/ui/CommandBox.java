@@ -55,6 +55,7 @@ public class CommandBox extends UiPart<Region> {
     private TextField commandTextField;
     private ArrayList<String> prevText = new ArrayList<String>();
     private AutoCompletionBinding autocompletionbinding;
+
     public CommandBox(Logic logic) {
         super(FXML);
         this.logic = logic;

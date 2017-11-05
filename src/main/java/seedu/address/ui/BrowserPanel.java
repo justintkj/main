@@ -24,7 +24,7 @@ public class BrowserPanel extends UiPart<Region> {
     public static final String DEFAULT_PAGE = "default.html";
     public static final String GOOGLE_SEARCH_URL_PREFIX = "https://www.google.com.sg/search?safe=off&q=";
     public static final String GOOGLE_SEARCH_URL_SUFFIX = "&cad=h";
-    public static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
+    private static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
 
     private static final String FXML = "BrowserPanel.fxml";
 
@@ -48,12 +48,14 @@ public class BrowserPanel extends UiPart<Region> {
                 + GOOGLE_SEARCH_URL_SUFFIX);
     }
 
+    //@@author liliwei25
     private void loadPersonMap(ReadOnlyPerson person) {
         loadPage(GOOGLE_MAPS_URL_PREFIX + person.getAddress().toString().replaceAll(" ", "+")
                 + GOOGLE_SEARCH_URL_SUFFIX);
     }
+    //@@author
 
-    public void loadPage(String url) {
+    private void loadPage(String url) {
         Platform.runLater(() -> browser.getEngine().load(url));
     }
 
@@ -78,6 +80,7 @@ public class BrowserPanel extends UiPart<Region> {
         loadPersonPage(event.getNewSelection().person);
     }
 
+    //@@author liliwei25
     @Subscribe
     private void handleMapPanelEvent(MapPersonEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));

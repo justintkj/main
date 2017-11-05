@@ -1,5 +1,5 @@
 # liliwei25
-###### /java/guitests/guihandles/InfoPanelHandle.java
+###### \java\guitests\guihandles\InfoPanelHandle.java
 ``` java
 /**
  * A handler for the {@code InfoPanel} of the UI.
@@ -59,14 +59,33 @@ public class InfoPanelHandle extends NodeHandle<Node> {
     }
 }
 ```
-###### /java/seedu/address/logic/commands/BirthdayCommandTest.java
+###### \java\seedu\address\logic\commands\BirthdayCommandTest.java
 ``` java
 /**
  * Test BirthdayCommand
  */
 public class BirthdayCommandTest {
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+
+    @Test
+    public void execute_validIndexUnfilteredList_success() throws Exception {
+        ReadOnlyPerson personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        BirthdayCommand birthdayCommand = prepareCommand(INDEX_FIRST_PERSON, new Birthday(VALID_BIRTHDAY_AMY));
+
+        ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
+                personToEdit.getAddress(), personToEdit.getRemark(), new Birthday(VALID_BIRTHDAY_AMY),
+                personToEdit.getTags(), personToEdit.getPicture(), personToEdit.getFavourite());
+        expectedModel.updatePerson(personToEdit, editedPerson);
+
+        String expectedMessage = String.format(BirthdayCommand.MESSAGE_BIRTHDAY_PERSON_SUCCESS, editedPerson);
+
+        assertCommandSuccess(birthdayCommand, model, expectedMessage, expectedModel);
+    }
 
     @Test
     public void execute_invalidPersonIndexUnfilteredList_failure() {
@@ -90,6 +109,26 @@ public class BirthdayCommandTest {
         BirthdayCommand birthdayCommand = prepareCommand(outOfBoundIndex, BIRTHDAY_BOB);
 
         assertCommandFailure(birthdayCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_duplicatePerson_failure() throws Exception {
+        BirthdayCommand birthdayCommand = prepareCommandForDuplicateException(Index.fromZeroBased(0), BIRTHDAY_ALICE);
+
+        thrown.expect(CommandException.class);
+        thrown.expectMessage(BirthdayCommand.MESSAGE_DUPLICATE_PERSON);
+
+        birthdayCommand.execute();
+    }
+
+    @Test
+    public void execute_missingPerson_failure() throws Exception {
+        BirthdayCommand birthdayCommand = prepareCommandForNotFoundException(Index.fromZeroBased(0), BIRTHDAY_ALICE);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage(BirthdayCommand.MESSAGE_MISSING_PERSON);
+
+        birthdayCommand.execute();
     }
 
     @Test
@@ -124,9 +163,141 @@ public class BirthdayCommandTest {
         birthdayCommand.setData(model, new CommandHistory(), new UndoRedoStack());
         return birthdayCommand;
     }
+
+    /**
+     * Returns an {@code BirthdayCommand} with parameters {@code index} and {@code birthday}
+     * to test {@code DuplicatePersonException}
+     */
+    private BirthdayCommand prepareCommandForDuplicateException(Index index, Birthday birthday) {
+        BirthdayCommand birthdayCommand = new BirthdayCommand(index, birthday);
+        birthdayCommand.setData(new ModelStubThrowingDuplicatePersonException(), new CommandHistory(),
+                new UndoRedoStack());
+        return birthdayCommand;
+    }
+
+    /**
+     * Returns an {@code BirthdayCommand} with parameters {@code index} and {@code birthday}
+     * to test {@code PersonNotFoundException}
+     */
+    private BirthdayCommand prepareCommandForNotFoundException(Index index, Birthday birthday) {
+        BirthdayCommand birthdayCommand = new BirthdayCommand(index, birthday);
+        birthdayCommand.setData(new ModelStubThrowingPersonNotFoundException(), new CommandHistory(),
+                new UndoRedoStack());
+        return birthdayCommand;
+    }
+
+    /**
+     * A default model stub that have all of the methods failing.
+     */
+    private class ModelStub implements Model {
+        @Override
+        public void addPerson(ReadOnlyPerson person) throws DuplicatePersonException {
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public void resetData(ReadOnlyAddressBook newData) {
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public void updateListToShowAll() {
+            fail("Thi method should not be called.");
+        }
+
+        @Override
+        public ReadOnlyAddressBook getAddressBook() {
+            fail("This method should not be called.");
+            return null;
+        }
+
+        @Override
+        public void deletePerson(ReadOnlyPerson target) throws PersonNotFoundException {
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public void sortPerson(String target) {
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
+                throws DuplicatePersonException , PersonNotFoundException{
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
+            fail("This method should not be called.");
+            return null;
+        }
+
+        @Override
+        public void updateFilteredPersonList(Predicate<ReadOnlyPerson> predicate) {
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public void removeTag(Tag tag) {
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public void mapPerson(ReadOnlyPerson target) {
+            fail("This method should not be called.");
+        }
+
+        @Override
+        public void changeImage(ReadOnlyPerson target) {
+            fail("This method should not be called.");
+        }
+    }
+
+    /**
+     * A Model stub that always throw a DuplicatePersonException when trying to edit birthday.
+     */
+    private class ModelStubThrowingDuplicatePersonException extends BirthdayCommandTest.ModelStub {
+        @Override
+        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
+            return model.getFilteredPersonList();
+        }
+
+        @Override
+        public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
+                throws DuplicatePersonException {
+            throw new DuplicatePersonException();
+        }
+
+        @Override
+        public ReadOnlyAddressBook getAddressBook() {
+            return new AddressBook();
+        }
+    }
+
+    /**
+     * A Model stub that always throw a DuplicatePersonException when trying to edit birthday.
+     */
+    private class ModelStubThrowingPersonNotFoundException extends BirthdayCommandTest.ModelStub {
+        @Override
+        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
+            return model.getFilteredPersonList();
+        }
+
+        @Override
+        public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
+                throws PersonNotFoundException {
+            throw new PersonNotFoundException();
+        }
+
+        @Override
+        public ReadOnlyAddressBook getAddressBook() {
+            return new AddressBook();
+        }
+    }
 }
 ```
-###### /java/seedu/address/logic/commands/DeleteCommandTest.java
+###### \java\seedu\address\logic\commands\DeleteCommandTest.java
 ``` java
 /**
  * Contains integration tests (interaction with the Model) and unit tests for {@code DeleteCommand}.
@@ -144,6 +315,23 @@ public class DeleteCommandTest {
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(personToDelete);
+
+        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_validIndexUnfilteredListMultiple_success() throws Exception {
+        ReadOnlyPerson firstPersonToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        ReadOnlyPerson secondPersonToDelete = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+
+        DeleteCommand deleteCommand = prepareCommand(INDEX_FIRST_PERSON, INDEX_SECOND_PERSON);
+
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
+                secondPersonToDelete.getName() + ", " + firstPersonToDelete.getName());
+
+        ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.deletePerson(firstPersonToDelete);
+        expectedModel.deletePerson(secondPersonToDelete);
 
         assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
     }
@@ -212,8 +400,8 @@ public class DeleteCommandTest {
     /**
      * Returns a {@code DeleteCommand} with the parameter {@code index}.
      */
-    private DeleteCommand prepareCommand(Index index) {
-        DeleteCommand deleteCommand = new DeleteCommand(new Index[] {index});
+    private DeleteCommand prepareCommand(Index... index) {
+        DeleteCommand deleteCommand = new DeleteCommand(index);
         deleteCommand.setData(model, new CommandHistory(), new UndoRedoStack());
         return deleteCommand;
     }
@@ -228,7 +416,7 @@ public class DeleteCommandTest {
     }
 }
 ```
-###### /java/seedu/address/logic/commands/MapCommandTest.java
+###### \java\seedu\address\logic\commands\MapCommandTest.java
 ``` java
 /**
  * Contains integration tests (interaction with the Model) and unit tests for {@code MapCommand}.
@@ -303,7 +491,7 @@ public class MapCommandTest {
     }
 }
 ```
-###### /java/seedu/address/logic/parser/BirthdayCommandParserTest.java
+###### \java\seedu\address\logic\parser\BirthdayCommandParserTest.java
 ``` java
 /**
  * Test BirthdayCommandParser
@@ -336,7 +524,7 @@ public class BirthdayCommandParserTest {
     }
 }
 ```
-###### /java/seedu/address/logic/parser/MapCommandParserTest.java
+###### \java\seedu\address\logic\parser\MapCommandParserTest.java
 ``` java
 /**
  * As we are only doing white-box testing, our test cases do not cover path variations
@@ -360,7 +548,7 @@ public class MapCommandParserTest {
     }
 }
 ```
-###### /java/seedu/address/model/person/BirthdayTest.java
+###### \java\seedu\address\model\person\BirthdayTest.java
 ``` java
 /**
  * Test Birthday class

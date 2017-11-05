@@ -94,6 +94,7 @@ public class RedoCommand extends Command {
     }
 
     //@@author
+
     @Override
     public void setData(Model model, CommandHistory commandHistory, UndoRedoStack undoRedoStack) {
         this.model = model;

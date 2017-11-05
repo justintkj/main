@@ -1,6 +1,6 @@
 package seedu.address.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +13,17 @@ import seedu.address.ui.BirthdayPopup;
  */
 public class BirthdayNotifier {
     public BirthdayNotifier(List<ReadOnlyPerson> list) {
-        LocalDateTime now = LocalDateTime.now();
+        String[] people = getBirthdaysToday(list);
+        if (people.length > 0) {
+            createPopup(people);
+        }
+    }
+
+    private String[] getBirthdaysToday(List<ReadOnlyPerson> list) {
+        LocalDate now = LocalDate.now();
         int date = now.getDayOfMonth();
         int month = now.getMonthValue();
+
         ArrayList<String> people = new ArrayList<>();
 
         for (ReadOnlyPerson e: list) {
@@ -23,11 +31,10 @@ public class BirthdayNotifier {
                 people.add(e.getName().toString());
             }
         }
-        if (people.size() > 0) {
-            createPopup(people.toArray(new String[people.size()]));
-        }
+        return people.toArray(new String[people.size()]);
     }
-    void createPopup(String[] person) {
+
+    private void createPopup(String[] person) {
         new BirthdayPopup(person);
     }
 }

@@ -27,18 +27,19 @@ public class HelpWindow extends UiPart<Region> {
 
     private final Stage dialogStage;
 
+    //@@author bokwoon95
     public HelpWindow() {
         super(FXML);
         Scene scene = new Scene(getRoot());
         //Null passed as the parent stage to make it non-modal.
         dialogStage = createDialogStage(TITLE, null, scene);
-        //dialogStage.setMaximized(true); //TODO: set a more appropriate initial size
         dialogStage.setMaximized(false);
         FxViewUtil.setStageIcon(dialogStage, ICON);
 
         String userGuideUrl = getClass().getResource(USERGUIDE_FILE_PATH).toString();
         browser.getEngine().load(userGuideUrl);
     }
+    //author
 
     /**
      * Shows the help window.

@@ -4,12 +4,14 @@ import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_BIRTHDAY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FAVOURITE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +48,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     public AddCommand parse(String args) throws ParseException {
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG,
-                        PREFIX_REMARK, PREFIX_BIRTHDAY);
+                        PREFIX_REMARK, PREFIX_BIRTHDAY, PREFIX_FAVOURITE);
         try {
             if (containsAnyPrefix(args)) {
                 validatesAllPrefixPresent(argMultimap);
@@ -288,8 +290,18 @@ public class AddCommandParser implements Parser<AddCommand> {
         Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE)).get();
         Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL)).get();
         Address address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS)).get();
-        Remark remark = ParserUtil.parseRemark(argMultimap.getValue(PREFIX_REMARK)).get();
-        Birthday birthday = ParserUtil.parseBirthday(argMultimap.getValue(PREFIX_BIRTHDAY)).get();
+        Remark remark;
+        Birthday birthday;
+        if (argMultimap.getValue(PREFIX_REMARK).equals(Optional.empty())) {
+            remark = new Remark("");
+        } else {
+            remark = ParserUtil.parseRemark(argMultimap.getValue(PREFIX_REMARK)).get();
+        }
+        if (argMultimap.getValue(PREFIX_BIRTHDAY).equals(Optional.empty())) {
+            birthday = new Birthday("");
+        } else {
+            birthday = ParserUtil.parseBirthday(argMultimap.getValue(PREFIX_BIRTHDAY)).get();
+        }
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
         Favourite favourite = new Favourite(Favourite.COLOR_OFF);
         ProfilePicture picture = new ProfilePicture("default");

@@ -28,6 +28,7 @@ public class UndoCommand extends Command {
     public static final String MESSAGE_INVALID_COMMAND = "Shouldn't reach here";
     public static final String MESSAGE_EMPTYSTACK = "No more commands to undo!";
     public static final String MESSAGE_TOO_MANY_UNDO = "Maximum undo size: ";
+
     public static final int INDEX_ZERO = 0;
 
     private int numUndo;

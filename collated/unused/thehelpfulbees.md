@@ -1,5 +1,5 @@
 # thehelpfulbees
-###### /ShowCommand.java
+###### \ShowCommand.java
 ``` java
 /**
  * Finds and lists all persons in address book whose tags include the argument keyword.
@@ -35,7 +35,7 @@ public class ShowCommand extends Command {
     }
 }
 ```
-###### /ShowCommandParser.java
+###### \ShowCommandParser.java
 ``` java
 /**
  * Parses input arguments and creates a new ShowCommand object
@@ -61,7 +61,7 @@ public class ShowCommandParser implements Parser<ShowCommand> {
 
 }
 ```
-###### /ShowCommandTest.java
+###### \ShowCommandTest.java
 ``` java
 /**
  * Contains integration tests (interaction with the Model) for {@code ShowCommand}.
