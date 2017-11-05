@@ -53,7 +53,8 @@ public class RedoCommand extends Command {
     }
 
     /**
-     * Redo for numRedo number of times
+     * Repeats numRedo commands number of times
+     *
      * @throws CommandException if redo while stack is empty
      */
     private void redoMultipleTimes() throws CommandException {
@@ -68,6 +69,7 @@ public class RedoCommand extends Command {
 
     /**
      * Checks if number of redos is not bigger than current avaliable number of redos
+     *
      * @throws CommandException if redo while stack is empty
      */
     private void checksRedoSizeNotBiggerThanStack() throws CommandException {
@@ -78,6 +80,7 @@ public class RedoCommand extends Command {
 
     /**
      * Checks if current number of redo avaliable is zero
+     *
      * @throws CommandException if current stack size is zero
      */
     private void checksStackNotEmpty() throws CommandException {

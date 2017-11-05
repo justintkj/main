@@ -52,7 +52,8 @@ public class UndoCommand extends Command {
         return new CommandResult(MESSAGE_SUCCESS);
     }
     /**
-     * Undo for numUndo number of times
+     * Remove commands for numUndo number of times
+     *
      * @throws CommandException if undo while stack is empty
      */
     private void undoMultipleTimes() throws CommandException {
@@ -67,6 +68,7 @@ public class UndoCommand extends Command {
 
     /**
      * Checks if number of undos is not bigger than current avaliable number of undo
+     *
      * @throws CommandException if redo while stack is empty
      */
     private void checkUndoSizeNotBiggerThanStack() throws CommandException {
@@ -77,6 +79,7 @@ public class UndoCommand extends Command {
 
     /**
      * Checks if current number of redo avaliable is zero
+     *
      * @throws CommandException if current stack size is zero
      */
     private void checkStackNotEmpty() throws CommandException {

@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Represents a Person's remark in the address book.
  */
-public class Remark {
+public class Remark implements Comparable {
 
     public static final String MESSAGE_REMARKS_CONSTRAINTS =
             "Person remarks can take any values, and it can be blank";
@@ -33,5 +33,11 @@ public class Remark {
     @Override
     public int hashCode() {
         return value.hashCode();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Remark comparedRemark = (Remark) o;
+        return this.value.compareTo(comparedRemark.toString());
     }
 }

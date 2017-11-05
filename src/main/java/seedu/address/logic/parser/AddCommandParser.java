@@ -9,6 +9,10 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.ParserUtil.COMMA_SPACE_STRING;
+import static seedu.address.logic.parser.ParserUtil.COMMA_STRING;
+import static seedu.address.logic.parser.ParserUtil.EMPTY_STRING;
+import static seedu.address.logic.parser.ParserUtil.INDEX_ZERO;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -39,10 +43,40 @@ import seedu.address.model.tag.Tag;
 public class AddCommandParser implements Parser<AddCommand> {
 
     public static final int SIZE_2 = 2;
+    public static final String EMAIL_REGEX = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+";
+    public static final String EMAIL_EXCEPTION_MESSAGE = "invalid email\n Example: Jason@example.com";
+    public static final String BLOCK_REGEX_ONE = "blk \\d{1,3}";
+    public static final String BLOCK_REGEX_2 = "block \\d{1,3}";
+    public static final String BLOCK_EXCEPTION_MESSAGE = "invalid address, Block Number. \nExample: Block 123"
+            + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String STREET_REGEX = "[a-zA-z]+ street \\d{1,2}";
+    public static final String STREET_EXCEPTION_REGEX = "invalid address, Street. \nExample: Jurong Street 11"
+            + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String UNIT_REGEX = "#\\d\\d-\\d{1,3}[a-zA-Z]{0,1}";
+    public static final String UNIT_EXCEPTION_MESSAGE = "invalid address, Unit. \n Example: #01-12B"
+            + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String POSTAL_REGEX = "singapore \\d{6,6}";
+    public static final String PHONE_REGEX_ONE = "\\ {0,1}\\d{8}\\ {0,1}";
+    public static final String PHONE_REGEX_TWO = "\\,{0,1}\\d{8}\\,{0,1}";
+    public static final String PHONE_EXCEPTION_REGEX = "Number should be 8 digits long!\n" + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String BIRTHDAY_REGEX = "\\d{1,2}-\\d{1,2}-\\d{4,4}";
+    public static final String BIRTHDAY_EXCEPTION_MESSAGE = "invalid birthday,\n Example: 12-09-1994";
+    public static final String MISSING_NAME_FORMAT = "Missing Name!\n";
+    public static final String FALSE = "false";
+    public static final String DEFAULT = "default";
+    public static final String DEFAULT = "default";
 
+    private String[] emailPatterns = {EMAIL_REGEX};
+    private String[] blockPatterns = {BLOCK_REGEX_ONE, BLOCK_REGEX_2};
+    private String[] streetPatterns = {STREET_REGEX};
+    private String[] unitPatterns = {UNIT_REGEX};
+    private String[] postalPatterns = {POSTAL_REGEX};
+    private String[] phonePatterns = {PHONE_REGEX_ONE, PHONE_REGEX_TWO};
+    private String[] birthdayPatterns = {BIRTHDAY_REGEX};
     /**
      * Parses the given {@code String} of arguments in the context of the AddCommand
      * and returns an AddCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public AddCommand parse(String args) throws ParseException {
@@ -63,6 +97,7 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     /**
      * Creates a new person without using any prefix
+     *
      * @param args input string given
      * @return New AddCommand with a new person
      * @throws IllegalValueException Invalid parameter for any of person's details
@@ -72,8 +107,8 @@ public class AddCommandParser implements Parser<AddCommand> {
         checkNameFormat(allArgs);
 
         //Initial person's details
-        Name name = new Name(allArgs[0]);
-        Remark remark = new Remark("");
+        Name name = new Name(allArgs[INDEX_ZERO]);
+        Remark remark = new Remark(EMPTY_STRING);
         Birthday birthday = new Birthday("");
         Email email;
         Phone phone;
@@ -81,18 +116,20 @@ public class AddCommandParser implements Parser<AddCommand> {
         String streetnum;
         String unitnum;
         String postalnum = "";
-        Favourite favourite = new Favourite("false");
-        ProfilePicture picture = new ProfilePicture("default");
+        Address address;
+        Favourite favourite = new Favourite(FALSE);
+        ProfilePicture picture = new ProfilePicture(DEFAULT);
 
         //Generate person's details
-        email = getEmailFromString(args);
-        blocknum = getBlockFromString(args);
-        streetnum = getStreetFromString(args);
-        unitnum = getUnitFromString(args);
-        postalnum = getPostalFromString(args, postalnum);
-        phone = getPhoneFromString(args);
-        birthday = getBirthdayFromString(args, birthday);
-        Address address = new Address(blocknum + ", " + streetnum + ", " + unitnum + postalnum);
+        email = new Email (getOutputFromString(args, emailPatterns, EMAIL_EXCEPTION_MESSAGE));
+        blocknum = getOutputFromString(args, blockPatterns, BLOCK_EXCEPTION_MESSAGE);
+        streetnum = getOutputFromString(args, streetPatterns, STREET_EXCEPTION_REGEX);
+        unitnum = getOutputFromString(args, unitPatterns, UNIT_EXCEPTION_MESSAGE);
+        postalnum = getOutputFromString(args, postalPatterns, EMPTY_STRING);
+        phone = new Phone(getOutputFromString(args, phonePatterns, PHONE_EXCEPTION_REGEX).
+                trim().replace(COMMA_STRING,EMPTY_STRING));
+        birthday = validateBirthdayNotFuture(args);
+        address = generatesAddress(blocknum, streetnum, unitnum, postalnum);
         Set<Tag> tagList = new HashSet<>();
         ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList, picture,
                 favourite);
@@ -100,187 +137,92 @@ public class AddCommandParser implements Parser<AddCommand> {
     }
 
     /**
-     * Go through the list of string to look for a valid birthday parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @param birthday Birthday object to store birthday details of a person
-     * @return new Birthday if found a valid birthday
-     * @throws IllegalValueException Nothing conforms to legal birthday format
+     * Creates an Address using all it's relevant parameter
+     *
+     * @param blocknum Block number
+     * @param streetnum Street number
+     * @param unitnum Unit number
+     * @param postalnum Postal Number (Optional)
+     * @return Address with all valid fields
+     * @throws IllegalValueException Any of the non-optional field is invalid
      */
-    private Birthday getBirthdayFromString(String args, Birthday birthday) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        Pattern birthpattern = Pattern.compile("\\d{1,2}-\\d{1,2}-\\d{4,4}",
-                Pattern.CASE_INSENSITIVE);
-        matcher = birthpattern.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            if (Birthday.isValidBirthday(matcher.group(0))) {
-                birthday = new Birthday(matcher.group(0));
-            } else {
-                throw new IllegalValueException("invalid birthday,\n Example: 12-09-1994");
-            }
+    private Address generatesAddress(String blocknum, String streetnum, String unitnum, String postalnum)
+            throws IllegalValueException {
+        Address address;
+        if(postalnum != EMPTY_STRING) {
+            address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING +
+                    unitnum + COMMA_SPACE_STRING + postalnum);
+        } else {
+            address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING + unitnum + postalnum);
+        }
+        return address;
+    }
+
+    /**
+     * Creates a birthday if the given birthday is not in the future.
+     *
+     * @param args birthday in string
+     * @return birthday in past
+     * @throws IllegalValueException birthday is in future
+     */
+    private Birthday validateBirthdayNotFuture(String args) throws IllegalValueException {
+        Birthday birthday;
+        String unprocessedBirthday = getOutputFromString(args, birthdayPatterns, BIRTHDAY_EXCEPTION_MESSAGE);
+        if(Birthday.isValidBirthday(unprocessedBirthday)) {
+            birthday = new Birthday(unprocessedBirthday);
+        } else {
+            throw new IllegalValueException(BIRTHDAY_EXCEPTION_MESSAGE);
         }
         return birthday;
     }
 
     /**
-     * Go through the list of string to look for a valid phone number parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new Phone if found a valid birthday
-     * @throws IllegalValueException Nothing conforms to legal birthday format
+     * Goes through the args string to look for an expression that fix regex in patterns.
+     *
+     * @param args user input string
+     * @param patterns Regex array for all the patterns to compare
+     * @param exceptionMessage Output error message
+     * @return String that is valid according to patterns
+     * @throws IllegalValueException no valid expression found
      */
-    private Phone getPhoneFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        Phone phone;
-        Pattern phonepattern = Pattern.compile("\\ {0,1}\\d{8}\\ {0,1}");
-        matcher = phonepattern.matcher(args);
-        matchFound = matcher.find();
-        if (!matchFound) {
-            phonepattern = Pattern.compile("\\,{0,1}\\d{8}\\,{0,1}");
-            matcher = phonepattern.matcher(args);
+    private String getOutputFromString(String args, String[] patterns, String exceptionMessage)
+            throws IllegalValueException {
+        Matcher matcher = null;
+        boolean matchFound = false;
+        for(int i = INDEX_ZERO; i < patterns.length; i ++) {
+            Pattern pattern = Pattern.compile(patterns[i], Pattern.CASE_INSENSITIVE);
+            matcher = pattern.matcher(args);
             matchFound = matcher.find();
+            if (matchFound) {
+                break;
+            }
         }
-        if (matchFound) {
-            phone = new Phone(matcher.group(0).trim().replace(",", ""));
-        } else {
-            throw new IllegalValueException("Number should be 8 digits long!\n" + AddCommand.MESSAGE_USAGE_ALT);
-        }
-        return phone;
-    }
-
-    /**
-     * Go through the list of string to look for a valid postal parameter
-     * Chooses the first valid argument
-     * No exception as this field is optional
-     * @param args input string given by user
-     * @param postalnum empty postal number
-     * @return new Postal if found a valid Postal Number
-     */
-    private String getPostalFromString(String args, String postalnum) {
-        Matcher matcher;
-        boolean matchFound;
-        Pattern postal = Pattern.compile("singapore \\d{6,6}", Pattern.CASE_INSENSITIVE);
-        matcher = postal.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            postalnum = ", " + matcher.group(0);
-        }
-        return postalnum;
-    }
-
-    /**
-     * Go through the list of string to look for a valid unit parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new unit if found a valid unit number
-     * @throws IllegalValueException Nothing conforms to legal unit format
-     */
-    private String getUnitFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        String unitnum;
-        Pattern unit = Pattern.compile("#\\d\\d-\\d{1,3}[a-zA-Z]{0,1}", Pattern.CASE_INSENSITIVE);
-        matcher = unit.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            unitnum = matcher.group(0);
-        } else {
-            throw new IllegalValueException("invalid address, Unit. \n Example: #01-12B"
-                + AddCommand.MESSAGE_USAGE_ALT);
-        }
-        return unitnum;
-    }
-
-    /**
-     * Go through the list of string to look for a valid street parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new street if found a valid street format
-     * @throws IllegalValueException Nothing conforms to legal street format
-     */
-    private String getStreetFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        String streetnum;
-        Pattern street = Pattern.compile("[a-zA-z]+ street \\d{1,2}", Pattern.CASE_INSENSITIVE);
-        matcher = street.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            streetnum = matcher.group(0);
-        } else {
-            throw new IllegalValueException("invalid address, Street. \nExample: Jurong Street 11"
-                + AddCommand.MESSAGE_USAGE_ALT);
-        }
-        return streetnum;
-    }
-
-    /**
-     * Go through the list of string to look for a valid block parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new block if found a valid block format
-     * @throws IllegalValueException Nothing conforms to legal block format
-     */
-    private String getBlockFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        String blocknum;
-        Pattern block = Pattern.compile("block \\d{1,3}", Pattern.CASE_INSENSITIVE);
-        matcher = block.matcher(args);
-        Pattern blk = Pattern.compile("blk \\d{1,3}", Pattern.CASE_INSENSITIVE);
-        Matcher blkmatcher = blk.matcher(args);
-        matchFound = matcher.find();
         if (!matchFound) {
-            matchFound = blkmatcher.find();
-            matcher = blkmatcher;
-        }
-        if (matchFound) {
-            blocknum = matcher.group(0);
+            if(exceptionMessage == EMPTY_STRING) {
+                return EMPTY_STRING;
+            } else {
+                throw new IllegalValueException(exceptionMessage);
+            }
         } else {
-            throw new IllegalValueException("invalid address, Block Number. \nExample: Block 123"
-                + AddCommand.MESSAGE_USAGE_ALT);
+            return matcher.group(INDEX_ZERO);
         }
-        return blocknum;
     }
 
     /**
-     * Go through the list of string to look for a valid email parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new email if found a valid email format
-     * @throws IllegalValueException Nothing conforms to legal email format
-     */
-    private Email getEmailFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        Email email;
-        Pattern emailpattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
-        matcher = emailpattern.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            email = new Email(matcher.group(0));
-        } else {
-            throw new IllegalValueException("invalid email\n Example: Jason@example.com");
-        }
-        return email;
-    }
-
-    /**
-     *  Go through the list of string to look for a valid email parameter
+     * Goes through the list of string to look for a valid email parameter
+     *
      * @param allArgs input string given by user
      * @throws IllegalValueException Nothing conforms to legal email format
      */
     private void checkNameFormat(String[] allArgs) throws IllegalValueException {
         if (allArgs.length < SIZE_2) {
-            throw new IllegalValueException("Missing Name!\n" + AddCommand.MESSAGE_USAGE_ALT);
+            throw new IllegalValueException(MISSING_NAME_FORMAT + AddCommand.MESSAGE_USAGE_ALT);
         }
     }
 
     /**
      * Adds a person using fields formatted by prefixes
+     *
      * @param argMultimap All the prefix that should be used.
      * @return A new add command with the new person.
      * @throws IllegalValueException invalid parameter type
@@ -304,7 +246,7 @@ public class AddCommandParser implements Parser<AddCommand> {
         }
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
         Favourite favourite = new Favourite(Favourite.COLOR_OFF);
-        ProfilePicture picture = new ProfilePicture("default");
+        ProfilePicture picture = new ProfilePicture(DEFAULT);
         ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList, picture,
                 favourite);
         return new AddCommand(person);
@@ -312,6 +254,7 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     /**
      * Checks if all prefixes are present
+     *
      * @param argMultimap All the prefixes to be used
      * @throws ParseException Missing prefix
      */
@@ -323,6 +266,7 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     /**
      * Checks if user input uses any prefix of any type
+     *
      * @param args User input
      * @return true if contains prefix, false if does not
      */

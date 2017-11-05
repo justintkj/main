@@ -4,13 +4,17 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.ParserUtil.SORTADD_ARG;
 import static seedu.address.logic.parser.ParserUtil.SORTBIRTHDAY_ARG;
 import static seedu.address.logic.parser.ParserUtil.SORTEMAIL_ARG;
+import static seedu.address.logic.parser.ParserUtil.SORTFAVOURITE_ARG;
 import static seedu.address.logic.parser.ParserUtil.SORTNAME_ARG;
 import static seedu.address.logic.parser.ParserUtil.SORTNUM_ARG;
 import static seedu.address.logic.parser.ParserUtil.SORTREMARK_ARG;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.fxmisc.easybind.EasyBind;
 
@@ -32,6 +36,24 @@ public class UniquePersonList implements Iterable<Person> {
     // used by asObservableList()
     private final ObservableList<ReadOnlyPerson> mappedList = EasyBind.map(internalList, (person) -> person);
 
+    private Map<String, Comparator<Person>> comparatorMap;
+
+    //@@author justintkj
+    /**
+     * Installs the comparator for the different sortType into comparatorMap
+     */
+    public UniquePersonList () {
+        comparatorMap = new HashMap<String, Comparator<Person>>();
+        comparatorMap.put(SORTNAME_ARG, Comparator.comparing(Person::getName));
+        comparatorMap.put(SORTNUM_ARG, Comparator.comparing(Person::getPhone));
+        comparatorMap.put(SORTADD_ARG, Comparator.comparing(Person::getAddress));
+        comparatorMap.put(SORTEMAIL_ARG, Comparator.comparing(Person::getEmail));
+        comparatorMap.put(SORTREMARK_ARG, Comparator.comparing(Person::getRemark));
+        comparatorMap.put(SORTBIRTHDAY_ARG, Comparator.comparing(Person::getBirthday));
+        comparatorMap.put(SORTFAVOURITE_ARG, Comparator.comparing(Person::getFavourite));
+    }
+    //@@author
+
     /**
      * Returns true if the list contains an equivalent person as the given argument.
      */
@@ -44,25 +66,7 @@ public class UniquePersonList implements Iterable<Person> {
      * Sorts the internalList as declared by the arguments
      */
     public void sort(String sortType) {
-        if (sortType.equals(SORTNAME_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getName().toString().compareTo(p2.getName().toString()));
-        } else if (sortType.equals(SORTNUM_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getPhone().toString().compareTo(p2.getPhone().toString()));
-        } else if (sortType.equals(SORTADD_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getAddress().toString().compareTo(p2.getAddress().toString()));
-        } else if (sortType.equals(SORTEMAIL_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getEmail().toString().compareTo(p2.getEmail().toString()));
-        } else if (sortType.equals(SORTREMARK_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getRemark().toString().compareTo(p2.getRemark().toString()));
-        } else if (sortType.equals(SORTBIRTHDAY_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getBirthday().toString().compareTo(p2.getBirthday().toString()));
-        }
+        Collections.sort(internalList, comparatorMap.get(sortType));
     }
     //@@author
 

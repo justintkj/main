@@ -13,6 +13,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.sun.net.ssl.internal.ssl.Provider;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.person.ReadOnlyPerson;
@@ -37,7 +38,18 @@ public class EmailCommand extends Command {
             + "Example: " + COMMAND_WORD + " 1"
             + ",subjectmessage,textmessage";
     public static final String INCORRECT_EMAIL_FORMAT = "Incorrect Email format";
-    public static final String CORRET_EMAIL_FORMAT = "Email successfully sent to : ";
+    public static final String CORRECT_EMAIL_FORMAT = "Email successfully sent to : ";
+    public static final String HOST_EMAIL = "smtp.gmail.com";
+    public static final String TEAM_EMAIL_ADDRESS = "cs2103f09b3@gmail.com";
+    public static final String TEAM_EMAIL_PASSWORD = "pocketbook";
+    public static final String SMTP_ENABLE = "mail.smtp.starttls.enable";
+    public static final String TRUE = "true";
+    public static final String SMTP_HOST = "mail.smtp.host";
+    public static final String SMTP_PORT = "mail.smtp.port";
+    public static final String PORT_NUMBER = "587";
+    public static final String SMTP_AUTHENTICATION = "mail.smtp.auth";
+    public static final String SMTP_STARTTLS = "mail.smtp.starttls.required";
+    public static final String SMTP = "smtp";
     public final Index index;
     public final String subject;
     public final String message;
@@ -49,7 +61,7 @@ public class EmailCommand extends Command {
     private String from;
 
     private Session mailSession;
-    private Message msg;
+    private Message composedMessage;
 
     public EmailCommand(Index index, String subject, String message) {
         requireNonNull(index);
@@ -85,55 +97,60 @@ public class EmailCommand extends Command {
             composeMethod(messageText, sessionDebug, props);
 
             //Sends the Message
-            sendsMessage(host, user, pass, mailSession, msg);
+            sendMessage(host, user, pass, mailSession, composedMessage);
 
         } catch (Exception ex) {
             throw new CommandException(INCORRECT_EMAIL_FORMAT);
         }
-        return new CommandResult(CORRET_EMAIL_FORMAT + personToEmail.getName());
+        return new CommandResult(CORRECT_EMAIL_FORMAT + personToEmail.getName());
     }
 
     /**
-     * Compose the Email object
+     * Creates the Email object
+     *
      * @param messageText The message to be sent out
      * @param sessionDebug
      * @param props
      * @throws MessagingException
      */
     private void composeMethod(String messageText, boolean sessionDebug, Properties props) throws MessagingException {
-        java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+        Provider provider = new com.sun.net.ssl.internal.ssl.Provider();
+        java.security.Security.addProvider(provider);
         mailSession = Session.getDefaultInstance(props, null);
         mailSession.setDebug(sessionDebug);
-        msg = composeMessage(to, from, subject, messageText, mailSession);
+        composedMessage = composeMessage(to, from, subject, messageText, mailSession);
     }
 
     /**
      *  Initialises basic sending credentials
-     * @param personToEmail Person to recieve the email
+     *
+     *  @param personToEmail Person to recieve the email
      */
     private void generateInitialLoginCred(ReadOnlyPerson personToEmail) {
-        host = "smtp.gmail.com";
-        user = "cs2103f09b3@gmail.com";
-        pass = "pocketbook";
+        host = HOST_EMAIL;
+        user = TEAM_EMAIL_ADDRESS;
+        pass = TEAM_EMAIL_PASSWORD;
         to = personToEmail.getEmail().toString();
-        from = "cs2103f09b3@gmail.com";
+        from = TEAM_EMAIL_ADDRESS;
     }
 
     /**
-     * Updates initial properties of javaMail
+     * Creates initial properties of javaMail
+     *
      * @param host DNS name of a server
      * @param props Properties of javamail API
      */
     private void updateProperties(String host, Properties props) {
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.required", "true");
+        props.put(SMTP_ENABLE, TRUE);
+        props.put(SMTP_HOST, host);
+        props.put(SMTP_PORT, PORT_NUMBER);
+        props.put(SMTP_AUTHENTICATION, TRUE);
+        props.put(SMTP_STARTTLS, TRUE);
     }
 
     /**
      * Sends the message to the email chosen
+     *
      * @param host DNS name of a server
      * @param user Email of CS2103F09B3 Team
      * @param pass Password of CS2103F09B3 Team
@@ -141,18 +158,19 @@ public class EmailCommand extends Command {
      * @param msg Message to be sent out
      * @throws MessagingException Invalid parameters used
      */
-    private void sendsMessage(String host, String user, String pass, Session mailSession,
-                              Message msg) throws MessagingException {
-        assert host == "smtp.gmail.com";
-        assert user == "cs2103f09b3@gmail.com";
-        assert pass == "pocketbook";
-        Transport transport = mailSession.getTransport("smtp");
+    private void sendMessage(String host, String user, String pass, Session mailSession,
+                             Message msg) throws MessagingException {
+        assert host == HOST_EMAIL;
+        assert user == TEAM_EMAIL_ADDRESS;
+        assert pass == TEAM_EMAIL_PASSWORD;
+        Transport transport = mailSession.getTransport(SMTP);
         transport.connect(host, user, pass);
         transport.sendMessage(msg, msg.getAllRecipients());
         transport.close();
     }
 
     /**
+     * Creates the message using the valid parameters.
      *
      * @param to Email of person to send
      * @param from Email of Sender
@@ -176,6 +194,7 @@ public class EmailCommand extends Command {
 
     /**
      * Creates the signature at the end of the email provided by CS2103F03B3 Team
+     *
      * @return New message attached with signature
      */
     private String teamSignatureGenerator() {

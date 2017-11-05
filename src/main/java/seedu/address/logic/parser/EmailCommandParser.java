@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.ParserUtil.EMPTY_STRING;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.exceptions.IllegalValueException;
@@ -13,7 +14,6 @@ import seedu.address.logic.parser.exceptions.ParseException;
  */
 public class EmailCommandParser implements Parser<EmailCommand> {
 
-    public static final String EMPTY_STRING = "";
     public static final int FIRST_PART_MESSAGE = 0;
     public static final int SECOND_PART_MESSAGE = 1;
     public static final int THIRD_PART_MESSAGE = 2;

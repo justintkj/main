@@ -7,7 +7,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
  * Represents a person's Favourite/color on in the addressBook
  * Guarantees: immutable; is valid as declared in {@link #isValidInput(String)}
  */
-public class Favourite {
+public class Favourite implements Comparable {
 
     public static final String MESSAGE_FAVOURITE_CONSTRAINTS =
             "Person favourite should only be true or false, and it should not be blank";
@@ -86,5 +86,11 @@ public class Favourite {
         return other == this // short circuit if same object
                 || (other instanceof Favourite // instanceof handles nulls
                 && this.colorOn.equals(((Favourite) other).colorOn)); // state check
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Favourite comparedFavourite = (Favourite) o;
+        return (comparedFavourite.toString()).compareTo(this.toString());
     }
 }

@@ -64,10 +64,11 @@ public class FavouriteCommand extends UndoableCommand {
 
     /**
      * Toggles the current color state of the person selected
+     *
      * @param editedPerson selected person to edit
      */
     private void toggleColor(ReadOnlyPerson editedPerson) {
-        if (editedPerson.getFavourite().toString().equals("true")) {
+        if (editedPerson.getFavourite().toString().equals(Favourite.COLOR_SWITCH)) {
             favourite.inverse();
         }
     }

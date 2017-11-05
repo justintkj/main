@@ -74,7 +74,8 @@ public class RemarkCommand extends UndoableCommand {
     }
 
     /**
-     * Change the remark field of the selected person to edit
+     * Changes the remark field of the selected person to edit
+     *
      * @param personToEdit Selected person to edit
      * @return A new person with remark field edited
      */
