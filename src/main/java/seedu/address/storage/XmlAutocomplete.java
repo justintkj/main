@@ -18,11 +18,14 @@ import java.util.Arrays;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 //@@author justintkj
+/**
+ * Stores Autocomplete data in an XML file
+ */
 public class XmlAutocomplete {
     private static String[] possibleSuggestion = {"add", "birthday", "clear", "list", "help", "removetag", "image",
-            "edit", "find", "delete", "select", "favourite", "history", "undo", "redo", "email", "sort", "sort name",
-            "map", "sort number", "sort email", "sort address", "sort remark", "sort birthday","sort favourite",
-            "exit"};
+        "edit", "find", "delete", "select", "favourite", "history", "undo", "redo", "email", "sort", "sort name",
+        "map", "sort number", "sort email", "sort address", "sort remark", "sort birthday", "sort favourite",
+        "exit", "fuzzyfind"};
     private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
 
     /**
@@ -30,11 +33,11 @@ public class XmlAutocomplete {
      *
      * @param ex exception to be handled
      */
-    public static ArrayList<String> createNewStorageFile(Exception ex) throws IOException{
-            File file = new File(STORAGE_FILE_NAME);
-            file.createNewFile();
-            addNewDataInStorage(EMPTY_STRING);
-            return  mainPossibleSuggestion;
+    public static ArrayList<String> createNewStorageFile(Exception ex) throws IOException {
+        File file = new File(STORAGE_FILE_NAME);
+        file.createNewFile();
+        addNewDataInStorage(EMPTY_STRING);
+        return  mainPossibleSuggestion;
     }
 
     /**

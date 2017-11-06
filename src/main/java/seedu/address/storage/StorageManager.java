@@ -1,7 +1,6 @@
 package seedu.address.storage;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
@@ -37,7 +36,7 @@ public class StorageManager extends ComponentManager implements Storage {
 
         this.usedBackupLocationNames = new HashSet<>();
     }
-//@@author justintkj
+    //@@author justintkj
     /**
      * Extracts and Returns an Arraylist of strings to be used in autocomplete from XML
      *
@@ -61,7 +60,7 @@ public class StorageManager extends ComponentManager implements Storage {
     public static ArrayList<String> setAddSuggestion(String commandWord) throws CommandException {
         return XmlAutocomplete.setAddSuggestion(commandWord);
     }
-//@@author
+    //@@author
     // ================ UserPrefs methods ==============================
 
     @Override

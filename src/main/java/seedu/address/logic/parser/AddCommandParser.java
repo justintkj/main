@@ -58,7 +58,8 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String POSTAL_REGEX = "singapore \\d{6,6}";
     public static final String PHONE_REGEX_ONE = "\\ {0,1}\\d{8}\\ {0,1}";
     public static final String PHONE_REGEX_TWO = "\\,{0,1}\\d{8}\\,{0,1}";
-    public static final String PHONE_EXCEPTION_REGEX = "Number should be 8 digits long!\n" + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String PHONE_EXCEPTION_REGEX = "Number should be 8 digits long!\n" +
+            AddCommand.MESSAGE_USAGE_ALT;
     public static final String BIRTHDAY_REGEX = "\\d{1,2}-\\d{1,2}-\\d{4,4}";
     public static final String BIRTHDAY_EXCEPTION_MESSAGE = "invalid birthday,\n Example: 12-09-1994";
     public static final String MISSING_NAME_FORMAT = "Missing Name!\n";
@@ -125,8 +126,8 @@ public class AddCommandParser implements Parser<AddCommand> {
         streetnum = getOutputFromString(args, streetPatterns, STREET_EXCEPTION_REGEX);
         unitnum = getOutputFromString(args, unitPatterns, UNIT_EXCEPTION_MESSAGE);
         postalnum = getOutputFromString(args, postalPatterns, EMPTY_STRING);
-        phone = new Phone(getOutputFromString(args, phonePatterns, PHONE_EXCEPTION_REGEX).
-                trim().replace(COMMA_STRING,EMPTY_STRING));
+        phone = new Phone(getOutputFromString(args, phonePatterns, PHONE_EXCEPTION_REGEX)
+                .trim().replace(COMMA_STRING, EMPTY_STRING));
         birthday = validateBirthdayNotFuture(args);
         address = generatesAddress(blocknum, streetnum, unitnum, postalnum);
         Set<Tag> tagList = new HashSet<>();
@@ -148,9 +149,9 @@ public class AddCommandParser implements Parser<AddCommand> {
     private Address generatesAddress(String blocknum, String streetnum, String unitnum, String postalnum)
             throws IllegalValueException {
         Address address;
-        if(postalnum != EMPTY_STRING) {
-            address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING +
-                    unitnum + COMMA_SPACE_STRING + postalnum);
+        if (postalnum != EMPTY_STRING) {
+            address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING
+                    + unitnum + COMMA_SPACE_STRING + postalnum);
         } else {
             address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING + unitnum + postalnum);
         }
@@ -167,7 +168,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     private Birthday validateBirthdayNotFuture(String args) throws IllegalValueException {
         Birthday birthday;
         String unprocessedBirthday = getOutputFromString(args, birthdayPatterns, BIRTHDAY_EXCEPTION_MESSAGE);
-        if(Birthday.isValidBirthday(unprocessedBirthday)) {
+        if (Birthday.isValidBirthday(unprocessedBirthday)) {
             birthday = new Birthday(unprocessedBirthday);
         } else {
             throw new IllegalValueException(BIRTHDAY_EXCEPTION_MESSAGE);
@@ -188,7 +189,7 @@ public class AddCommandParser implements Parser<AddCommand> {
             throws IllegalValueException {
         Matcher matcher = null;
         boolean isMatchFound = false;
-        for(int i = INDEX_ZERO; i < patterns.length; i ++) {
+        for (int i = INDEX_ZERO; i < patterns.length; i++) {
             Pattern pattern = Pattern.compile(patterns[i], Pattern.CASE_INSENSITIVE);
             matcher = pattern.matcher(args);
             isMatchFound = matcher.find();
@@ -210,7 +211,7 @@ public class AddCommandParser implements Parser<AddCommand> {
      */
     private String processOptionalFields(String exceptionMessage, Matcher matcher, boolean matchFound) throws IllegalValueException {
         if (!matchFound) {
-            if(exceptionMessage == EMPTY_STRING) {
+            if (exceptionMessage == EMPTY_STRING) {
                 return EMPTY_STRING;
             } else {
                 throw new IllegalValueException(exceptionMessage);

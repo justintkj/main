@@ -1,15 +1,7 @@
 package seedu.address.ui;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.controlsfx.control.textfield.AutoCompletionBinding;
@@ -28,7 +20,6 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.storage.Storage;
 import seedu.address.storage.StorageManager;
 
 //@@author justintkj
@@ -62,7 +53,7 @@ public class CommandBox extends UiPart<Region> {
         updateAutocompleteTextField();
         autocompletionbinding = TextFields.bindAutoCompletion(commandTextField, mainPossibleSuggestion);
     }
-//@@author justintkj
+    //@@author justintkj
     /**
      * updates the autocompleteTextField
      */
@@ -73,7 +64,7 @@ public class CommandBox extends UiPart<Region> {
             raise(new DataSavingExceptionEvent(ioe));
         }
     }
-//@@author
+    //@@author
     /**
      * Handles the key press event, {@code keyEvent}.
      */
