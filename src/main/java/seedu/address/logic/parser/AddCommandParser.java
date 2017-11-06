@@ -58,8 +58,8 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String POSTAL_REGEX = "singapore \\d{6,6}";
     public static final String PHONE_REGEX_ONE = "\\ {0,1}\\d{8}\\ {0,1}";
     public static final String PHONE_REGEX_TWO = "\\,{0,1}\\d{8}\\,{0,1}";
-    public static final String PHONE_EXCEPTION_REGEX = "Number should be 8 digits long!\n" +
-            AddCommand.MESSAGE_USAGE_ALT;
+    public static final String PHONE_EXCEPTION_REGEX = "Number should be 8 digits long!\n"
+            + AddCommand.MESSAGE_USAGE_ALT;
     public static final String BIRTHDAY_REGEX = "\\d{1,2}-\\d{1,2}-\\d{4,4}";
     public static final String BIRTHDAY_EXCEPTION_MESSAGE = "invalid birthday,\n Example: 12-09-1994";
     public static final String MISSING_NAME_FORMAT = "Missing Name!\n";
@@ -209,7 +209,8 @@ public class AddCommandParser implements Parser<AddCommand> {
      * @return processed field
      * @throws IllegalValueException not a valid processable input
      */
-    private String processOptionalFields(String exceptionMessage, Matcher matcher, boolean matchFound) throws IllegalValueException {
+    private String processOptionalFields(String exceptionMessage, Matcher matcher, boolean matchFound)
+            throws IllegalValueException {
         if (!matchFound) {
             if (exceptionMessage == EMPTY_STRING) {
                 return EMPTY_STRING;
