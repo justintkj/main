@@ -41,6 +41,7 @@ public class ParserUtil {
     public static final String SORTBIRTHDAY_ARG = "birthday";
     public static final String SORTFAVOURITE_ARG = "favourite";
     public static final String EMPTY_STRING = "";
+    public static final String SPACE_STRING = " ";
     public static final String COMMA_STRING = ",";
     public static final String COMMA_SPACE_STRING = ", ";
     public static final int INDEX_ZERO = 0;

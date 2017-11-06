@@ -1,6 +1,8 @@
 package seedu.address.storage;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -12,6 +14,7 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.events.model.AddressBookChangedEvent;
 import seedu.address.commons.events.storage.DataSavingExceptionEvent;
 import seedu.address.commons.exceptions.DataConversionException;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 
@@ -34,7 +37,31 @@ public class StorageManager extends ComponentManager implements Storage {
 
         this.usedBackupLocationNames = new HashSet<>();
     }
+//@@author justintkj
+    /**
+     * Extracts and Returns an Arraylist of strings to be used in autocomplete from XML
+     *
+     * @return ArrayList of String with valid inputs
+     * @throws IOException unable to create new XML file
+     */
+    public static ArrayList<String> updateAutocomplete() throws IOException {
+        try {
+            return XmlAutocomplete.updateAutocompleteWithStorageFile();
+        } catch (Exception ex) {
+            return XmlAutocomplete.createNewStorageFile(ex);
+        }
+    }
 
+    /**
+     * Adds a new command string to the XML file for autocomplete
+     * @param commandWord command to be added
+     * @return new ArrayList including the new valid command
+     * @throws CommandException if autocomplete.xml cannot be made.
+     */
+    public static ArrayList<String> setAddSuggestion(String commandWord) throws CommandException {
+        return XmlAutocomplete.setAddSuggestion(commandWord);
+    }
+//@@author
     // ================ UserPrefs methods ==============================
 
     @Override

@@ -19,6 +19,7 @@ public class UndoCommandParser implements Parser<UndoCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the UndoCommand
      * and returns an UndoCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public UndoCommand parse(String args) throws ParseException {
@@ -37,6 +38,7 @@ public class UndoCommandParser implements Parser<UndoCommand> {
 
     /**
      * Generates number of undo to be done
+     *
      * @param splitArg Message given by user
      * @return Number of undo to be done
      * @throws IllegalValueException invalid number of undo to be done

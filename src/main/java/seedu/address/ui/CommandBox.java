@@ -28,25 +28,22 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.storage.Storage;
+import seedu.address.storage.StorageManager;
 
 //@@author justintkj
 /**
  * The UI component that is responsible for receiving user command inputs.
  */
 public class CommandBox extends UiPart<Region> {
-
     public static final String AUTOCOMPLETE_FILE_NAME = "Autocomplete.xml";
     public static final String ERROR_STYLE_CLASS = "error";
     public static final String STORAGE_FILE_NAME = "Autocomplete.xml";
     public static final String ERROR_MESSAGE_CREATE_FILE_FAILED = "Unable to create file Autocomplete.xml";
-    public static final String EMPTY_STRING = "";
 
     private static final String FXML = "CommandBox.fxml";
 
-    private static String[] possibleSuggestion = {"add", "birthday", "clear", "list", "help", "removetag", "image",
-        "edit", "find", "delete", "select", "favourite", "history", "undo", "redo", "email", "sort", "sort name", "map",
-        "sort number", "sort email", "sort address", "sort remark", "sort birthday", "exit"};
-    private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
+    private static ArrayList<String> mainPossibleSuggestion;
     private final Logger logger = LogsCenter.getLogger(CommandBox.class);
     private final Logic logic;
     private ListElementPointer historySnapshot;
@@ -62,41 +59,21 @@ public class CommandBox extends UiPart<Region> {
         // calls #setStyleToDefault() whenever there is a change to the text of the command box.
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
         historySnapshot = logic.getHistorySnapshot();
-        updateAutocomplete();
+        updateAutocompleteTextField();
         autocompletionbinding = TextFields.bindAutoCompletion(commandTextField, mainPossibleSuggestion);
     }
-
+//@@author justintkj
     /**
-     * Updates autocomplete with Autocomplete.xml file
+     * updates the autocompleteTextField
      */
-    private void updateAutocomplete() {
+    private void updateAutocompleteTextField() {
         try {
-            updateAutocompleteWithStorageFile();
-        } catch (Exception ex) {
-            createNewStorageFile(ex);
+            mainPossibleSuggestion = StorageManager.updateAutocomplete();
+        } catch (IOException ioe) {
+            raise(new DataSavingExceptionEvent(ioe));
         }
     }
-
-    /**
-     * Reads the storage file to update mainpossiblesuggestion
-     * @throws FileNotFoundException storage file cannot be found
-     */
-    private void updateAutocompleteWithStorageFile() throws FileNotFoundException {
-        XMLDecoder e = readStorageFile();
-        mainPossibleSuggestion = ((ArrayList<String>) e.readObject());
-        e.close();
-    }
-
-    /**
-     *  Reads the storage file
-     * @return  an input stream for reading archive
-     * @throws FileNotFoundException storagefile cannot be found
-     */
-    private XMLDecoder readStorageFile() throws FileNotFoundException {
-        return new XMLDecoder(new FileInputStream(STORAGE_FILE_NAME));
-    }
-
-    //@@author
+//@@author
     /**
      * Handles the key press event, {@code keyEvent}.
      */
@@ -127,57 +104,7 @@ public class CommandBox extends UiPart<Region> {
      * @throws CommandException if autocomplete.xml cannot be made.
      */
     public static void setAddSuggestion(String commandWord) throws CommandException {
-        if (mainPossibleSuggestion.contains(commandWord)) {
-            return;
-        }
-        try {
-            addNewDataInStorage(commandWord);
-        } catch (Exception ex) {
-            createNewStorageFile();
-        }
-
-    }
-
-    /**
-     * Creates a new storage file named Autocomplete.xml
-     * @param ex exception to be handled
-     */
-    private void createNewStorageFile(Exception ex)  {
-        try {
-            File file = new File(STORAGE_FILE_NAME);
-            file.createNewFile();
-            addNewDataInStorage(EMPTY_STRING);
-        } catch (IOException ioe) {
-            raise(new DataSavingExceptionEvent(ex));
-        }
-    }
-
-    /**
-     * Overloads the createNewStorageFile method
-     * @throws CommandException unable to create new file
-     */
-    private static void createNewStorageFile() throws CommandException {
-        try {
-            File file = new File(STORAGE_FILE_NAME);
-            file.createNewFile();
-            addNewDataInStorage(EMPTY_STRING);
-        } catch (IOException ioe) {
-            throw new CommandException(ERROR_MESSAGE_CREATE_FILE_FAILED);
-        }
-    }
-
-    /**
-     * Updates Storagefile with new content, used as refresh if no content
-     * @param commandWord input to be added to storage
-     * @throws FileNotFoundException file cannot be found
-     */
-    private static void addNewDataInStorage(String commandWord) throws FileNotFoundException {
-        if (!commandWord.equals(EMPTY_STRING)) {
-            mainPossibleSuggestion.add(commandWord.trim());
-        }
-        XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(AUTOCOMPLETE_FILE_NAME)));
-        e.writeObject(mainPossibleSuggestion);
-        e.close();
+        StorageManager.setAddSuggestion(commandWord);
     }
 
     //@@author

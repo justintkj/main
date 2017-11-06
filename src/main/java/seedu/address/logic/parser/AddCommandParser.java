@@ -64,7 +64,6 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String MISSING_NAME_FORMAT = "Missing Name!\n";
     public static final String FALSE = "false";
     public static final String DEFAULT = "default";
-    public static final String DEFAULT = "default";
 
     private String[] emailPatterns = {EMAIL_REGEX};
     private String[] blockPatterns = {BLOCK_REGEX_ONE, BLOCK_REGEX_2};
@@ -103,13 +102,13 @@ public class AddCommandParser implements Parser<AddCommand> {
      * @throws IllegalValueException Invalid parameter for any of person's details
      */
     private AddCommand alternativeCreateNewPerson(String args) throws IllegalValueException {
-        String[] allArgs = args.split(",");
+        String[] allArgs = args.split(COMMA_STRING);
         checkNameFormat(allArgs);
 
         //Initial person's details
         Name name = new Name(allArgs[INDEX_ZERO]);
         Remark remark = new Remark(EMPTY_STRING);
-        Birthday birthday = new Birthday("");
+        Birthday birthday = new Birthday(EMPTY_STRING);
         Email email;
         Phone phone;
         String blocknum;
@@ -188,15 +187,28 @@ public class AddCommandParser implements Parser<AddCommand> {
     private String getOutputFromString(String args, String[] patterns, String exceptionMessage)
             throws IllegalValueException {
         Matcher matcher = null;
-        boolean matchFound = false;
+        boolean isMatchFound = false;
         for(int i = INDEX_ZERO; i < patterns.length; i ++) {
             Pattern pattern = Pattern.compile(patterns[i], Pattern.CASE_INSENSITIVE);
             matcher = pattern.matcher(args);
-            matchFound = matcher.find();
-            if (matchFound) {
+            isMatchFound = matcher.find();
+            if (isMatchFound) {
                 break;
             }
         }
+        return processOptionalFields(exceptionMessage, matcher, isMatchFound);
+    }
+
+    /**
+     * Processes the input if match is not found, and is empty string (Optional fields)
+     *
+     * @param exceptionMessage Exception message if match is not found and is not empty
+     * @param matcher Stores processedfield if match found
+     * @param matchFound Valids if match is found
+     * @return processed field
+     * @throws IllegalValueException not a valid processable input
+     */
+    private String processOptionalFields(String exceptionMessage, Matcher matcher, boolean matchFound) throws IllegalValueException {
         if (!matchFound) {
             if(exceptionMessage == EMPTY_STRING) {
                 return EMPTY_STRING;

@@ -70,9 +70,10 @@ Block : BLOCK (1 to 3 digits). Example : Block 1, Block 11, Block 111 +
 Unit : #(1 to 2 digits)-(1-3 digits)(Optional:Character). Example: #01-111B +
 Street : (1 Word) street (1 to 2 digits). Example : Jurong Street 11 +
 Number : (Optional:,)(8 digits)(Optional:,). Example: ,11111111, or 11111111. +
+Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldnt be in the future and has to be a valid date.Example :Singapore 655900+
 Email : (1 alphanumericword)@(1 alphanumericword).(1 alphanumericword). Example: Jason@example.com +
 (Optional) Postal Code: singapore (6digits). Example :Singapore 655900 +
-(Optional) Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldnt be in the future and has to be a valid date.Example :Singapore 655900
+
 
 
 Examples:
@@ -80,7 +81,7 @@ Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 r/Handsome b/11-11-2011`
 * `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal r/Swimmer b/ 9-9-2012`
 * `a n/Donald Pua t/friend e/donana@example.com a/Porsche street p/3153357 t/cleaner`
-* `add Jason, Block 111 jurong street 55 #01-111 92008822 jason@example.com`
+* `add Jason, Block 111 jurong street 55 #01-111 92008822 jason@example.com 11-11-2011`
 * `add Dexter,jurong street 15 Block 12 #01-111 singapore 666999 92008822 jason@example.com 92008822 11-11-2011`
 
 === Listing all persons : `list`
