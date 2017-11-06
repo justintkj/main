@@ -1,6 +1,5 @@
 package seedu.address.logic.commands;
 
-import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalPersons.getSortedAddressAddressBook;
 import static seedu.address.testutil.TypicalPersons.getSortedEmailAddressBook;
@@ -39,23 +38,28 @@ public class SortCommandTest {
     @Test
     public void execute_showsSameList() {
         //Sort name -> command parsed successful
-        assertSuccessSortWithParameter(SORT_NAME_ARG, model, sortCommand, SortCommand.MESSAGE_SORT_SUCCESS + SORT_NAME_ARG, expectedModel);
+        assertSuccessSortWithParameter(SORT_NAME_ARG, model, sortCommand, SortCommand.MESSAGE_SORT_SUCCESS
+                + SORT_NAME_ARG, expectedModel);
 
         //Sort email -> command parsed successful
         expectedModel = new ModelManager(getSortedEmailAddressBook(), new UserPrefs());
-        assertSuccessSortWithParameter(SORT_EMAIL_ARG, model, sortCommand, SortCommand.MESSAGE_SORT_SUCCESS + SORT_EMAIL_ARG, expectedModel);
+        assertSuccessSortWithParameter(SORT_EMAIL_ARG, model, sortCommand,
+                SortCommand.MESSAGE_SORT_SUCCESS + SORT_EMAIL_ARG, expectedModel);
 
         //Sort address -> command parsed successful
         expectedModel = new ModelManager(getSortedAddressAddressBook(), new UserPrefs());
-        assertSuccessSortWithParameter(SORT_ADDRESS_ARG, model, sortCommand, SortCommand.MESSAGE_SORT_SUCCESS + SORT_ADDRESS_ARG, expectedModel);
+        assertSuccessSortWithParameter(SORT_ADDRESS_ARG, model, sortCommand,
+                SortCommand.MESSAGE_SORT_SUCCESS + SORT_ADDRESS_ARG, expectedModel);
 
         //Sort number -> command parsed successful
         expectedModel = new ModelManager(getSortedNumAddressBook(), new UserPrefs());
-        assertSuccessSortWithParameter(SORT_NUM_ARG, model, sortCommand, SortCommand.MESSAGE_SORT_SUCCESS + SORT_NUM_ARG, expectedModel);
+        assertSuccessSortWithParameter(SORT_NUM_ARG, model, sortCommand,
+                SortCommand.MESSAGE_SORT_SUCCESS + SORT_NUM_ARG, expectedModel);
 
         //Sort number CamelCase -> command parsed successful
         expectedModel = new ModelManager(getSortedNumAddressBook(), new UserPrefs());
-        assertSuccessSortWithParameter(SORT_NUM_ARG, model, sortCommand, SortCommand.MESSAGE_SORT_SUCCESS + SORT_NUM_ARG, expectedModel);
+        assertSuccessSortWithParameter(SORT_NUM_ARG, model, sortCommand,
+                SortCommand.MESSAGE_SORT_SUCCESS + SORT_NUM_ARG, expectedModel);
 
     }
 
@@ -68,7 +72,8 @@ public class SortCommandTest {
      * @param expectedMessage Expected message to produce after sort
      * @param expectedModel Expected addressbook after the sort
      */
-    private void assertSuccessSortWithParameter(String sortParameterArg, Model model, SortCommand sortCommand, String expectedMessage, Model expectedModel) {
+    private void assertSuccessSortWithParameter(String sortParameterArg, Model model, SortCommand sortCommand,
+                                                String expectedMessage, Model expectedModel) {
         sortCommand = new SortCommand(sortParameterArg);
         sortCommand.setData(model, new CommandHistory(), new UndoRedoStack());
         assertCommandSuccess(sortCommand, model, expectedMessage, expectedModel);

@@ -77,7 +77,8 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
      * @throws DuplicatePersonException Amy already exist in model
      */
     private void addAmyToModel(Model model) throws DuplicatePersonException {
-        String command;ReadOnlyPerson toAdd = AMY;
+        String command;
+        ReadOnlyPerson toAdd = AMY;
         command = "   " + AddCommand.COMMAND_WORD + "  " + NAME_DESC_AMY + "  " + PHONE_DESC_AMY + " "
                 + EMAIL_DESC_AMY + "   " + ADDRESS_DESC_AMY + "   " + REMARK_DESC_AMY + " "
                 + BIRTHDAY_DESC_BOB + " " + TAG_DESC_FRIEND + " ";
