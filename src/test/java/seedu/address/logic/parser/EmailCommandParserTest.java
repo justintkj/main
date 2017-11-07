@@ -5,12 +5,10 @@ import static seedu.address.logic.commands.RedoCommand.INDEX_ONE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.logic.parser.ParserUtil.COMMA_STRING;
-import static seedu.address.logic.parser.ParserUtil.EMPTY_STRING;
 import static seedu.address.logic.parser.ParserUtil.SPACE_COMMMA_STRING;
 import static seedu.address.logic.parser.ParserUtil.SPACE_STRING;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
-import com.sun.mail.imap.protocol.BODY;
 import org.junit.Test;
 
 import seedu.address.commons.core.index.Index;

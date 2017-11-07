@@ -160,21 +160,22 @@ public class FavouriteCommandTest {
      * when trying to edit favourite.
      */
     private class ModelStubThrowingPersonException extends ModelStub {
-        String ExceptionType;
-        String EXCEPTION_DUPLICATE = "duplicate";
+        private String exceptionType;
+        private static final String EXCEPTION_DUPLICATE = "duplicate";
+
+        public ModelStubThrowingPersonException (String ExceptionType) {
+            this.exceptionType = ExceptionType;
+        }
 
         @Override
         public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
             return model.getFilteredPersonList();
         }
 
-        public ModelStubThrowingPersonException (String ExceptionType) {
-            this.ExceptionType = ExceptionType;
-        }
         @Override
         public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
-                throws DuplicatePersonException, PersonNotFoundException{
-            if (ExceptionType.trim().toLowerCase().equals(EXCEPTION_DUPLICATE)) {
+                throws DuplicatePersonException, PersonNotFoundException {
+            if (exceptionType.trim().toLowerCase().equals(EXCEPTION_DUPLICATE)) {
                 throw new DuplicatePersonException();
             } else {
                 throw new PersonNotFoundException();

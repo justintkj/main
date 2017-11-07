@@ -76,8 +76,8 @@ public class AddCommandParserTest {
                 + VALID_BIRTHDAY_BOB, new AddCommand(expectedPerson));
 
         //Multiple phone, 1st Phone accepted - Accepted
-        assertParseSuccess(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING +
-                VALID_PHONE_AMY + SPACE_STRING + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING
+        assertParseSuccess(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
+                + VALID_PHONE_AMY + SPACE_STRING + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING
                 + VALID_BIRTHDAY_BOB, new AddCommand(expectedPerson));
 
         //Multiple Email, 1st Email accepted - Accepted
@@ -152,21 +152,20 @@ public class AddCommandParserTest {
         assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
                 + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB, BIRTHDAY_EXCEPTION_MESSAGE);
 
-
         // missing Address/Block field
         assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + INVALID_BLOCK_ADDRESS_BOB + SPACE_STRING
-                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB
-                , BLOCK_EXCEPTION_MESSAGE);
+                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB,
+                BLOCK_EXCEPTION_MESSAGE);
 
         // missing Address/Street field
         assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + INVALID_STREET_ADDRESS_BOB + SPACE_STRING
-                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB
-                , STREET_EXCEPTION_MESSAGE);
+                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB,
+                STREET_EXCEPTION_MESSAGE);
 
         // missing Address/Unit field
         assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + INVALID_UNIT_ADDRESS_BOB + SPACE_STRING
-                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB
-                , UNIT_EXCEPTION_MESSAGE);
+                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB,
+                UNIT_EXCEPTION_MESSAGE);
     }
     //@@author
 
