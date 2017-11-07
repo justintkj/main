@@ -160,11 +160,11 @@ public class FavouriteCommandTest {
      * when trying to edit favourite.
      */
     private class ModelStubThrowingPersonException extends ModelStub {
-        private String exceptionType;
         private static final String EXCEPTION_DUPLICATE = "duplicate";
+        private String exceptiontype;
 
         public ModelStubThrowingPersonException (String ExceptionType) {
-            this.exceptionType = ExceptionType;
+            this.exceptiontype = ExceptionType;
         }
 
         @Override
