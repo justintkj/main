@@ -67,6 +67,10 @@ public class FavouriteCommandTest {
 
     /**
      * Creates a new {@code Person} with a valid favourite
+     *
+     * @param personToEdit The Person to edit
+     * @return The edited person
+     * @throws IllegalValueException Invalid value when generating the Person
      */
     private Person getEditedPerson(ReadOnlyPerson personToEdit) throws IllegalValueException {
         return new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
@@ -139,6 +143,7 @@ public class FavouriteCommandTest {
 
     /**
      * Returns an {@code FavouriteCommand} with parameters {@code index} and {@code favourite}
+     *
      * @param model model to run the tet on
      * @param index index of the person to tet
      * @param favourite favourite state of the person
@@ -169,7 +174,7 @@ public class FavouriteCommandTest {
         @Override
         public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
                 throws DuplicatePersonException, PersonNotFoundException{
-            if(ExceptionType.trim().toLowerCase().equals(EXCEPTION_DUPLICATE)) {
+            if (ExceptionType.trim().toLowerCase().equals(EXCEPTION_DUPLICATE)) {
                 throw new DuplicatePersonException();
             } else {
                 throw new PersonNotFoundException();

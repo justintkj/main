@@ -75,10 +75,10 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String NAME_EXCEPTION_MESSAGE = "Missing Name!\n" + AddCommand.MESSAGE_USAGE_ALT;
     public static final String FALSE = "false";
     public static final String DEFAULT = "default";
-
-    private static final Logger logger = LogsCenter.getLogger(AddCommandParser.class);
     public static final String ALTERNATIVE_METHOD_LOG_MESSAGE = "Adding a person using alternative method ";
     public static final String PREFIX_METHOD_LOG_MESSAGE = "Adding a person using prefix method";
+
+    private static final Logger logger = LogsCenter.getLogger(AddCommandParser.class);
     private static Level currentLogLevel = Level.INFO;
     private String[] emailPatterns = {EMAIL_REGEX};
     private String[] blockPatterns = {BLOCK_REGEX_ONE, BLOCK_REGEX_2};
@@ -86,7 +86,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     private String[] unitPatterns = {UNIT_REGEX};
     private String[] postalPatterns = {POSTAL_REGEX};
     private String[] phonePatterns = {PHONE_REGEX_ONE, PHONE_REGEX_TWO, PHONE_REGEX_THREE, PHONE_REGEX_FOUR,
-    PHONE_REGEX_FIVE, PHONE_REGEX_SIX, PHONE_REGEX_SEVEN, PHONE_REGEX_EIGHT};
+        PHONE_REGEX_FIVE, PHONE_REGEX_SIX, PHONE_REGEX_SEVEN, PHONE_REGEX_EIGHT};
     private String[] birthdayPatterns = {BIRTHDAY_REGEX};
     /**
      * Parses the given {@code String} of arguments in the context of the AddCommand
@@ -214,7 +214,8 @@ public class AddCommandParser implements Parser<AddCommand> {
             isMatchFound = matcher.find();
             if (isMatchFound) {
                 isAnyMatchFound = true;
-                listOfValidOutput.add(matcher.group(INDEX_ZERO));            }
+                listOfValidOutput.add(matcher.group(INDEX_ZERO));
+            }
         }
         return processOptionalFields(args, exceptionMessage, listOfValidOutput, isAnyMatchFound);
     }
@@ -252,7 +253,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     private String getLeftMostValidOutput(String args, ArrayList<String> listOfValidOuput) {
         int leftmostStringIndex = args.length();
         String leftMostOutput = EMPTY_STRING;
-        for(int i = INDEX_ZERO; i < listOfValidOuput.size(); i++) {
+        for (int i = INDEX_ZERO; i < listOfValidOuput.size(); i++) {
             if (args.indexOf(listOfValidOuput.get(i)) < leftmostStringIndex) {
                 leftmostStringIndex = args.indexOf(listOfValidOuput.get(i));
                 leftMostOutput = listOfValidOuput.get(i);
