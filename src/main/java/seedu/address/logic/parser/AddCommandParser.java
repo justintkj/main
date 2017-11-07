@@ -194,7 +194,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     }
 
     /**
-     * Goes through the args string to look for an expression that fix regex in patterns.
+     * Goes through the argument string to look for an expression that fix regex in patterns.
      *
      * @param args user input string
      * @param patterns Regex array for all the patterns to compare
