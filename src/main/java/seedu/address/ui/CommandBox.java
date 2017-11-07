@@ -20,7 +20,10 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.storage.AddressBookStorage;
+import seedu.address.storage.Storage;
 import seedu.address.storage.StorageManager;
+import seedu.address.storage.UserPrefsStorage;
 
 //@@author justintkj
 /**
@@ -38,6 +41,9 @@ public class CommandBox extends UiPart<Region> {
     private final Logger logger = LogsCenter.getLogger(CommandBox.class);
     private final Logic logic;
     private ListElementPointer historySnapshot;
+    private AddressBookStorage addressBookStorage;
+    private UserPrefsStorage userPrefsStorage;
+    protected Storage storage = new StorageManager(addressBookStorage, userPrefsStorage);
 
     @FXML
     private TextField commandTextField;
@@ -59,7 +65,7 @@ public class CommandBox extends UiPart<Region> {
      */
     private void updateAutocompleteTextField() {
         try {
-            mainPossibleSuggestion = StorageManager.updateAutocomplete();
+            mainPossibleSuggestion = storage.updateAutocomplete();
         } catch (IOException ioe) {
             raise(new DataSavingExceptionEvent(ioe));
         }
@@ -95,7 +101,18 @@ public class CommandBox extends UiPart<Region> {
      * @throws CommandException if autocomplete.xml cannot be made.
      */
     public static void setAddSuggestion(String commandWord) throws CommandException {
-        StorageManager.setAddSuggestion(commandWord);
+        Storage storage = generateStorage();
+        mainPossibleSuggestion = storage.setAddSuggestion(commandWord);
+    }
+
+    /**
+     * Creates an empty addressbook storageManager instance to be used for autocomplete
+     * @return StorageManager
+     */
+    private static Storage generateStorage() {
+        AddressBookStorage addressBookStorage = null;
+        UserPrefsStorage userPrefsStorage = null;
+        return new StorageManager(addressBookStorage, userPrefsStorage);
     }
 
     //@@author

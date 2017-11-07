@@ -43,7 +43,7 @@ public class StorageManager extends ComponentManager implements Storage {
      * @return ArrayList of String with valid inputs
      * @throws IOException unable to create new XML file
      */
-    public static ArrayList<String> updateAutocomplete() throws IOException {
+    public ArrayList<String> updateAutocomplete() throws IOException {
         try {
             return XmlAutocomplete.updateAutocompleteWithStorageFile();
         } catch (Exception ex) {
@@ -57,7 +57,7 @@ public class StorageManager extends ComponentManager implements Storage {
      * @return new ArrayList including the new valid command
      * @throws CommandException if autocomplete.xml cannot be made.
      */
-    public static ArrayList<String> setAddSuggestion(String commandWord) throws CommandException {
+    public ArrayList<String> setAddSuggestion(String commandWord) throws CommandException {
         return XmlAutocomplete.setAddSuggestion(commandWord);
     }
     //@@author
