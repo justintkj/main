@@ -163,8 +163,8 @@ public class FavouriteCommandTest {
         private static final String EXCEPTION_DUPLICATE = "duplicate";
         private String exceptiontype;
 
-        public ModelStubThrowingPersonException (String ExceptionType) {
-            this.exceptiontype = ExceptionType;
+        public ModelStubThrowingPersonException (String exceptionType) {
+            this.exceptiontype = exceptionType;
         }
 
         @Override
@@ -175,7 +175,7 @@ public class FavouriteCommandTest {
         @Override
         public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
                 throws DuplicatePersonException, PersonNotFoundException {
-            if (exceptionType.trim().toLowerCase().equals(EXCEPTION_DUPLICATE)) {
+            if (exceptiontype.trim().toLowerCase().equals(EXCEPTION_DUPLICATE)) {
                 throw new DuplicatePersonException();
             } else {
                 throw new PersonNotFoundException();
