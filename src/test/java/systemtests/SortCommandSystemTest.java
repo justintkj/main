@@ -1,6 +1,7 @@
 package systemtests;
 
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
+import static seedu.address.logic.commands.CommandTestUtil.BIRTHDAY_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.BIRTHDAY_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
@@ -80,7 +81,7 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
         ReadOnlyPerson toAdd = AMY;
         command = "   " + AddCommand.COMMAND_WORD + "  " + NAME_DESC_AMY + "  " + PHONE_DESC_AMY + " "
                 + EMAIL_DESC_AMY + "   " + ADDRESS_DESC_AMY + "   " + REMARK_DESC_AMY + " "
-                + BIRTHDAY_DESC_BOB + " " + TAG_DESC_FRIEND + " ";
+                + BIRTHDAY_DESC_AMY + " " + TAG_DESC_FRIEND + " ";
         assertCommandSuccess(command, toAdd);
         model.addPerson(toAdd);
     }
