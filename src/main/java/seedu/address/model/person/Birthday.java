@@ -17,18 +17,19 @@ public class Birthday implements Comparable {
 
     public static final String MESSAGE_BIRTHDAY_CONSTRAINTS =
             "Birthdays can only contain numbers, and should be in the format dd-mm-yyyy";
-    public static final String MESSAGE_WRONG_DATE = "Date entered is in wrong";
+    public static final String MESSAGE_WRONG_DATE = "Date entered is wrong";
+    public static final String MESSAGE_LATE_DATE = "Date given should be before today %1$s";
     private static final String DASH = "-";
     private static final int DEFAULT_VALUE = 0;
     private static final String NOT_SET = "Not Set";
     private static final String EMPTY = "";
     private static final String REMOVE = "remove";
-    private static final String MESSAGE_LATE_DATE = "Date given should be before today %1$s";
     private static final int MIN_MONTHS = 1;
     private static final int MAX_MONTHS = 12;
     private static final int MIN_DAYS = 1;
     private static final int DAY_POS = 0;
     private static final int MONTH_POS = 1;
+    private static final String DATE_FORMAT = "dd-MM-yyyy";
 
     public final String value;
     private final int day;
@@ -44,7 +45,7 @@ public class Birthday implements Comparable {
         requireNonNull(birthday);
         String trimmedBirthday = birthday.trim();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
         if (birthday.equals(EMPTY) || birthday.equals(NOT_SET) || birthday.equals(REMOVE)) {
             this.value = NOT_SET;
@@ -75,7 +76,7 @@ public class Birthday implements Comparable {
      * @param birthday {@code LocalDate} containing input by user
      * @return True when birthday entered by user is before or on current date
      */
-    private static boolean isDateCorrect(LocalDate birthday) {
+    public static boolean isDateCorrect(LocalDate birthday) {
         return birthday.isBefore(LocalDate.now()) || birthday.equals(LocalDate.now());
     }
 
@@ -149,5 +150,4 @@ public class Birthday implements Comparable {
         Birthday comparedBirthday = (Birthday) o;
         return this.value.compareTo(comparedBirthday.toString());
     }
-
 }

@@ -19,15 +19,18 @@ import seedu.address.logic.commands.MapCommand;
  */
 public class MapCommandParserTest {
 
+    private static final String VALID_INPUT = "1";
+    private static final String INVALID_INPUT = "a";
     private MapCommandParser parser = new MapCommandParser();
 
     @Test
     public void parse_validArgs_returnsDeleteCommand() {
-        assertParseSuccess(parser, "1", new MapCommand(INDEX_FIRST_PERSON));
+        assertParseSuccess(parser, VALID_INPUT, new MapCommand(INDEX_FIRST_PERSON));
     }
 
     @Test
     public void parse_invalidArgs_throwsParseException() {
-        assertParseFailure(parser, "a", String.format(MESSAGE_INVALID_COMMAND_FORMAT, MapCommand.MESSAGE_USAGE));
+        assertParseFailure(parser, INVALID_INPUT,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, MapCommand.MESSAGE_USAGE));
     }
 }

@@ -30,7 +30,7 @@ public class RemoveTagCommand extends UndoableCommand {
 
     public static final String MESSAGE_TAG_NOT_FOUND = "Specified tag is not found";
 
-    private static final String MESSAGE_REMOVE_TAG_SUCCESS = "Removed Tag: %1$s";
+    public static final String MESSAGE_REMOVE_TAG_SUCCESS = "Removed Tag: %1$s";
 
     public final Tag target;
 

@@ -12,7 +12,7 @@ public class MainWindowHandle extends StageHandle {
     private final CommandBoxHandle commandBox;
     private final StatusBarFooterHandle statusBarFooter;
     private final MainMenuHandle mainMenu;
-    private final InfoPanelHandle infoPanel;
+    private final PersonInfoPanelHandle infoPanel;
     private final BrowserPanelHandle browserPanel;
 
     public MainWindowHandle(Stage stage) {
@@ -23,7 +23,7 @@ public class MainWindowHandle extends StageHandle {
         commandBox = new CommandBoxHandle(getChildNode(CommandBoxHandle.COMMAND_INPUT_FIELD_ID));
         statusBarFooter = new StatusBarFooterHandle(getChildNode(StatusBarFooterHandle.STATUS_BAR_PLACEHOLDER));
         mainMenu = new MainMenuHandle(getChildNode(MainMenuHandle.MENU_BAR_ID));
-        infoPanel = new InfoPanelHandle(getChildNode(InfoPanelHandle.INFO_PANEL_ID));
+        infoPanel = new PersonInfoPanelHandle(getChildNode(PersonInfoPanelHandle.INFO_PANEL_ID));
         browserPanel = new BrowserPanelHandle(getChildNode(BrowserPanelHandle.BROWSER_ID));
     }
 
@@ -47,7 +47,7 @@ public class MainWindowHandle extends StageHandle {
         return mainMenu;
     }
 
-    public InfoPanelHandle getInfoPanel() {
+    public PersonInfoPanelHandle getInfoPanel() {
         return infoPanel;
     }
 

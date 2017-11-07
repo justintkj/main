@@ -1,31 +1,42 @@
 package seedu.address.logic.commands;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static seedu.address.commons.core.Messages.MESSAGE_MISSING_PERSON;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
-import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showFirstPersonOnly;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import javafx.collections.ObservableList;
 
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.CommandHistory;
 import seedu.address.logic.UndoRedoStack;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.ReadOnlyPerson;
+import seedu.address.model.person.exceptions.PersonNotFoundException;
+import seedu.address.testutil.ModelStub;
 
 //@@author liliwei25
 /**
  * Contains integration tests (interaction with the Model) and unit tests for {@code MapCommand}.
  */
 public class MapCommandTest {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
@@ -35,11 +46,7 @@ public class MapCommandTest {
         MapCommand mapCommand = prepareCommand(INDEX_FIRST_PERSON);
 
         String expectedMessage = String.format(MapCommand.MESSAGE_MAP_SHOWN_SUCCESS, personToMap);
-
-        ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        expectedModel.mapPerson(personToMap);
-
-        assertCommandSuccess(mapCommand, model, expectedMessage, expectedModel);
+        assertEquals(mapCommand.executeUndoableCommand().feedbackToUser, expectedMessage);
     }
 
     @Test
@@ -64,6 +71,16 @@ public class MapCommandTest {
     }
 
     @Test
+    public void execute_missingPerson_failure() throws Exception {
+        MapCommand mapCommand = prepareCommandForNotFoundException(INDEX_FIRST_PERSON);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage(MESSAGE_MISSING_PERSON);
+
+        mapCommand.execute();
+    }
+
+    @Test
     public void equals() {
         MapCommand mapFirstCommand = new MapCommand(INDEX_FIRST_PERSON);
         MapCommand mapSecondCommand = new MapCommand(INDEX_SECOND_PERSON);
@@ -76,7 +93,7 @@ public class MapCommandTest {
         assertTrue(mapFirstCommand.equals(mapFirstCommandCopy));
 
         // different types -> returns false
-        assertFalse(mapFirstCommand.equals(1));
+        assertFalse(mapFirstCommand.equals(new ClearCommand()));
 
         // null -> returns false
         assertFalse(mapFirstCommand.equals(null));
@@ -92,5 +109,36 @@ public class MapCommandTest {
         MapCommand mapCommand = new MapCommand(index);
         mapCommand.setData(model, new CommandHistory(), new UndoRedoStack());
         return mapCommand;
+    }
+
+    /**
+     * Returns an {@code MapCommand} with parameters {@code index}
+     * to test {@code PersonNotFoundException}
+     */
+    private MapCommand prepareCommandForNotFoundException(Index index) {
+        MapCommand mapCommand = new MapCommand(index);
+        mapCommand.setData(new ModelStubThrowingPersonNotFoundException(), new CommandHistory(),
+                new UndoRedoStack());
+        return mapCommand;
+    }
+
+    /**
+     * A Model stub that always throw a {@code PersonNotFoundException} when trying to change image.
+     */
+    private class ModelStubThrowingPersonNotFoundException extends ModelStub {
+        @Override
+        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
+            return model.getFilteredPersonList();
+        }
+
+        @Override
+        public void mapPerson(ReadOnlyPerson target) throws PersonNotFoundException {
+            throw new PersonNotFoundException();
+        }
+
+        @Override
+        public ReadOnlyAddressBook getAddressBook() {
+            return new AddressBook();
+        }
     }
 }

@@ -15,6 +15,7 @@ import seedu.address.model.UserPrefs;
  * API of the Storage component
  */
 public interface Storage extends AddressBookStorage, UserPrefsStorage {
+
     ArrayList<String> updateAutocomplete() throws IOException;
 
     ArrayList<String> setAddSuggestion(String commandWord) throws CommandException;
