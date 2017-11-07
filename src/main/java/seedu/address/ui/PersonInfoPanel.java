@@ -27,6 +27,7 @@ public class PersonInfoPanel extends UiPart<Region> {
     private static final String DEFAULT = "profiles/default.png";
     private static final String DEFAULT_TEXT = "default";
     private final Logger logger = LogsCenter.getLogger(PersonInfoPanel.class);
+    private final ReadOnlyPerson person;
 
     @FXML
     private ImageView profileImage;
@@ -48,12 +49,14 @@ public class PersonInfoPanel extends UiPart<Region> {
     public PersonInfoPanel(ReadOnlyPerson person) {
         super(FXML);
         setConnections(person);
+        this.person = person;
         registerAsAnEventHandler(this);
     }
 
     public PersonInfoPanel() {
         super(FXML);
         setDefaultConnections();
+        person = null;
         registerAsAnEventHandler(this);
     }
 
@@ -100,5 +103,28 @@ public class PersonInfoPanel extends UiPart<Region> {
     private void handlePersonPanelSelectionChangedEvent(PersonPanelSelectionChangedEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));
         setConnections(event.getNewSelection().person);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        // short circuit if same object
+        if (other == this) {
+            return true;
+        }
+
+        // instanceof handles nulls
+        if (!(other instanceof PersonInfoPanel)) {
+            return false;
+        }
+
+        // state check
+        PersonInfoPanel card = (PersonInfoPanel) other;
+        return name.getText().equals(card.name.getText())
+                && phone.getText().equals(card.phone.getText())
+                && address.getText().equals(card.address.getText())
+                && email.getText().equals(card.email.getText())
+                && birthday.getText().equals(card.birthday.getText())
+                && remark.getText().equals(card.remark.getText())
+                && person.equals(card.person);
     }
 }

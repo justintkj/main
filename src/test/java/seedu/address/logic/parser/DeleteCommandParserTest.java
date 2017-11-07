@@ -17,12 +17,14 @@ import seedu.address.logic.parser.exceptions.ParseException;
  */
 public class DeleteCommandParserTest {
 
+    private static final String VALID_INPUT = "1";
+    private static final String INVALID_INPUT = "a";
     private DeleteCommandParser parser = new DeleteCommandParser();
 
     @Test
     public void parse_validArgs_returnsDeleteCommand() {
         try {
-            DeleteCommand newCommand = parser.parse("1");
+            DeleteCommand newCommand = parser.parse(VALID_INPUT);
             if (newCommand.equals(new DeleteCommand(newCommand.targetIndex))) {
                 assert true;
             } else {
@@ -35,6 +37,7 @@ public class DeleteCommandParserTest {
 
     @Test
     public void parse_invalidArgs_throwsParseException() {
-        assertParseFailure(parser, "a", String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+        assertParseFailure(parser, INVALID_INPUT,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
     }
 }

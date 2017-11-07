@@ -34,7 +34,6 @@ public class BirthdayCommandParser implements Parser<BirthdayCommand> {
         Index index;
         Birthday birthday;
         try {
-            System.out.println(splitArgs[INDEX_POS]);
             index = ParserUtil.parseIndex(splitArgs[INDEX_POS]);
             if (splitArgs.length < CORRECT_LENGTH) {
                 throw new IllegalValueException(Birthday.MESSAGE_BIRTHDAY_CONSTRAINTS);

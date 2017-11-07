@@ -7,7 +7,7 @@ import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.REMARK_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
-import static seedu.address.logic.parser.ParserUtil.EMPTY_STRING;
+import static seedu.address.logic.parser.ParserUtil.SPACE_STRING;
 import static seedu.address.testutil.TypicalPersons.AMY;
 
 import org.junit.Test;
@@ -20,7 +20,6 @@ import seedu.address.model.person.exceptions.DuplicatePersonException;
 
 //@@author justintkj
 public class SortCommandSystemTest extends AddressBookSystemTest {
-
     public static final String PARAM_NAME_CAMELCASE = " NaMe";
     public static final String PARAM_NAME = " name";
     public static final String PARAM_ADDRESS = " address";
@@ -40,7 +39,7 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
         sortExecuteSuccess(model, PARAM_NAME_CAMELCASE);
 
         /* Case: Sort all persons by null*/
-        sortExecuteFail(EMPTY_STRING);
+        sortExecuteFail(SPACE_STRING + SPACE_STRING);
 
         /* Case: Sort all persons by name */
         sortExecuteSuccess(model, PARAM_NAME);

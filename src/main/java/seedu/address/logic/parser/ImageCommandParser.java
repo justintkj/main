@@ -18,6 +18,7 @@ public class ImageCommandParser implements Parser<ImageCommand> {
     private static final String SPACE = " ";
     private static final int INDEX_POS = 0;
     private static final int SELECT_POS = 1;
+    private static final String INVALID_POST_INDEX = "Wrong input after index";
 
     /**
      * Parses the given {@code String} of arguments in the context of the ImageCommand
@@ -38,8 +39,10 @@ public class ImageCommandParser implements Parser<ImageCommand> {
         Index index = ParserUtil.parseIndex(splitArgs[INDEX_POS]);
         if (splitArgs.length > 1 && splitArgs[SELECT_POS].toLowerCase().equals(REMOVE)) {
             return new ImageCommand(index, REMOVE_IMAGE);
-        } else {
+        } else if (splitArgs.length <= 1) {
             return new ImageCommand(index, !REMOVE_IMAGE);
+        } else {
+            throw new IllegalValueException(INVALID_POST_INDEX);
         }
     }
 }

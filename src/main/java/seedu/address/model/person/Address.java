@@ -3,6 +3,7 @@ package seedu.address.model.person;
 import static java.util.Objects.requireNonNull;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.logic.parser.AddCommandParser;
 
 /**
  * Represents a Person's address in the address book.
@@ -46,6 +47,12 @@ public class Address implements Comparable {
         return value;
     }
 
+    /**
+     * Returns a string without unit that is suitable for google map
+     */
+    public String getMapableAddress() {
+        return value.replaceAll(AddCommandParser.UNIT_REGEX, "");
+    }
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object

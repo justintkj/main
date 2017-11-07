@@ -25,9 +25,9 @@ import org.junit.ClassRule;
 
 import guitests.guihandles.BrowserPanelHandle;
 import guitests.guihandles.CommandBoxHandle;
-import guitests.guihandles.InfoPanelHandle;
 import guitests.guihandles.MainMenuHandle;
 import guitests.guihandles.MainWindowHandle;
+import guitests.guihandles.PersonInfoPanelHandle;
 import guitests.guihandles.PersonListPanelHandle;
 import guitests.guihandles.ResultDisplayHandle;
 import guitests.guihandles.StatusBarFooterHandle;
@@ -100,7 +100,7 @@ public abstract class AddressBookSystemTest {
         return mainWindowHandle.getBrowserPanel();
     }
 
-    public InfoPanelHandle getInfoPanel() {
+    public PersonInfoPanelHandle getInfoPanel() {
         return mainWindowHandle.getInfoPanel();
     }
 

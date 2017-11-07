@@ -2,6 +2,8 @@ package seedu.address.logic.commands;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static seedu.address.commons.core.Messages.MESSAGE_DUPLICATE_PERSON;
+import static seedu.address.commons.core.Messages.MESSAGE_MISSING_PERSON;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showFirstPersonOnly;
@@ -10,21 +12,36 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import javafx.collections.ObservableList;
 
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.CommandHistory;
 import seedu.address.logic.UndoRedoStack;
+import seedu.address.logic.commands.exceptions.CommandException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.ProfilePicture;
 import seedu.address.model.person.ReadOnlyPerson;
+import seedu.address.model.person.exceptions.DuplicatePersonException;
+import seedu.address.model.person.exceptions.PersonNotFoundException;
+import seedu.address.testutil.ModelStub;
 
+//@@author liliwei25
 public class ImageCommandTest {
-    public static final boolean REMOVE = true;
+    private static final boolean REMOVE = true;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
@@ -41,7 +58,7 @@ public class ImageCommandTest {
     }
 
     @Test
-    public void execute_validIndexFilterListRemoveSuccess() throws Exception {
+    public void execute_validIndexFilterListRemoveImage_success() throws Exception {
         ReadOnlyPerson person = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
         ImageCommand imageCommand = prepareCommand(INDEX_SECOND_PERSON, REMOVE);
 
@@ -49,10 +66,9 @@ public class ImageCommandTest {
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         ReadOnlyPerson personToEdit = expectedModel.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
-        Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
-                personToEdit.getAddress(), personToEdit.getRemark(), personToEdit.getBirthday(),
-                personToEdit.getTags(), new ProfilePicture(DEFAULT), personToEdit.getFavourite());
+        Person editedPerson = getDefaultPerson(personToEdit);
         expectedModel.updatePerson(personToEdit, editedPerson);
+
         assertCommandSuccess(imageCommand, model, expectedMessage, expectedModel);
     }
 
@@ -78,9 +94,30 @@ public class ImageCommandTest {
     }
 
     @Test
+    public void execute_duplicatePerson_failure() throws Exception {
+        ImageCommand imageCommand = prepareCommandForDuplicateException(INDEX_FIRST_PERSON, REMOVE);
+
+        thrown.expect(CommandException.class);
+        thrown.expectMessage(MESSAGE_DUPLICATE_PERSON);
+
+        imageCommand.execute();
+    }
+
+    @Test
+    public void execute_missingPerson_failure() throws Exception {
+        ImageCommand imageCommand = prepareCommandForNotFoundException(INDEX_FIRST_PERSON);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage(MESSAGE_MISSING_PERSON);
+
+        imageCommand.execute();
+    }
+
+    @Test
     public void equals() {
         ImageCommand imageFirstCommand = new ImageCommand(INDEX_FIRST_PERSON, !REMOVE);
         ImageCommand imageSecondCommand = new ImageCommand(INDEX_SECOND_PERSON, !REMOVE);
+        ImageCommand imageFirstRemoveCommand = new ImageCommand(INDEX_FIRST_PERSON, REMOVE);
 
         // same object -> returns true
         assertTrue(imageFirstCommand.equals(imageFirstCommand));
@@ -90,21 +127,96 @@ public class ImageCommandTest {
         assertTrue(imageFirstCommand.equals(imageFirstCommandCopy));
 
         // different types -> returns false
-        assertFalse(imageFirstCommand.equals(1));
+        assertFalse(imageFirstCommand.equals(new ClearCommand()));
 
         // null -> returns false
         assertFalse(imageFirstCommand.equals(null));
 
         // different person -> returns false
         assertFalse(imageFirstCommand.equals(imageSecondCommand));
+
+        // different mode (remove/edit) -> returns false
+        assertFalse(imageFirstCommand.equals(imageFirstRemoveCommand));
     }
 
     /**
-     * Returns a {@code MapCommand} with the parameter {@code index}.
+     * Creates and returns new person with default picture
+     */
+    private Person getDefaultPerson(ReadOnlyPerson personToEdit) {
+        return new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
+                personToEdit.getAddress(), personToEdit.getRemark(), personToEdit.getBirthday(),
+                personToEdit.getTags(), new ProfilePicture(DEFAULT), personToEdit.getFavourite());
+    }
+
+    /**
+     * Returns a {@code ImageCommand} with the parameter {@code index} and {@code remove}.
      */
     private ImageCommand prepareCommand(Index index, boolean remove) {
         ImageCommand imageCommand = new ImageCommand(index, remove);
         imageCommand.setData(model, new CommandHistory(), new UndoRedoStack());
         return imageCommand;
+    }
+
+    /**
+     * Returns an {@code ImageCommand} with parameters {@code index} and {@code remove}
+     * to test {@code DuplicatePersonException}
+     */
+    private ImageCommand prepareCommandForDuplicateException(Index index, boolean remove) {
+        ImageCommand imageCommand = new ImageCommand(index, remove);
+        imageCommand.setData(new ModelStubThrowingDuplicatePersonException(), new CommandHistory(),
+                new UndoRedoStack());
+        return imageCommand;
+    }
+
+    /**
+     * Returns an {@code ImageCommand} with parameters {@code index} and {@code remove}
+     * to test {@code PersonNotFoundException}
+     */
+    private ImageCommand prepareCommandForNotFoundException(Index index) {
+        ImageCommand imageCommand = new ImageCommand(index, !REMOVE);
+        imageCommand.setData(new ModelStubThrowingPersonNotFoundException(), new CommandHistory(),
+                new UndoRedoStack());
+        return imageCommand;
+    }
+
+    /**
+     * A Model stub that always throw a DuplicatePersonException when trying to edit image.
+     */
+    private class ModelStubThrowingDuplicatePersonException extends ModelStub {
+        @Override
+        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
+            return model.getFilteredPersonList();
+        }
+
+        @Override
+        public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
+                throws DuplicatePersonException {
+            throw new DuplicatePersonException();
+        }
+
+        @Override
+        public ReadOnlyAddressBook getAddressBook() {
+            return new AddressBook();
+        }
+    }
+
+    /**
+     * A Model stub that always throw a {@code PersonNotFoundException} when trying to change image.
+     */
+    private class ModelStubThrowingPersonNotFoundException extends ModelStub {
+        @Override
+        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
+            return model.getFilteredPersonList();
+        }
+
+        @Override
+        public void changeImage(ReadOnlyPerson target) throws PersonNotFoundException {
+            throw new PersonNotFoundException();
+        }
+
+        @Override
+        public ReadOnlyAddressBook getAddressBook() {
+            return new AddressBook();
+        }
     }
 }

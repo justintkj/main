@@ -28,6 +28,7 @@ public class BirthdayPopup {
     private static final String CLOSE_BUTTON = "x";
     private static final String BIRTHDAY_MESSAGE = "There are birthdays today: \n";
     private static final int DELAY = 5000;
+
     private JDialog frame = new JDialog();
     private GridBagConstraints constraints = new GridBagConstraints();
 

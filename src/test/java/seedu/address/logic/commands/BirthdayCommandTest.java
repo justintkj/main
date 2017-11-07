@@ -2,7 +2,7 @@ package seedu.address.logic.commands;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
 import static seedu.address.commons.core.Messages.MESSAGE_DUPLICATE_PERSON;
 import static seedu.address.commons.core.Messages.MESSAGE_MISSING_PERSON;
 import static seedu.address.logic.commands.CommandTestUtil.BIRTHDAY_ALICE;
@@ -16,8 +16,6 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
-import java.util.function.Predicate;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,6 +24,7 @@ import javafx.collections.ObservableList;
 
 import seedu.address.commons.core.Messages;
 import seedu.address.commons.core.index.Index;
+import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.logic.CommandHistory;
 import seedu.address.logic.UndoRedoStack;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -39,7 +38,7 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.ReadOnlyPerson;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.model.person.exceptions.PersonNotFoundException;
-import seedu.address.model.tag.Tag;
+import seedu.address.testutil.ModelStub;
 
 //@@author liliwei25
 /**
@@ -58,14 +57,21 @@ public class BirthdayCommandTest {
         BirthdayCommand birthdayCommand = prepareCommand(INDEX_FIRST_PERSON, new Birthday(VALID_BIRTHDAY_AMY));
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
-                personToEdit.getAddress(), personToEdit.getRemark(), new Birthday(VALID_BIRTHDAY_AMY),
-                personToEdit.getTags(), personToEdit.getPicture(), personToEdit.getFavourite());
+        Person editedPerson = getEditedPerson(personToEdit);
         expectedModel.updatePerson(personToEdit, editedPerson);
 
         String expectedMessage = String.format(BirthdayCommand.MESSAGE_BIRTHDAY_PERSON_SUCCESS, editedPerson);
 
         assertCommandSuccess(birthdayCommand, model, expectedMessage, expectedModel);
+    }
+
+    /**
+     * Creates a new {@code Person} with a valid birthday
+     */
+    private Person getEditedPerson(ReadOnlyPerson personToEdit) throws IllegalValueException {
+        return new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
+                    personToEdit.getAddress(), personToEdit.getRemark(), new Birthday(VALID_BIRTHDAY_AMY),
+                    personToEdit.getTags(), personToEdit.getPicture(), personToEdit.getFavourite());
     }
 
     @Test
@@ -94,7 +100,7 @@ public class BirthdayCommandTest {
 
     @Test
     public void execute_duplicatePerson_failure() throws Exception {
-        BirthdayCommand birthdayCommand = prepareCommandForDuplicateException(Index.fromZeroBased(0), BIRTHDAY_ALICE);
+        BirthdayCommand birthdayCommand = prepareCommandForDuplicateException(INDEX_FIRST_PERSON, BIRTHDAY_ALICE);
 
         thrown.expect(CommandException.class);
         thrown.expectMessage(MESSAGE_DUPLICATE_PERSON);
@@ -104,7 +110,7 @@ public class BirthdayCommandTest {
 
     @Test
     public void execute_missingPerson_failure() throws Exception {
-        BirthdayCommand birthdayCommand = prepareCommandForNotFoundException(Index.fromZeroBased(0), BIRTHDAY_ALICE);
+        BirthdayCommand birthdayCommand = prepareCommandForNotFoundException(INDEX_FIRST_PERSON, BIRTHDAY_ALICE);
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage(MESSAGE_MISSING_PERSON);
@@ -168,77 +174,9 @@ public class BirthdayCommandTest {
     }
 
     /**
-     * A default model stub that have all of the methods failing.
-     */
-    private class ModelStub implements Model {
-        @Override
-        public void addPerson(ReadOnlyPerson person) throws DuplicatePersonException {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public void resetData(ReadOnlyAddressBook newData) {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public void updateListToShowAll() {
-            fail("Thi method should not be called.");
-        }
-
-        @Override
-        public ReadOnlyAddressBook getAddressBook() {
-            fail("This method should not be called.");
-            return null;
-        }
-
-        @Override
-        public void deletePerson(ReadOnlyPerson target) throws PersonNotFoundException {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public void sortPerson(String target) {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
-                throws DuplicatePersonException , PersonNotFoundException {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
-            fail("This method should not be called.");
-            return null;
-        }
-
-        @Override
-        public void updateFilteredPersonList(Predicate<ReadOnlyPerson> predicate) {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public void removeTag(Tag tag) {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public void mapPerson(ReadOnlyPerson target) {
-            fail("This method should not be called.");
-        }
-
-        @Override
-        public void changeImage(ReadOnlyPerson target) {
-            fail("This method should not be called.");
-        }
-    }
-
-    /**
      * A Model stub that always throw a DuplicatePersonException when trying to edit birthday.
      */
-    private class ModelStubThrowingDuplicatePersonException extends BirthdayCommandTest.ModelStub {
+    private class ModelStubThrowingDuplicatePersonException extends ModelStub {
         @Override
         public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
             return model.getFilteredPersonList();
@@ -257,9 +195,9 @@ public class BirthdayCommandTest {
     }
 
     /**
-     * A Model stub that always throw a DuplicatePersonException when trying to edit birthday.
+     * A Model stub that always throw a {@code PersonNotFoundException} when trying to update person.
      */
-    private class ModelStubThrowingPersonNotFoundException extends BirthdayCommandTest.ModelStub {
+    private class ModelStubThrowingPersonNotFoundException extends ModelStub {
         @Override
         public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
             return model.getFilteredPersonList();

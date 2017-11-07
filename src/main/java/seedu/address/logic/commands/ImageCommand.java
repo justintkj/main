@@ -127,6 +127,7 @@ public class ImageCommand extends UndoableCommand {
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof ImageCommand // instanceof handles nulls
-                && this.index.equals(((ImageCommand) other).index)); // state check
+                && this.index.equals(((ImageCommand) other).index)
+                && this.remove == (((ImageCommand) other).remove)); // state check
     }
 }

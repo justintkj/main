@@ -26,7 +26,7 @@ public class DeleteCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " 1 2 3";
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted Person(s): %1$s";
-    private static final String DELIMITER = ", ";
+    private static final String COMMA = ", ";
 
     public final Index[] targetIndex;
 
@@ -37,8 +37,8 @@ public class DeleteCommand extends UndoableCommand {
     //@@author liliwei25
     @Override
     public CommandResult executeUndoableCommand() throws CommandException {
-        StringJoiner deletedPersons = deleteAllSelectedPersonFromAddressBook();
-        return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, deletedPersons.toString()));
+        String deletedPersons = deleteAllSelectedPersonFromAddressBook();
+        return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, deletedPersons));
     }
 
     /**
@@ -47,8 +47,8 @@ public class DeleteCommand extends UndoableCommand {
      * @return A {@code StringJoiner} that includes all the names that were deleted
      * @throws CommandException when person selected is not found
      */
-    private StringJoiner deleteAllSelectedPersonFromAddressBook() throws CommandException {
-        StringJoiner joiner = new StringJoiner(DELIMITER);
+    private String deleteAllSelectedPersonFromAddressBook() throws CommandException {
+        StringJoiner joiner = new StringJoiner(COMMA);
         List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
         for (int i = targetIndex.length - 1; i >= 0; i--) {
             if (targetIndex[i].getZeroBased() >= lastShownList.size()) {
@@ -59,7 +59,7 @@ public class DeleteCommand extends UndoableCommand {
 
             deletePersonFromAddressBook(joiner, personToDelete);
         }
-        return joiner;
+        return joiner.toString();
     }
 
     /**
