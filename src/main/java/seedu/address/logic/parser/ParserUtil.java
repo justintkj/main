@@ -44,6 +44,7 @@ public class ParserUtil {
     public static final String SPACE_STRING = " ";
     public static final String COMMA_STRING = ",";
     public static final String COMMA_SPACE_STRING = ", ";
+    public static final String SPACE_COMMMA_STRING = " ,";
     public static final int INDEX_ZERO = 0;
 
     /**

@@ -8,10 +8,13 @@ import static seedu.address.logic.commands.CommandTestUtil.BIRTHDAY_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_ADDRESS_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_BLOCK_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_EMAIL_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_STREET_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.INVALID_TAG_DESC;
+import static seedu.address.logic.commands.CommandTestUtil.INVALID_UNIT_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
@@ -22,6 +25,7 @@ import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
+import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB_NO_COMMA;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_BIRTHDAY_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_BIRTHDAY_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_AMY;
@@ -34,8 +38,17 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_REMARK_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_REMARK_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
+import static seedu.address.logic.parser.AddCommandParser.BIRTHDAY_EXCEPTION_MESSAGE;
+import static seedu.address.logic.parser.AddCommandParser.BLOCK_EXCEPTION_MESSAGE;
+import static seedu.address.logic.parser.AddCommandParser.EMAIL_EXCEPTION_MESSAGE;
+import static seedu.address.logic.parser.AddCommandParser.NAME_EXCEPTION_MESSAGE;
+import static seedu.address.logic.parser.AddCommandParser.PHONE_EXCEPTION_MESSAGE;
+import static seedu.address.logic.parser.AddCommandParser.STREET_EXCEPTION_MESSAGE;
+import static seedu.address.logic.parser.AddCommandParser.UNIT_EXCEPTION_MESSAGE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.logic.parser.ParserUtil.COMMA_STRING;
+import static seedu.address.logic.parser.ParserUtil.SPACE_STRING;
 
 import org.junit.Test;
 
@@ -55,27 +68,31 @@ public class AddCommandParserTest {
     public void parse_allFieldsPresentAlternative_success() {
         Person expectedPerson = new PersonBuilder().withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
                 .withEmail(VALID_EMAIL_BOB).withAddress(VALID_ADDRESS_BOB).withRemark("")
-                .withTags().withBirthday("11-11-2010").build();
+                .withTags().withBirthday(VALID_BIRTHDAY_BOB).build();
+
         //Valid input format - Accepted
-        assertParseSuccess(parser, "Bob Choo, 22222222 Block 123 Bobby Street 3 #01-123 "
-                + "bob@example.com" + " 11-11-2010", new AddCommand(expectedPerson));
+        assertParseSuccess(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
+                + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING
+                + VALID_BIRTHDAY_BOB, new AddCommand(expectedPerson));
 
         //Multiple phone, 1st Phone accepted - Accepted
-        assertParseSuccess(parser, "Bob Choo, 22222222 33333333 Block 123 Bobby Street 3 #01-123 "
-                + "bob@example.com" + " 11-11-2010", new AddCommand(expectedPerson));
+        assertParseSuccess(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING +
+                VALID_PHONE_AMY + SPACE_STRING + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING
+                + VALID_BIRTHDAY_BOB, new AddCommand(expectedPerson));
 
         //Multiple Email, 1st Email accepted - Accepted
-        assertParseSuccess(parser, "Bob Choo, 22222222 Block 123 Bobby Street 3 #01-123 "
-                + "bob@example.com  pop@example.com" + " 11-11-2010", new AddCommand(expectedPerson));
+        assertParseSuccess(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
+                + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_EMAIL_AMY + SPACE_STRING
+                + VALID_BIRTHDAY_BOB, new AddCommand(expectedPerson));
 
         //Multiple Addresses, 1st Address accepted - Accepted
-        assertParseSuccess(parser, "Bob Choo, 22222222 Block 123 Bobby Street 3 #01-123 "
-                + "bob@example.com  Block 122 Poppy Street 88 #11-111" + " 11-11-2010", new AddCommand(expectedPerson));
-
+        assertParseSuccess(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
+                        + VALID_ADDRESS_BOB + SPACE_STRING + VALID_ADDRESS_AMY + SPACE_STRING + VALID_EMAIL_BOB
+                        + SPACE_STRING + VALID_BIRTHDAY_BOB, new AddCommand(expectedPerson));
         //Multiple Birthdays, 1st Birthday accepted - Accepted
-        assertParseSuccess(parser, "Bob Choo, 22222222 Block 123 Bobby Street 3 #01-123 "
-                + "bob@example.com " + " 11-11-2010" + " 12-12-2012", new AddCommand(expectedPerson));
-
+        assertParseSuccess(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
+                + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING
+                + VALID_BIRTHDAY_BOB + SPACE_STRING + VALID_BIRTHDAY_AMY, new AddCommand(expectedPerson));
     }
     //@@author
 
@@ -120,24 +137,36 @@ public class AddCommandParserTest {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
 
         // missing name field
-        assertParseFailure(parser, "22222222 Block 123 Bobby Street 3 #01-123 "
-                + "bob@example.com" + " 11-11-2010", "Missing Name!\n" + AddCommand.MESSAGE_USAGE_ALT);
+        assertParseFailure(parser, VALID_PHONE_BOB + SPACE_STRING + VALID_ADDRESS_BOB_NO_COMMA
+                + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB, NAME_EXCEPTION_MESSAGE);
+
         // missing phone field
-        assertParseFailure(parser, "JohnDoe, Block 123 Bobby Street 3 #01-123 "
-                + "bob@example.com" + " 11-11-2010", "Number should be 8 digits long!\n"
-                + AddCommand.MESSAGE_USAGE_ALT);
+        assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + VALID_ADDRESS_BOB + SPACE_STRING
+                + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB, PHONE_EXCEPTION_MESSAGE);
+
+        // missing email field
+        assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
+                + VALID_ADDRESS_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB, EMAIL_EXCEPTION_MESSAGE);
+
+        // missing BIRTHDAY field
+        assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
+                + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB, BIRTHDAY_EXCEPTION_MESSAGE);
+
+
         // missing Address/Block field
-        assertParseFailure(parser, "JohnDoe, 11111111 Bobby Street 3 #01-123 "
-                + "bob@example.com" + " 11-11-2010", "invalid address, Block Number. \nExample: Block 123"
-                + AddCommand.MESSAGE_USAGE_ALT);
+        assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + INVALID_BLOCK_ADDRESS_BOB + SPACE_STRING
+                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB
+                , BLOCK_EXCEPTION_MESSAGE);
+
         // missing Address/Street field
-        assertParseFailure(parser, "JohnDoe, 11111111 Block 123 #01-123 "
-                + "bob@example.com" + " 11-11-2010", "invalid address, Street. \nExample: Jurong Street 11"
-                + AddCommand.MESSAGE_USAGE_ALT);
+        assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + INVALID_STREET_ADDRESS_BOB + SPACE_STRING
+                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB
+                , STREET_EXCEPTION_MESSAGE);
+
         // missing Address/Unit field
-        assertParseFailure(parser, "JohnDoe, 11111111 Block 123 Bobby Street 3 "
-                + "bob@example.com" + " 11-11-2010", "invalid address, Unit. \n Example: #01-12B"
-                + AddCommand.MESSAGE_USAGE_ALT);
+        assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + INVALID_UNIT_ADDRESS_BOB + SPACE_STRING
+                + VALID_PHONE_BOB + SPACE_STRING + VALID_EMAIL_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB
+                , UNIT_EXCEPTION_MESSAGE);
     }
     //@@author
 

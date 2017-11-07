@@ -37,12 +37,16 @@ public class CommandTestUtil {
     public static final String VALID_EMAIL_BOB = "bob@example.com";
     public static final String VALID_ADDRESS_AMY = "Block 312, Amy Street 1";
     public static final String VALID_ADDRESS_BOB = "Block 123, Bobby Street 3, #01-123";
+    public static final String INVALID_BLOCK_ADDRESS_BOB = "Bobby Street 3 #01-123";
+    public static final String INVALID_STREET_ADDRESS_BOB = "Block 123 #01-123";
+    public static final String INVALID_UNIT_ADDRESS_BOB = "Block 123 Bobby Street 3";
+    public static final String VALID_ADDRESS_BOB_NO_COMMA = "Block 123 Bobby Street 3 #01-123";
     public static final String VALID_TAG_HUSBAND = "husband";
     public static final String VALID_TAG_FRIEND = "friends";
     public static final String VALID_REMARK_AMY = "handsome";
     public static final String VALID_REMARK_BOB = "Favourite pastime: Food";
     public static final String VALID_BIRTHDAY_AMY = "09-12-2013";
-    public static final String VALID_BIRTHDAY_BOB = "";
+    public static final String VALID_BIRTHDAY_BOB = "11-11-2011";
 
     public static final String NAME_DESC_AMY = " " + PREFIX_NAME + VALID_NAME_AMY;
     public static final String NAME_DESC_BOB = " " + PREFIX_NAME + VALID_NAME_BOB;

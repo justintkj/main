@@ -1,8 +1,10 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.commands.RedoCommand.INDEX_ONE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.logic.parser.EmailCommandParserTest.ALPHABET_INDEX;
 
 import org.junit.Test;
 
@@ -18,16 +20,17 @@ import seedu.address.logic.commands.RedoCommand;
  */
 public class RedoCommandParserTest {
 
+    public static final int NUMBER_ONE = 1;
     private RedoCommandParser parser = new RedoCommandParser();
 
     @Test
     public void parse_validArgs_returnsRedoCommand() {
-        assertParseSuccess(parser, "1", new RedoCommand(1));
+        assertParseSuccess(parser, INDEX_ONE, new RedoCommand(NUMBER_ONE));
     }
 
     @Test
     public void parse_invalidArgs_throwsParseException() {
-        assertParseFailure(parser, "a", String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+        assertParseFailure(parser, ALPHABET_INDEX, String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                 RedoCommand.MESSAGE_USAGE));
     }
 }

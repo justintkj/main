@@ -1,8 +1,10 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.commons.core.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.commands.RedoCommand.INDEX_ONE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.logic.parser.EmailCommandParserTest.ALPHABET_INDEX;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
 import org.junit.Test;
@@ -21,18 +23,18 @@ import seedu.address.model.person.Favourite;
  */
 public class FavouriteCommandParserTest {
 
-    public static final String FIRST_PERSON = "1";
+    public static final String FIRST_PERSON = INDEX_ONE;
     private FavouriteCommandParser parser = new FavouriteCommandParser();
 
     @Test
     public void parse_validArgs_returnsFavouriteCommand() throws IllegalValueException {
         assertParseSuccess(parser, FIRST_PERSON, new FavouriteCommand(INDEX_FIRST_PERSON,
-                new Favourite("true")));
+                new Favourite(Favourite.COLOR_SWITCH)));
     }
 
     @Test
     public void parse_invalidArgs_throwsParseException() {
-        assertParseFailure(parser, "a", String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+        assertParseFailure(parser, ALPHABET_INDEX, String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                 FavouriteCommand.MESSAGE_USAGE));
     }
 }
