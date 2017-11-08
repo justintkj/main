@@ -398,6 +398,10 @@ The user may choose to sort the persons by other parameters. The parameters incl
 
 If a command fails its execution, no sorting will be done and a parse Exception will be used to handle the format for incorrect Commands.
 
+A simple flow of Activity Diagram for how sort command operates is given:
+
+image::SortActivityDiagram.png[width="800"]
+
 ==== Design Considerations
 
 **Aspect:** Implementation of `SortCommand` +

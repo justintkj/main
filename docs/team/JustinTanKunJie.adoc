@@ -17,7 +17,7 @@ PocketBook is a desktop address book application targetted at Singaporeans. The 
 
 include::../UserGuide.adoc[tag=undoredo]
 
-	#End of Extract#
+#End of Extract#
 
 ---
 
@@ -44,7 +44,7 @@ UndoCommand : Repeats the command for the requested number of times.
 
 include::../UserGuide.adoc[tag=sort]
 
-	#End of Extract#
+#End of Extract#
 
 ---
 
