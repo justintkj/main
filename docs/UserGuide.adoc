@@ -186,7 +186,7 @@ Selects the 1st person in the results of the `find` command.
 `s 1` +
 Selects the 1st person in the results of the `find` command.
 
-// tag::undoredo[]
+// tag::sort[]
 === Sort all persons : `sort`
 
 Sort all the persons according to their names in alphabetical order. +
@@ -215,10 +215,12 @@ Sorts all the persons by birthday in alphabetical order.
 * `sort favourite` +
 Sorts all the persons by favourite in alphabetical order.
 // end::sort[]
+
+// tag::favourite[]
 === Favourite : `favourite`
 
 Favourite a person selected by index by highlighting their name in a red box. +
-Format: `sort INDEX`
+Format: `favourite INDEX`
 ****
 * Favourite a selected person by given index
 * The index refers to the index number shown in the most recent listing.
@@ -231,6 +233,7 @@ Examples:
 Favourite the person with index 1 in list.
 * `favourite 2` +
 Favourite the person with index 2 in list.
+// end::favourite[]
 
 === Emailing a person: `email`
 
