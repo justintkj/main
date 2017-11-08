@@ -63,6 +63,37 @@ The sort should be automatically updated in storage as it is inefficient for use
 include::../DeveloperGuide.adoc[tag=sort]
 
 #End of Extract#
+
+---
+
+=== Enhancement Added: Favourite
+
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=favourite]
+
+#End of Extract#
+
+---
+
+==== Justification
+
+When the contacts list increases, finding a person important to the user may be tough. +
+Favourite hightlights a person name with a red box to highlight importance of the person, becoming prominent when scrolling through the list. +
+A sort can be made to filter all the favourite persons to the top of the list, easier to find important persons.
+
+==== Implementation
+
+---
+FavouriteCommandParser : Parses the valid argument (positive and valid indexes)
+Favourite Command : Highlights the person chosen via model class to interact with the correct person. 
+Person : Contains a Favourite class as it's parameter. + 
+Favourite : Contains two different state, to highlight or not to highlight.
+PersonCard : Updates highlight color for person.
+
 ---
 
 === Enhancement Proposed: Add command `remark`
