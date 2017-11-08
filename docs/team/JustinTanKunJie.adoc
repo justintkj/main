@@ -1,0 +1,79 @@
+= Justin - Project Portfolio
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+:imagesDir: ../images
+:stylesDir: ../stylesheets
+
+== Project: PocketBook
+PocketBook is a desktop address book application targetted at Singaporeans. The user interacts with it using a CLI, and it has a GUI created with JavaFX. It is written in Java, and has about 10 kLoC.
+
+*Code contributed*: [https://github.com/justintkj/main/blob/master/collated/main/justintkj.md[Functional code]] [https://github.com/justintkj/main/blob/master/collated/test/justintkj.md[Test code]]
+
+=== Enhancement Added: Multiple Undo/Redo
+
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=undoredo]
+
+	#End of Extract#
+
+---
+
+==== Justification
+
+When a large chunk of commands needs to be redone, it is inconvienent and inefficient to have to type the `undo` command. +
+With an attached positive integer chosen by the user, user can redo alot of commands instantly with just one line of command. +
+Original implementation of `undo` command is kept as it would be more inituitive for the user to not have to type the number of undos if only one is expected.
+
+==== Implementation
+
+---
+UndoCommandParser : Accepts one more (optional) postive integer after the command `undo`. +
+UndoCommand : Repeats the command for the requested number of times.
+
+---
+
+=== Enhancement Added: Sort
+
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=sort]
+
+	#End of Extract#
+
+---
+
+==== Justification
+
+When the contacts list increases, the list of persons stored may be unorganized. +
+Sorting is made possible for various type of parameters of users depending on the type of organization needed. +
+The sort should be automatically updated in storage as it is inefficient for users who want a specified sort to need to type the same command everytime the application starts.
+
+
+==== Implementation
+
+---
+#Start of Extract [from: Developer Guide]#
+
+include::../DeveloperGuide.adoc[tag=sort]
+
+#End of Extract#
+---
+
+=== Enhancement Proposed: Add command `remark`
+
+{Explain similar to the Undo/Redo feature above.}
+
+=== Other contributions
+
+* Updated the GUI color scheme (Pull requests https://github.com[#33], https://github.com[#34])
+* Wrote additional tests to increase coverage from 88% to 92% (Pull requests https://github.com[#36], https://github.com[#38])
+
+== Project: PowerPointLabs
+
+{Optionally (not graded), you may include other projects in your portfolio.}

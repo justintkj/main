@@ -394,7 +394,7 @@ The following sequence diagram shows how the sort operation works:
 image::SortSequenceDiagram.png[width="800"]
 
 [NOTE]
-The user may choose to sort the persons by other parameters. The parameters includes : name, number, address, email, remark, birthday.
+The user may choose to sort the persons by other parameters. The parameters includes : name, number, address, email, remark, birthday, favourite.
 
 If a command fails its execution, no sorting will be done and a parse Exception will be used to handle the format for incorrect Commands.
 
@@ -417,6 +417,8 @@ If a command fails its execution, no sorting will be done and a parse Exception 
 **Alternative 2:** Individual Comparator for person object based on sorting parameter. +
 *Pros:** Sort the persons based on comparator, more free play to the comparisons in sorting. +
 **Cons:** Less efficient as more context switch is needed, resulting in higher overhead time.
+
+// end::sort[]
 
 // tag::BirthdayNotifier[]
 === Birthday and Birthday Notifier mechanism

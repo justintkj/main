@@ -186,14 +186,16 @@ Selects the 1st person in the results of the `find` command.
 `s 1` +
 Selects the 1st person in the results of the `find` command.
 
+// tag::undoredo[]
 === Sort all persons : `sort`
 
 Sort all the persons according to their names in alphabetical order. +
-Format: `sort ARG`
+Format: `sort ARGUMENT`
 ****
 * Sorts the storage list of all persons in ascending order
-* Valid Arguments are: 'name', 'number', 'address', 'email', 'remark', 'birthday'.
-* CamelCase arguments are allowed 'NamE', 'NuMbEr', 'AddResS, 'EmAIL', 'REMARK', 'BiRtHDAY'
+* Sorting is permanent, will be updated into storage.
+* Valid Arguments are: 'name', 'number', 'address', 'email', 'remark', 'birthday', favourite.
+* CamelCase arguments are allowed 'NamE', 'NuMbEr', 'AddResS, 'EmAIL', 'REMARK', 'BiRtHDAY', 'FavouRITE'
 ****
 
 Examples:
@@ -210,7 +212,9 @@ Sorts all the persons by email in alphabetical order.
 Sorts all the persons by remark in alphabetical order.
 * `sort birthday` +
 Sorts all the persons by birthday in alphabetical order.
-
+* `sort favourite` +
+Sorts all the persons by favourite in alphabetical order.
+// end::sort[]
 === Favourite : `favourite`
 
 Favourite a person selected by index by highlighting their name in a red box. +
@@ -358,7 +362,7 @@ Pressing the kbd:[&uarr;] and kbd:[&darr;] arrows will display the previous and 
 
 Restores the address book to the state before the previous _undoable_ command was executed. +
 Format: `undo`
-	`undo NUMBER`
+	`undo (NUMBER)`
 	`u`
 [NOTE]
 ====
@@ -382,7 +386,7 @@ The `undo` command fails as there are no undoable commands executed previously.
 
 * `delete 1` +
 `clear` +
-`undo` (reverses the `clear` command) +
+`undo 1` (reverses the `clear` command) +
 `u` (reverses the `delete 1` command) +
 
 === Redoing the previously undone command : `redo`
@@ -458,8 +462,8 @@ Error beep sound will be played from ErrorSound.mp3 file every time an invalid c
 
 * *Add* `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]...` +
 e.g. `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
-* *Add* `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL` +
-e.g. `add Jason, Block 11 Jurong Street 88 #01-11 22224444 jassie@example.com `
+* *Add* `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL BIRTHDAY` +
+e.g. `add Jason, Block 11 Jurong Street 88 #01-11 22224444 jassie@example.com 12-09-1994`
 * *Clear* : `clear`
 * *Delete* : `delete INDEX` +
 e.g. `delete 3`
@@ -483,5 +487,5 @@ e.g. `Undo 2`
 e.g. `Redo 2`
 * *Remark* : `remark INDEX, r/MESSAGE`
 e.g. `Remark 2, r/remark`
-* *Sort* `sort name` + `sort number` + `sort address` + `sort email` + `sort remark` + `sort birthday`
+* *Sort* `sort name` + `sort number` + `sort address` + `sort email` + `sort remark` + `sort birthday` + `sort favourite`
 

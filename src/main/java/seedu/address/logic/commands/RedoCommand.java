@@ -30,6 +30,7 @@ public class RedoCommand extends Command {
     public static final String EMPTY_STACK_ERROR_MESSAGE = "No more commands to redo!";
     public static final int INDEX_ZERO = 0;
     public static final String INDEX_ONE = "1";
+    public static final int EMPTY_STACK = 0;
 
     private int numRedo;
     //@@author justintkj
@@ -84,7 +85,7 @@ public class RedoCommand extends Command {
      * @throws CommandException if current stack size is zero
      */
     private void checksStackNotEmpty() throws CommandException {
-        if (undoRedoStack.getRedoStackSize() == 0) {
+        if (undoRedoStack.getRedoStackSize() == EMPTY_STACK) {
             throw new CommandException(EMPTY_STACK_ERROR_MESSAGE);
         }
     }

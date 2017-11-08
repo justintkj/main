@@ -30,6 +30,7 @@ public class UndoCommand extends Command {
     public static final String MESSAGE_TOO_MANY_UNDO = "Maximum undo size: ";
 
     public static final int INDEX_ZERO = 0;
+    public static final int EMPTY_STACK = 0;
 
     private int numUndo;
     //@@author justintkj
@@ -83,7 +84,7 @@ public class UndoCommand extends Command {
      * @throws CommandException if current stack size is zero
      */
     private void checkStackNotEmpty() throws CommandException {
-        if (undoRedoStack.getUndoStackSize() == 0) {
+        if (undoRedoStack.getUndoStackSize() == EMPTY_STACK) {
             throw new CommandException(MESSAGE_EMPTYSTACK);
         }
     }

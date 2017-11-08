@@ -19,6 +19,7 @@ public class SortCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " address"
             + "Example: " + COMMAND_WORD + " remark"
             + "Example: " + COMMAND_WORD + " email"
+            + "Example: " + COMMAND_WORD + " favourite"
             + "Example: " + COMMAND_WORD + " birthday";
 
 
