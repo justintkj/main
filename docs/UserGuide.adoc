@@ -455,14 +455,26 @@ and press `Exit`.
 Address book data are saved in the hard disk automatically after any command that changes the data. +
 There is no need to save manually.
 
-=== Saving the AutoComplete Box
+// tag::autocomplete[]
 
-Autocomplete data are saved in the hard disk automatically after any valid new command that user uses. +
+=== AutoComplete
+
+A drop-down list of valid input prompts are filtered as when user types a command.
+Users can navigate between the filtered command with the 
+All valid commands will be saved and updated in the storage, expanding the list of recommended inputs for the user.
+Autocomplete data are saved in the XML automatically after any valid new command that user uses. +
 There is no need to save manually. A new empty Autcomplete.xml file will be created if deleted.
+
+// end::autocomplete[]
+
+// tag::errorsound[]
 
 === Error Sound from invalid command
 
 Error beep sound will be played from ErrorSound.mp3 file every time an invalid command is entered by the user.
+Sound will be played whenever an invalid command triggers ParseException or CommandException
+
+// end::errorsound[]
 
 == FAQ
 

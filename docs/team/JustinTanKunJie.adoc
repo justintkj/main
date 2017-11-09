@@ -89,10 +89,67 @@ A sort can be made to filter all the favourite persons to the top of the list, e
 
 ---
 FavouriteCommandParser : Parses the valid argument (positive and valid indexes)
-Favourite Command : Highlights the person chosen via model class to interact with the correct person. 
-Person : Contains a Favourite class as it's parameter. + 
+Favourite Command : Highlights the person chosen via model class to interact with the correct person.
+Person : Contains a Favourite class as it's parameter. +
 Favourite : Contains two different state, to highlight or not to highlight.
 PersonCard : Updates highlight color for person.
+
+---
+
+=== Enhancement Added: Error Sound for invalid command
+
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=errorsound]
+
+#End of Extract#
+
+---
+
+==== Justification
+
+It is important to notify the user whenever an invalid command is given into the application. While the commandBox shows the type of error the user made,
+it is essential to prompt the user with a sound to notify an error, following which, then reads the commandBox for type of error.
+ErrorSound is called from ParseException and CommandException as a user's input which is rejected by the application would have to handle and error of these two types.
+
+==== Implementation
+
+---
+ErrorSound : Creates a mediaplayer and play the sound file chosen.
+ParseException : Calls invalidCommandSound() in Sound.
+CommandException : Calls invalidCommandSound() in Sound.
+
+---
+
+=== Enhancement Added: Autocomplete 
+
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=autocomplete]
+
+#End of Extract#
+
+---
+
+==== Justification
+
+It reduces the amout of time needed to type a specified command and acts as a quick reference to a list of vaid command. 
+When the user types a command in the CLI, recommended valid commmands are shown as a drop-down list for the user to choose.
+User can choose from the list of valid command via the kbd:[Down Arrow] or kbd:[Up Arrow] and select via kbd:[Enter].
+Valid commands needs to be saved and increase the drop down list to provide more relevant commands for the user progressively.
+When XML file is deleted, a new XML file will be created, populated with a standard list of commands.
+
+==== Implementation
+
+---
+CommandBox : Binds textfield with the CLI UI.
+XMLAutocomplete : Updates the list when given valid command and to store the list in an XML file. A new XML file will be created with a sample list of basic inputs if XML file is deleted.
 
 ---
 
