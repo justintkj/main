@@ -17,7 +17,6 @@ public class PersonCard extends UiPart<Region> {
     public static final String RED_COLOUR = "-fx-background-color : #ff0000";
     public static final String NO_COLOUR = "-fx-background-color : transparent";
     public static final String FALSE_STRING = "false";
-    
     private static final String FXML = "PersonListCard.fxml";
     /**
      * Note: Certain keywords such as "location" and "resources" are reserved keywords in JavaFX.
