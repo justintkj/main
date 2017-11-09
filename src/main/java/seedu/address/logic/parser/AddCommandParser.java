@@ -49,8 +49,7 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final int SIZE_2 = 2;
     public static final String EMAIL_REGEX = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+";
     public static final String EMAIL_EXCEPTION_MESSAGE = "invalid email\n Example: Jason@example.com";
-    public static final String BLOCK_REGEX_ONE = "blk \\d{1,3}";
-    public static final String BLOCK_REGEX_2 = "block \\d{1,3}";
+    public static final String BLOCK_REGEX = "block \\d{1,3}";
     public static final String BLOCK_EXCEPTION_MESSAGE = "invalid address, Block Number. \nExample: Block 123"
             + AddCommand.MESSAGE_USAGE_ALT;
     public static final String STREET_REGEX = "[a-zA-z]+ street \\d{1,2}";
@@ -60,17 +59,11 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String UNIT_EXCEPTION_MESSAGE = "invalid address, Unit. \n Example: #01-12B"
             + AddCommand.MESSAGE_USAGE_ALT;
     public static final String POSTAL_REGEX = "singapore \\d{6,6}";
-    public static final String PHONE_REGEX_ONE = "\\ {1,1}\\d{8}\\ {1,1}";
-    public static final String PHONE_REGEX_TWO = "\\,{1,1}\\d{8}\\,{1,1}";
-    public static final String PHONE_REGEX_THREE = "\\ {1,1}\\d{8}\\,{1,1}";
-    public static final String PHONE_REGEX_FOUR = "\\,{1,1}\\d{8}\\ {1,1}";
-    public static final String PHONE_REGEX_FIVE = "\\ {1,1}\\d{8}$";
-    public static final String PHONE_REGEX_SIX = "\\,{1,1}\\d{8}$";
-    public static final String PHONE_REGEX_SEVEN = "^\\d{8}\\ {1,1}";
-    public static final String PHONE_REGEX_EIGHT = "^\\d{8}\\,{1,1}";
+    public static final String PHONE_REGEX = "\\d{8}";
     public static final String PHONE_EXCEPTION_MESSAGE = "Number should be 8 digits long!\n"
             + AddCommand.MESSAGE_USAGE_ALT;
     public static final String BIRTHDAY_REGEX = "\\d{1,2}-\\d{1,2}-\\d{4,4}";
+
     public static final String BIRTHDAY_EXCEPTION_MESSAGE = "invalid birthday,\n Example: 12-09-1994";
     public static final String NAME_EXCEPTION_MESSAGE = "Missing Name!\n" + AddCommand.MESSAGE_USAGE_ALT;
     public static final String FALSE = "false";
@@ -79,14 +72,25 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String PREFIX_METHOD_LOG_MESSAGE = "Adding a person using prefix method";
 
     private static final Logger logger = LogsCenter.getLogger(AddCommandParser.class);
+    public static final String SPACE_REGEX = "\\ {1,1}";
+    public static final String COMMA_REGEX = "\\,{1,1}";
+    public static final String START_REGEX = "^";
+    public static final String END_REGEX = "$";
+    public static final int INDEX_ONE = 1;
+    public static final int INDEX_TWO = 2;
+    public static final int INDEX_THREE = 3;
+    public static final int INDEX_FOUR = 4;
+    public static final int INDEX_FIVE = 5;
+    public static final int INDEX_SIX = 6;
+    public static final int INDEX_SEVEN = 7;
+    public static final int INDEX_EIGHT = 8;
     private static Level currentLogLevel = Level.INFO;
     private String[] emailPatterns = {EMAIL_REGEX};
-    private String[] blockPatterns = {BLOCK_REGEX_ONE, BLOCK_REGEX_2};
+    private String[] blockPatterns = {BLOCK_REGEX};
     private String[] streetPatterns = {STREET_REGEX};
     private String[] unitPatterns = {UNIT_REGEX};
     private String[] postalPatterns = {POSTAL_REGEX};
-    private String[] phonePatterns = {PHONE_REGEX_ONE, PHONE_REGEX_TWO, PHONE_REGEX_THREE, PHONE_REGEX_FOUR,
-        PHONE_REGEX_FIVE, PHONE_REGEX_SIX, PHONE_REGEX_SEVEN, PHONE_REGEX_EIGHT};
+    private String[] phonePatterns = {PHONE_REGEX};
     private String[] birthdayPatterns = {BIRTHDAY_REGEX};
     /**
      * Parses the given {@code String} of arguments in the context of the AddCommand
@@ -166,9 +170,10 @@ public class AddCommandParser implements Parser<AddCommand> {
     private Address generatesAddress(String blocknum, String streetnum, String unitnum, String postalnum)
             throws IllegalValueException {
         Address address;
+
         if (postalnum != EMPTY_STRING) {
             address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING
-                    + unitnum + COMMA_SPACE_STRING + postalnum);
+                + unitnum + COMMA_SPACE_STRING + postalnum);
         } else {
             address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING + unitnum + postalnum);
         }
@@ -184,8 +189,10 @@ public class AddCommandParser implements Parser<AddCommand> {
      */
     private Birthday validateBirthdayNotFuture(String args) throws IllegalValueException {
         Birthday birthday;
-        String unprocessedBirthday = getOutputFromString(args, birthdayPatterns, BIRTHDAY_EXCEPTION_MESSAGE);
-        if (Birthday.isValidBirthday(unprocessedBirthday)) {
+        String unprocessedBirthday = getOutputFromString(args, birthdayPatterns, EMPTY_STRING);
+        if (unprocessedBirthday.equals(EMPTY_STRING)) {
+            return new Birthday (EMPTY_STRING);
+        } else if (Birthday.isValidBirthday(unprocessedBirthday)) {
             birthday = new Birthday(unprocessedBirthday);
         } else {
             throw new IllegalValueException(BIRTHDAY_EXCEPTION_MESSAGE);
@@ -204,20 +211,43 @@ public class AddCommandParser implements Parser<AddCommand> {
      */
     private String getOutputFromString(String args, String[] patterns, String exceptionMessage)
             throws IllegalValueException {
+
         Matcher matcher = null;
         boolean isMatchFound = false;
         boolean isAnyMatchFound = false;
         ArrayList<String> listOfValidOutput = new ArrayList<String>();
-        for (int i = INDEX_ZERO; i < patterns.length; i++) {
-            Pattern pattern = Pattern.compile(patterns[i], Pattern.CASE_INSENSITIVE);
+        String[] constraintpatterns = constraintPatterns(patterns[INDEX_ZERO]);
+
+        for (int i = INDEX_ZERO; i < constraintpatterns.length; i++) {
+            Pattern pattern = Pattern.compile(constraintpatterns[i], Pattern.CASE_INSENSITIVE);
             matcher = pattern.matcher(args);
             isMatchFound = matcher.find();
             if (isMatchFound) {
                 isAnyMatchFound = true;
-                listOfValidOutput.add(matcher.group(INDEX_ZERO));
+                listOfValidOutput.add(matcher.group(INDEX_ZERO).trim());
             }
         }
         return processOptionalFields(args, exceptionMessage, listOfValidOutput, isAnyMatchFound);
+    }
+
+    /**
+     * Creates the constaint for regex to accept space/comma in front and behind
+     *
+     * @param pattern Regex to process
+     * @return Array string of constainted different regex
+     */
+    private String[] constraintPatterns(String pattern) {
+        String contraintpattern = pattern;
+        String[] constraintpatterns = new String[INDEX_EIGHT];
+        constraintpatterns[INDEX_ZERO] = SPACE_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_ONE] = COMMA_REGEX + contraintpattern + COMMA_REGEX;
+        constraintpatterns[INDEX_TWO] = SPACE_REGEX + contraintpattern + COMMA_REGEX;
+        constraintpatterns[INDEX_THREE] = COMMA_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_FOUR] = START_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_FIVE] = START_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_SIX] = SPACE_REGEX + contraintpattern + END_REGEX;
+        constraintpatterns[INDEX_SEVEN] = COMMA_REGEX + contraintpattern + END_REGEX;
+        return constraintpatterns;
     }
 
     /**
@@ -225,7 +255,7 @@ public class AddCommandParser implements Parser<AddCommand> {
      *
      * @param args The input message from user
      * @param exceptionMessage Exception message if match is not found and is not empty
-     * @param listOfValidOuput Stores processedfield if match found
+     * @param listOfValidOuput Stores processed field if match found
      * @param matchFound Valids if match is found
      * @return processed field
      * @throws IllegalValueException not a valid processable input
@@ -245,7 +275,8 @@ public class AddCommandParser implements Parser<AddCommand> {
     }
 
     /**
-     * Generates the value that fits the regex according to left most output
+     * Generates the value that fits the regex according to left most output, without comma
+     *
      * @param args input given by user
      * @param listOfValidOuput all the output that fits the regexs
      * @return The leftmost valid output
@@ -259,7 +290,7 @@ public class AddCommandParser implements Parser<AddCommand> {
                 leftMostOutput = listOfValidOuput.get(i);
             }
         }
-        return leftMostOutput;
+        return leftMostOutput.replaceAll(COMMA_STRING, EMPTY_STRING);
     }
 
     /**

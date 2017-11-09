@@ -148,9 +148,6 @@ public class AddCommandParserTest {
         assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
                 + VALID_ADDRESS_BOB + SPACE_STRING + VALID_BIRTHDAY_BOB, EMAIL_EXCEPTION_MESSAGE);
 
-        // missing BIRTHDAY field
-        assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + VALID_PHONE_BOB + SPACE_STRING
-                + VALID_ADDRESS_BOB + SPACE_STRING + VALID_EMAIL_BOB, BIRTHDAY_EXCEPTION_MESSAGE);
 
         // missing Address/Block field
         assertParseFailure(parser, VALID_NAME_BOB + COMMA_STRING + INVALID_BLOCK_ADDRESS_BOB + SPACE_STRING
