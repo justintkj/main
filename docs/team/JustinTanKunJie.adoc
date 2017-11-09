@@ -31,10 +31,11 @@ Vice versa, multiple `redo` is made to undo multiple number of undo.
 ==== Implementation
 
 ---
-UndoCommandParser : Accepts one more (optional) postive integer after the command `undo`. +
-UndoCommand : Repeats the command for the requested number of times. +
-UndoCommandParser : Accepts one more (optional) postive integer after the command `redo`. +
-UndoCommand : Repeats the command for the requested number of times.
+#Start of Extract [from: Developer Guide]#
+
+include::../DeveloperGuide.adoc[tag=multipleundoredo]
+
+#End of Extract#
 ---
 
 === Enhancement Added: `Sort`

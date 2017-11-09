@@ -38,7 +38,6 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_REMARK_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_REMARK_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
-import static seedu.address.logic.parser.AddCommandParser.BIRTHDAY_EXCEPTION_MESSAGE;
 import static seedu.address.logic.parser.AddCommandParser.BLOCK_EXCEPTION_MESSAGE;
 import static seedu.address.logic.parser.AddCommandParser.EMAIL_EXCEPTION_MESSAGE;
 import static seedu.address.logic.parser.AddCommandParser.NAME_EXCEPTION_MESSAGE;

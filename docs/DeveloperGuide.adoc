@@ -344,14 +344,27 @@ image::UndoRedoActivityDiagram.png[width="200"]
 **Pros:** We do not need to maintain a separate stack, and just reuse what is already in the codebase. +
 **Cons:** Requires dealing with commands that have already been undone: We must remember to skip these commands. Violates Single Responsibility Principle and Separation of Concerns as `HistoryManager` now needs to do two different things. +
 // end::undoredo[]
-// tag::sort[]
-=== sort mechanism
+
+// tag::multipleundoredo[]
+==== Multiple undo/redo mechanism
+UndoCommandParser : Accepts one more (optional) postive integer after the command `undo`. +
+UndoCommand : Repeats the command for the requested number of times. +
+UndoCommandParser : Accepts one more (optional) postive integer after the command `redo`. +
+UndoCommand : Repeats the command for the requested number of times.
+
 ==== Design Considerations
+
+**Aspect:** Implementation of `Multiple Undo Command` and `Multiple Redo Command` +
+**Alternative 1 (current choice):*undo/redo single undo/redo for chosen number of times one at a time*  +
+**Pros:** We will not lose any undone/redone functionality it is reusing the functionality of the original + undo/redo command
+
+---
 // end::undoredo[]
+
 // tag::sort[]
 === sort mechanism
 
-The sort mechanism is operates from sorting the 'internalList' in 'UniquePersonList' which resides in the model componet. Sort supports reformatting the current list of person according to the user's chosen details in ascending order. Such commands will inherit from `Command`.
+The sort mechanism operates from sorting the 'internalList' in 'UniquePersonList' which resides in the model componet. Sort supports reformatting the current list of person according to the user's chosen details in ascending order. Such commands will inherit from `Command`.
 
 With the help of sortCommandParser, the user's sorting type preference will be extracted from the CLI and passed into sortCommand.Invalid sorting type or command will not be sorted, and parseException will be generated:
 
@@ -426,7 +439,18 @@ image::SortActivityDiagram.png[width="300"]
 **Cons:** Less efficient as more context switch is needed, resulting in higher overhead time.
 
 // end::sort[]
+// tag::favourite[]
+=== Favourite mechanism
+The favourite command toggles the favourite variable in the person to toggle a change in the highlight of color around
+the person's name
 
+FavouriteCommandParser : Parses the valid argument (positive and valid indexes) +
+Favourite Command : Highlights the person chosen via model class to interact with the correct person. +
+Person : Contains a Favourite class as it's parameter. +
+Favourite : Contains two different state, to highlight or not to highlight. +
+PersonCard : Updates highlight color for person.
+
+// end::favourite[]
 // tag::BirthdayNotifier[]
 === Birthday and Birthday Notifier mechanism
 
