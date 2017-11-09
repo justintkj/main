@@ -1,4 +1,4 @@
-= Justin - Project Portfolio
+= Justin Tan Kun Jie - Project Portfolio
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 :imagesDir: ../images
 :stylesDir: ../stylesheets
