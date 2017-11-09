@@ -25,14 +25,16 @@ include::../UserGuide.adoc[tag=undoredo]
 
 When a large chunk of commands needs to be redone, it is inconvienent and inefficient to have to type the `undo` command. +
 With an attached positive integer chosen by the user, user can redo alot of commands instantly with just one line of command. +
-Original implementation of `undo` command is kept as it would be more inituitive for the user to not have to type the number of undos if only one is expected.
+Original implementation of `undo` command is kept as it would be more inituitive for the user to not have to type the number of undos if only one is expected. +
+Vice versa, multiple `redo` is made to undo multiple number of undo.
 
 ==== Implementation
 
 ---
 UndoCommandParser : Accepts one more (optional) postive integer after the command `undo`. +
+UndoCommand : Repeats the command for the requested number of times. +
+UndoCommandParser : Accepts one more (optional) postive integer after the command `redo`. +
 UndoCommand : Repeats the command for the requested number of times.
-
 ---
 
 === Enhancement Added: Sort
