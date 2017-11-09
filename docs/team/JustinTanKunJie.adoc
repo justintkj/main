@@ -8,7 +8,7 @@ PocketBook is a desktop address book application targetted at Singaporeans. The 
 
 *Code contributed*: [https://github.com/justintkj/main/blob/master/collated/main/justintkj.md[Functional code]] [https://github.com/justintkj/main/blob/master/collated/test/justintkj.md[Test code]]
 
-=== Enhancement Added: Multiple Undo/Redo
+=== Enhancement Added: `Multiple Undo/Redo`
 
 ==== External behavior
 
@@ -37,7 +37,7 @@ UndoCommandParser : Accepts one more (optional) postive integer after the comman
 UndoCommand : Repeats the command for the requested number of times.
 ---
 
-=== Enhancement Added: Sort
+=== Enhancement Added: `Sort`
 
 ==== External behavior
 
@@ -68,7 +68,7 @@ include::../DeveloperGuide.adoc[tag=sort]
 
 ---
 
-=== Enhancement Added: Favourite
+=== Enhancement Added: `Favourite`
 
 ==== External behavior
 
@@ -98,7 +98,7 @@ PersonCard : Updates highlight color for person.
 
 ---
 
-=== Enhancement Added: Error Sound for invalid command
+=== Enhancement Added: `Error Sound for invalid command`
 
 ==== External behavior
 
@@ -127,7 +127,7 @@ CommandException : Calls invalidCommandSound() in Sound.
 
 ---
 
-=== Enhancement Added: Autocomplete 
+=== Enhancement Added: `Autocomplete` 
 
 ==== External behavior
 
@@ -156,7 +156,7 @@ XMLAutocomplete : Updates the list when given valid command and to store the lis
 
 ---
 
-=== Enhancement Added: Email
+=== Enhancement Added: `Email`
 
 ==== External behavior
 
@@ -182,7 +182,7 @@ EmailCommand : Sends an Email to the email of the person selected.
 
 ---
 
-=== Enhancement Added: Add (Alternative method)
+=== Enhancement Added: `Add (Alternative method)`
 
 ==== External behavior
 
@@ -219,7 +219,7 @@ If multiple input for the same field is given, the leftmost input will be chosen
 
 ---
 
-=== Enhancement Added: Remark (Logic)
+=== Enhancement Added: `Remark (Logic)`
 
 ==== External behavior
 
@@ -275,7 +275,7 @@ ImportCommand : Extract all contacts from the user's social media account and up
 
 * Added a command alias for addCommand.
 * Designed PocketBook logo.
-* Highlighted bugs using issue with team TunedIn (Pull requests https://github.com/CS2103AUG2017-T14-B2/main/issues/100[#100], https://github.com/CS2103AUG2017-T14-B2/main/issues/101[#101], https://github.com/CS2103AUG2017-T14-B2/main/issues/110[#110], https://github.com/CS2103AUG2017-T14-B2/main/issues/112[#112], https://github.com/CS2103AUG2017-T14-B2/main/issues/102[#102], https://github.com/CS2103AUG2017-T14-B2/main/issues/107[#107])
+* Highlighted bugs using issue with team `TunedIn` (Pull requests https://github.com/CS2103AUG2017-T14-B2/main/issues/100[#100], https://github.com/CS2103AUG2017-T14-B2/main/issues/101[#101], https://github.com/CS2103AUG2017-T14-B2/main/issues/110[#110], https://github.com/CS2103AUG2017-T14-B2/main/issues/112[#112], https://github.com/CS2103AUG2017-T14-B2/main/issues/102[#102], https://github.com/CS2103AUG2017-T14-B2/main/issues/107[#107])
 * Offered features for reuse. Error Sound for invalid commands https://github.com/nus-cs2103-AY1718S1/forum/issues/123[#123],
 Autocomplete feature using ControlsFX https://github.com/nus-cs2103-AY1718S1/forum/issues/122[#122]
 
