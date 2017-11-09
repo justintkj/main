@@ -15,8 +15,9 @@ import seedu.address.commons.core.LogsCenter;
  */
 public class Sound {
     public static final String EMPTY = "";
-    private static final Logger logger = LogsCenter.getLogger("Error Sound");
     public static final String ERROR_SOUND_LOG_MESSAGE = "Error with playing sound.";
+
+    private static final Logger logger = LogsCenter.getLogger("Error Sound");
 
     private static ArrayList<String> musicList = new ArrayList<String>(Arrays.asList("ErrorSound.mp3"));
     private static int curr = 0;

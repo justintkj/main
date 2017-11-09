@@ -70,8 +70,6 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String DEFAULT = "default";
     public static final String ALTERNATIVE_METHOD_LOG_MESSAGE = "Adding a person using alternative method ";
     public static final String PREFIX_METHOD_LOG_MESSAGE = "Adding a person using prefix method";
-
-    private static final Logger logger = LogsCenter.getLogger(AddCommandParser.class);
     public static final String SPACE_REGEX = "\\ {1,1}";
     public static final String COMMA_REGEX = "\\,{1,1}";
     public static final String START_REGEX = "^";
@@ -84,6 +82,8 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final int INDEX_SIX = 6;
     public static final int INDEX_SEVEN = 7;
     public static final int INDEX_EIGHT = 8;
+
+    private static final Logger logger = LogsCenter.getLogger(AddCommandParser.class);
     private static Level currentLogLevel = Level.INFO;
     private String[] emailPatterns = {EMAIL_REGEX};
     private String[] blockPatterns = {BLOCK_REGEX};

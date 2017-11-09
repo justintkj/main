@@ -400,7 +400,7 @@ If a command fails its execution, no sorting will be done and a parse Exception 
 
 A simple flow of Activity Diagram for how sort command operates is given:
 
-image::SortActivityDiagram.png[width="600"]
+image::SortActivityDiagram.png[width="300"]
 
 ==== Design Considerations
 
