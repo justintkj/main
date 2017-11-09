@@ -141,7 +141,7 @@ include::../UserGuide.adoc[tag=autocomplete]
 
 It reduces the amout of time needed to type a specified command and acts as a quick reference to a list of vaid command. 
 When the user types a command in the CLI, recommended valid commmands are shown as a drop-down list for the user to choose.
-User can choose from the list of valid command via the kbd:[Down Arrow] or kbd:[Up Arrow] and select via kbd:[Enter].
+User can choose from the list of valid command via the kbd:[&uarr;] or kbd:[&darr;] and select via kbd:[&enter;].
 Valid commands needs to be saved and increase the drop down list to provide more relevant commands for the user progressively.
 When XML file is deleted, a new XML file will be created, populated with a standard list of commands.
 
@@ -153,15 +153,122 @@ XMLAutocomplete : Updates the list when given valid command and to store the lis
 
 ---
 
-=== Enhancement Proposed: Add command `remark`
+=== Enhancement Added: Email
 
-{Explain similar to the Undo/Redo feature above.}
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=email]
+
+#End of Extract#
+
+---
+
+==== Justification
+
+Provides a quick way to send an email to the selected person via our team's generated Gmail account.
+Javamail API is used to provide an efficient route to create an email message and to connect to the host server.
+
+==== Implementation
+
+---
+EmailCommandParser : Validiates and extract user's command for index, subject, and message.
+EmailCommand : Sends an Email to the email of the person selected.
+---
+
+=== Enhancement Added: Add (Alternative method)
+
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=add]
+
+#End of Extract#
+
+---
+
+==== Justification
+
+Provides an alternative way to add a person without using prefix, so user do not need to memorize a standard way to add a person.
+Regex is used to scan the entire message given by the user to extract relevant information fields.
+It is impractical to confirm a person's name to a certain regex, hence the name field must be the first field follow by a `,`
+
+==== Implementation
+
+---
+AddCommandParser : Validiates the given command and extracts the relevant person field given, following this format:
+For alternative format, name needs to be the first field followed by ','. The rest do not need to be in any order. +
+Fields have to follow these formats: +
+Block : Block (1 to 3 digits). Example : Block 1, Block 11, Block 111 +
+Unit : #(1 to 2 digits)-(1-3 digits)(Optional:Character). Example: #01-111B +
+Street : (1 Word) street (1 to 2 digits). Example : Jurong Street 11 +
+Number : (Optional:,)(8 digits)(Optional:,). Example: ,11111111, or 11111111 +
+Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldnt be in the future and has to be a valid date.Example :Singapore 655900+
+Email : (1 alphanumericword)@(1 alphanumericword).(1 alphanumericword). Example: Jason@example.com +
+(Optional) Postal Code: singapore (6digits). Example :Singapore 655900 +
+
+If multiple input for the same field is given, the leftmost input will be chosen.
+---
+
+=== Enhancement Added: Remark (Logic)
+
+==== External behavior
+
+---
+#Start of Extract [from: User Guide]#
+
+include::../UserGuide.adoc[tag=remark]
+
+#End of Extract#
+
+---
+
+==== Justification
+
+A field for user to attach a sentence to indicate relevance to user on a selected person.
+It acts as a reminder for the user what the remarked person mean.
+
+==== Implementation
+
+---
+RemarkCommandParser : Validates and extracts remark from the given input from the user.
+RemarkCommand : Adds the remark to the person selected.
+---
+
+=== Enhancement Proposed: import command `import`
+
+==== External behavior
+
+---
+Imports all the contacts from the user's chosen social media type into the application.
+Valid type of imports to be used:
+`import facebook`
+`import instagram`
+`import linkedin`
+---
+
+==== Justification
+
+It is not practical to manually add every contact when initialising the application for the first time.
+By importing from the user's social media account, it provides a relevant base of contacts for the user to use.
+
+==== Implementation
+
+---
+ImportCommandParser : Validate type of import chosen by user
+ImportCommand : Extract all contacts from the user's social media account and updates the storage with the new populated list of persons.
+---
+
 
 === Other contributions
 
-* Updated the GUI color scheme (Pull requests https://github.com[#33], https://github.com[#34])
-* Wrote additional tests to increase coverage from 88% to 92% (Pull requests https://github.com[#36], https://github.com[#38])
+* Added a command alias for addCommand.
+* Designed PocketBook logo.
+* Highlighted bugs using issue with team TunedIn (Pull requests https://github.com/CS2103AUG2017-T14-B2/main/issues/100[#100], https://github.com/CS2103AUG2017-T14-B2/main/issues/101[#101], https://github.com/CS2103AUG2017-T14-B2/main/issues/110[#110], https://github.com/CS2103AUG2017-T14-B2/main/issues/112[#112], https://github.com/CS2103AUG2017-T14-B2/main/issues/102[#102], https://github.com/CS2103AUG2017-T14-B2/main/issues/107[#107])
+* Offered features for reuse. Error Sound for invalid commands https://github.com/nus-cs2103-AY1718S1/forum/issues/123[#123],
+Autocomplete feature using JavaFX https://github.com/nus-cs2103-AY1718S1/forum/issues/122[#122]
 
-== Project: PowerPointLabs
-
-{Optionally (not graded), you may include other projects in your portfolio.}
