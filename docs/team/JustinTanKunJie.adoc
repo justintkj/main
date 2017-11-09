@@ -144,7 +144,7 @@ include::../UserGuide.adoc[tag=autocomplete]
 
 It reduces the amout of time needed to type a specified command and acts as a quick reference to a list of vaid command. +
 When the user types a command in the CLI, recommended valid commmands are shown as a drop-down list for the user to choose. +
-User can choose from the list of valid command via the keyboardd:[&uarr;] or keyboard:[&darr;] and select via keyboard:`Enter`. +
+User can choose from the list of valid command via the keyboardd:[&uarr;] or keyboard:[&darr;] and select via kbd:[Enter]. +
 Valid commands needs to be saved and increase the drop down list to provide more relevant commands for the user progressively. +
 When XML file is deleted, a new XML file will be created, populated with a standard list of commands.
 
