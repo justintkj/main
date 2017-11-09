@@ -70,7 +70,7 @@ Fields have to follow these formats: +
 Block : Block (1 to 3 digits). Example : Block 1, Block 11, Block 111 +
 Unit : #(1 to 2 digits)-(1-3 digits)(Optional:Character). Example: #01-111B +
 Street : (1 Word) street (1 to 2 digits). Example : Jurong Street 11 +
-Number : (Optional:,)(8 digits)(Optional:,). Example: ,11111111, or 11111111 +
+Number : (8 digits). Example: ,11111111, or 11111111 +
 Email : (1 alphanumericword)@(1 alphanumericword).(1 alphanumericword). Example: Jason@example.com +
 (Optional) Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldnt be in the future and has to be a valid date.Example :Singapore 655900+
 (Optional) Postal Code: singapore (6digits). Example :Singapore 655900 +
@@ -470,7 +470,7 @@ There is no need to save manually.
 === AutoComplete
 
 A drop-down list of valid input prompts are filtered as when user types a command.
-Users can navigate between the filtered command with the
+Users can navigate between the filtered command with the kbd:[&uarr;] kbd:[&darr;]arrow keys.
 All valid commands will be saved and updated in the storage, expanding the list of recommended inputs for the user.
 Autocomplete data are saved in the XML automatically after any valid new command that user uses. +
 There is no need to save manually. A new empty Autcomplete.xml file will be created if deleted.

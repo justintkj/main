@@ -347,11 +347,34 @@ image::UndoRedoActivityDiagram.png[width="200"]
 
 // tag::multipleundoredo[]
 ==== Multiple undo/redo mechanism
+The undo and redo can be done multiple times, chosen by the user by a positive integer
+
 UndoCommandParser : Accepts one more (optional) postive integer after the command `undo`. +
 UndoCommand : Repeats the command for the requested number of times. +
 UndoCommandParser : Accepts one more (optional) postive integer after the command `redo`. +
 UndoCommand : Repeats the command for the requested number of times.
 
+Multiple undos are implemented this way
+[source,java]
+----
+for (int i = INDEX_ZERO; i < numUndo; i++) {
+    if (!undoRedoStack.canUndo()) {
+        throw new CommandException(MESSAGE_FAILURE);
+    }
+    undoRedoStack.popUndo().undo();
+}
+----
+Multiple redos are implemented this way
+[source,java]
+----
+for (int i = INDEX_ZERO; i < numRedo; i++) {
+    if (!undoRedoStack.canRedo()) {
+        throw new CommandException(MESSAGE_FAILURE);
+    }
+
+    undoRedoStack.popRedo().redo();
+}
+----
 ==== Design Considerations
 
 **Aspect:** Implementation of `Multiple Undo Command` and `Multiple Redo Command` +
@@ -359,7 +382,7 @@ UndoCommand : Repeats the command for the requested number of times.
 **Pros:** We will not lose any undone/redone functionality it is reusing the functionality of the original + undo/redo command
 
 ---
-// end::undoredo[]
+// end::multipleundoredo[]
 
 // tag::sort[]
 === sort mechanism
@@ -437,8 +460,8 @@ image::SortActivityDiagram.png[width="300"]
 **Alternative 2:** Individual Comparator for person object based on sorting parameter. +
 *Pros:** Sort the persons based on comparator, more free play to the comparisons in sorting. +
 **Cons:** Less efficient as more context switch is needed, resulting in higher overhead time.
-
 // end::sort[]
+
 // tag::favourite[]
 === Favourite mechanism
 The favourite command toggles the favourite variable in the person to toggle a change in the highlight of color around
@@ -450,7 +473,226 @@ Person : Contains a Favourite class as it's parameter. +
 Favourite : Contains two different state, to highlight or not to highlight. +
 PersonCard : Updates highlight color for person.
 
+Implementation to create a new person to replace the old person with the new favourite +
+[source,java]
+----
+ReadOnlyPerson personToEdit = lastShownList.get(targetIndex.getZeroBased());
+ReadOnlyPerson editedPerson = personToEdit;
+toggleColor(editedPerson);
+editedPerson.setFavourite(favourite);
+----
+
+Implementation to toggle the color of the person shown in UI
+[source,java]
+----
+name.textProperty().bind(Bindings.convert(person.nameProperty()));
+if (person.getFavourite().toString().equals(TRUE_STRING)) {
+    name.setStyle(RED_COLOUR);
+} else if (person.getFavourite().toString().equals(FALSE_STRING)) {
+    name.setStyle(NO_COLOUR);
+}
+----
+==== Design Considerations
+
+**Aspect:** Toggle the color highlight of the person +
+**Alternative 1 (current choice):** use a string to indicate highlight +
+**Pros:** May add different colors in future for different priorities +
+**Cons:** More code, read string instead of boolean, typo may result in non-toggle +
+**Alternative 2:** use a boolean to indicate highlight +
+**Pros:** Rigid structure for red color and no color +
+**Cons:** Not good for furthur enhancements +
+---
+
 // end::favourite[]
+
+// tag::errorsound[]
+=== ErrorSound mechanism
+The Error sound mechanism plays a .mp3 sound file named "ErrorSound.mp3" whenevever an invalid Command
+is typed by the user. +
+User's invalid command are facilitated through ParseException and CommandException.
+The play sound function can then be called through these two exception.
+
+ErrorSound : Creates a mediaplayer and play the sound file chosen.
+ParseException : Calls invalidCommandSound() in Sound.
+CommandException : Calls invalidCommandSound() in Sound.
+
+Implementation to activate the sound file in invalidCommandSound()
+[source,java]
+----
+try {
+    createsNewMediaPlayer();
+    mediaPlayer.play();
+} catch (Exception ex) {
+    logger.info(ERROR_SOUND_LOG_MESSAGE);
+    ex.printStackTrace();
+}
+----
+
+==== Design Considerations
+
+**Aspect:** Plays the sound file when given invalid command +
+**Alternative 1 (current choice):** use a mediaPlayer, look for the sound file and play +
+**Pros:** Sound file can be replaced easily +
+**Cons:** Reliant on ParseException and CommandException to play sound. If other Exceptions are added in future
+implementation, might not play sound.
+
+---
+// end::errorsound[]
+
+// tag::autocomplete[]
+=== AutoComplete mechanism
+
+The autocomplete mechanism uses controlsFX to bind an autocomplete drop-down list to the Command Line.
+Every time the user enters a valid command, the command used will be added to the storage file to expand the
+autocomplist of stored valid command.
+
+CommandBox : Binds textfield with the CLI UI. +
+XMLAutocomplete : Updates the list when given valid command and to store the list in an XML file. A new XML file will be created with a sample list of basic inputs if XML file is deleted.
+
+Implementation to bind the list of valid inputs to the CLI
+[source,java]
+----
+updateAutocompleteTextField();
+autocompletionbinding = TextFields.bindAutoCompletion(commandTextField, mainPossibleSuggestion);
+----
+
+Implementation to store the valid new command into an XML file
+[source,java]
+----
+if (!commandWord.equals(EMPTY_STRING)) {
+    mainPossibleSuggestion.add(commandWord.trim());
+}
+XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(AUTOCOMPLETE_FILE_NAME)));
+e.writeObject(mainPossibleSuggestion);
+e.close();
+----
+
+==== Design Considerations
+
+**Aspect:** Autocomplete drop-down list +
+**Alternative 1 (current choice):** use .bindAutoCompletion() to bind an array of valid string into the
+autocomplete drop-down list.
+**Pros:** Little code needed, storage base expands over usage time +
+**Cons:** May not be automated test friendly as invalid command may be interpreted as valid command due to using the
+kbd:[Enter].
+---
+// end::autocomplete[]
+
+// tag::EmailPerson[]
+
+=== Email mechanism
+The email mechanism uses JavaMail API to send an actualy E-mail using our team's designated email address. +
+The selected user will receive an email at their email address if there's a valid internet connection.
+
+EmailCommandParser : Validates and extract user's command for index, subject, and message. +
+EmailCommand : Sends an Email to the email of the person selected.
+
+Implementation to send the email
+[source,java]
+----
+//Initial Login credentials
+generateInitialLoginCred(personToEmail);
+
+//Adds signature to user's text
+String messageText = teamSignatureGenerator();
+boolean sessionDebug = false;
+
+Properties props = System.getProperties();
+
+//updates the properties of the session
+updateProperties(host, props);
+
+//Compose the message
+composeMethod(messageText, sessionDebug, props);
+
+//Sends the Message
+sendMessage(host, user, pass, mailSession, composedMessage);
+----
+
+==== Design Considerations
+
+**Aspect:** Sending an email +
+**Alternative 1 (current choice):** use your team's email address as the sender. +
+**Pros:** No login credentials on user's part needed +
+**Cons:** Users may use our team's email for illegal purpose. +
+**Alternative 2:** User sign in to their own email. +
+**Pros:** More secure on developer's email +
+**Cons:** An extra step needed to send the email.
+
+---
+// end::EmailPerson[]
+
+// tag::AddPerson[]
+
+=== Add mechanism (Alternative)
+The alternative add mechaism uses regex to search for valid input types in a given string. +
+By using regex for searching for valid fields, the order of parameters to add a person is not neccessary. +
+As PocketBook is made to target Singaporeans, the regex specifies the following to be true for the different parameters
+of a person.
+As name has no valid regex to it, it has to be the first parameter given, followed by `,`
+
+Implementation to add a person
+[source,java]
+----
+//Generate person's details
+email = new Email (getOutputFromString(args, emailPatterns, EMAIL_EXCEPTION_MESSAGE));
+blocknum = getOutputFromString(args, blockPatterns, BLOCK_EXCEPTION_MESSAGE);
+streetnum = getOutputFromString(args, streetPatterns, STREET_EXCEPTION_MESSAGE);
+unitnum = getOutputFromString(args, unitPatterns, UNIT_EXCEPTION_MESSAGE);
+postalnum = getOutputFromString(args, postalPatterns, EMPTY_STRING);
+phone = new Phone(getOutputFromString(args, phonePatterns, PHONE_EXCEPTION_MESSAGE)
+        .trim().replace(COMMA_STRING, EMPTY_STRING));
+birthday = validateBirthdayNotFuture(args);
+address = generatesAddress(blocknum, streetnum, unitnum, postalnum);
+Set<Tag> tagList = new HashSet<>();
+ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList, picture,
+        favourite);
+return new AddCommand(person);
+----
+==== Design Considerations
+
+**Aspect:** Adding a person to pocketBook(Alternative) +
+**Alternative 1 (current choice):** searches the string given for valid regex. +
+**Pros:** No strict format to remember, natural for users to add user +
+**Cons:** Users may not be familiar with independent fields constaints. +
+**Alternative 2:** uses a prefix for each individual field. +
+**Pros:** Less constraints on individual fields +
+**Cons:** Users have to refer for different prefixes meaning and how to use them.
+
+---
+// end::AddPerson[]
+
+
+// tag::remark[]
+
+=== Remark mechanism
+The remark mechanism enables an additional field for a person to have.
+It is used as a note for a specified person.
+RemarkCommandParser : Validates and extracts remark from the given input from the user. +
+RemarkCommand : Adds the remark to the person selected.
+
+Implementation to remark a person
+
+[source,java]
+----
+ReadOnlyPerson personToEdit = lastShownList.get(index.getZeroBased());
+Person editedPerson = generateNewEditedPerson(personToEdit);
+model.updatePerson(personToEdit, editedPerson);
+----
+==== Design Considerations
+
+**Aspect:** Editing a person's remark +
+**Alternative 1 (current choice):** Generate a new person with a new remark and replace the old one +
+**Pros:** Previous remark has nothing to do with current remark +
+**Cons:** A new person needs to be generated. +
+**Alternative 2:** Edits the current person's remark. +
+**Pros:** Old person object remains the same +
+**Cons:** Access to person needs to be given.
+
+---
+
+// end::remark[]
+
 // tag::BirthdayNotifier[]
 === Birthday and Birthday Notifier mechanism
 
