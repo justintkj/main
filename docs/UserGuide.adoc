@@ -470,7 +470,7 @@ There is no need to save manually.
 === AutoComplete
 
 A drop-down list of valid input prompts are filtered as when user types a command.
-Users can navigate between the filtered command with the 
+Users can navigate between the filtered command with the
 All valid commands will be saved and updated in the storage, expanding the list of recommended inputs for the user.
 Autocomplete data are saved in the XML automatically after any valid new command that user uses. +
 There is no need to save manually. A new empty Autcomplete.xml file will be created if deleted.

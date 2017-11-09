@@ -127,7 +127,7 @@ CommandException : Calls invalidCommandSound() in Sound.
 
 ---
 
-=== Enhancement Added: `Autocomplete` 
+=== Enhancement Added: `Autocomplete`
 
 ==== External behavior
 
