@@ -212,7 +212,6 @@ Format: `sort ARGUMENT`
 ****
 * Sorts the storage list of all persons in ascending order
 * Sorting is permanent, will be updated into storage.
-* Valid Arguments are: 'name', 'number', 'address', 'email', 'remark', 'birthday', favourite.
 * CamelCase arguments are allowed 'NamE', 'NuMbEr', 'AddResS, 'EmAIL', 'REMARK', 'BiRtHDAY', 'FavouRITE'
 =======
 * Valid Arguments are:
@@ -220,6 +219,7 @@ Format: `sort ARGUMENT`
 ** `number` (alt: `num`, `no`)
 ** `address` (alt: `addr`, `add`, `a`)
 ** `email` (alt: `e`)
+** `favourite` (alt: `f`)
 ** `remark` (alt: `r`)
 ** `birthday` (alt: `bday`, `b`)
 ** `numtimessearched` (alt: `timessearched`, `numsearches`, `searches`, `s`)
