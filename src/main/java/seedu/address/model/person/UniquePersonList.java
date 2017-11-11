@@ -35,6 +35,7 @@ import seedu.address.model.person.exceptions.PersonNotFoundException;
  */
 public class UniquePersonList implements Iterable<Person> {
 
+    public static final String EMPTY_LIST = "EMPTY";
     private final ObservableList<Person> internalList = FXCollections.observableArrayList();
     // used by asObservableList()
     private final ObservableList<ReadOnlyPerson> mappedList = EasyBind.map(internalList, (person) -> person);
@@ -83,6 +84,9 @@ public class UniquePersonList implements Iterable<Person> {
      * Sorts the internalList as declared by the arguments
      */
     public String sort (String sortType) {
+        if(internalList.size() == INDEX_ZERO) {
+            return EMPTY_LIST;
+        }
         Collections.sort(internalList, comparatorMap.get(sortType));
         return findFullNameSort(sortType);
     }

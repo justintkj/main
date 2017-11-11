@@ -190,14 +190,16 @@ Selects the 1st person in the results of the `find` command.
 // tag::sort[]
 
 === Sort all persons : `sort`
-
+Note : While Jo did the numsearched fields for sort, i refractored to use streams to
+reduce excessive "for loops".
 Sort all the persons according to their names in alphabetical order. +
+Cannot sort if list is empty +
 Format: `sort ARGUMENT`
 ****
 * Sorts the storage list of all persons in ascending order
 * Sorting is permanent, will be updated into storage.
-* Valid Arguments are: 'name', 'number', 'address', 'email', 'remark', 'birthday', favourite.
-* CamelCase arguments are allowed 'NamE', 'NuMbEr', 'AddResS, 'EmAIL', 'REMARK', 'BiRtHDAY', 'FavouRITE'
+* Valid Arguments are: `name`, `number`, vaddress`, `email`, `remark`, `birthday`, `favourite`, `numtimessearched`.
+* CamelCase arguments are allowed `NamE`, `NuMbEr`, `AddResS`, `EmAIL`, `REMARK`, `BiRtHDAY`, `FavouRITE`
 ****
 
 Examples:
@@ -216,6 +218,8 @@ Sorts all the persons by remark in alphabetical order.
 Sorts all the persons by birthday in alphabetical order.
 * `sort favourite` +
 Sorts all the persons by favourite in alphabetical order.
+* `sort numtimessearched` +
+Sorts all the persons by number of times searched in alphabetical order.
 
 // end::sort[]
 
@@ -254,7 +258,7 @@ Format: `email INDEX, SUBJECT, BODY`
 * The index(es) *must be a positive integers* 1, 2, 3, ...
 * Email will be sent using our team's Gmail account.
 * An internet connection is needed.
-* Subject and Body message should not contain any ','.
+* Subject and Body message should not contain any `,`.
 ****
 
 Examples:
@@ -408,7 +412,7 @@ The `undo` command fails as there are no undoable commands executed previously.
 `undo 1` (reverses the `clear` command) +
 `u` (reverses the `delete 1` command) +
 
-=== Redoing the previously undone command : `redo`
+=== Redoing the previously undone command : `redo` `r`
 
 Reverses the most recent `undo` command. +
 Format: `redo`
