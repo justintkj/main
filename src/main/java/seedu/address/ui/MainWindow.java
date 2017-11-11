@@ -148,7 +148,7 @@ public class MainWindow extends UiPart<Region> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        PersonInfoPanel personInfoPanel = new PersonInfoPanel();
+        PersonInfoPanel personInfoPanel = new PersonInfoPanel(null);
         infoPlaceholder.getChildren().add(personInfoPanel.getRoot());
 
         browserPanel = new BrowserPanel();

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.exceptions.IllegalValueException;
@@ -33,13 +34,15 @@ public class ParserUtil {
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
     public static final String MESSAGE_INSUFFICIENT_PARTS = "Number of parts must be more than 1.";
     public static final String MESSAGE_INVALID_SORT = "Sort type is not a valid sort type.";
-    public static final String SORTNAME_ARG = "name";
-    public static final String SORTNUM_ARG = "number";
-    public static final String SORTADD_ARG = "address";
-    public static final String SORTEMAIL_ARG = "email";
-    public static final String SORTREMARK_ARG = "remark";
-    public static final String SORTBIRTHDAY_ARG = "birthday";
-    public static final String SORTFAVOURITE_ARG = "favourite";
+    public static final String[] SORTNAME_ARGS = {"name", "n"};
+    public static final String[] SORTNUM_ARGS = {"number", "num", "no"};
+    public static final String[] SORTADD_ARGS = {"address", "add", "addr", "a"};
+    public static final String[] SORTEMAIL_ARGS = {"email", "e"};
+    public static final String[] SORTREMARK_ARGS = {"remark", "r", "rem"};
+    public static final String[] SORTBIRTHDAY_ARGS = {"birthday", "bday", "b"};
+    public static final String[] SORTNUMTIMESSEARCHED_ARGS = {"numtimessearched", "timessearched", "searches", "s"};
+    public static final String[] SORTFAVOURITE_ARGS = {"favourite", "f"};
+
     public static final String EMPTY_STRING = "";
     public static final String SPACE_STRING = " ";
     public static final String COMMA_STRING = ",";
@@ -59,7 +62,7 @@ public class ParserUtil {
         }
         return Index.fromOneBased(Integer.parseInt(trimmedIndex));
     }
-    //@@author justintkj
+
     /**
      * Parses {@code number} into an {@code Integer} and returns it. Leading and trailing whitespaces will be
      * trimmed.
@@ -73,20 +76,48 @@ public class ParserUtil {
         return Integer.parseInt(trimmedNumber);
     }
 
+    //@@author thehelpfulbees
+
+    /**
+     * Tests whether a {@code inputString} is contained in the array {@code items}.
+     * @return True if it is contained, false otherwise
+     */
+    public static boolean stringContainsItemFromList(String inputStr, String[] items) {
+        for (String item:items) {
+            if (item.equals(inputStr)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //@@author justintkj
     /**
      * Parses {@code sortType}returns it. Leading and trailing whitespaces will be
      * trimmed.
+     *
      * @throws IllegalValueException if the specified index is invalid (not valid sorting type).
      */
     public static String parseSortType(String sortType) throws IllegalValueException {
         String toSort = sortType.trim().toLowerCase();
-        if (!toSort.equals(SORTNAME_ARG) && !toSort.equals(SORTNUM_ARG)
-            && !toSort.equals(SORTADD_ARG) && !toSort.equals(SORTEMAIL_ARG)
-            && !toSort.equals(SORTREMARK_ARG) && !toSort.equals(SORTBIRTHDAY_ARG)
-            && !toSort.equals(SORTFAVOURITE_ARG)) {
+        String[] allValidArgs = mergeValidArg(SORTNAME_ARGS, SORTNUM_ARGS, SORTEMAIL_ARGS, SORTREMARK_ARGS,
+                SORTBIRTHDAY_ARGS, SORTFAVOURITE_ARGS, SORTNUMTIMESSEARCHED_ARGS, SORTADD_ARGS);
+        if (!stringContainsItemFromList(toSort, allValidArgs)) {
             throw new IllegalValueException(MESSAGE_INVALID_SORT);
         }
         return toSort;
+    }
+
+    /**
+     * Merges multiple array into one
+     *
+     * @param arrays All the arrays to be merged
+     * @return One new array will all inputs from previous
+     */
+    public static String[] mergeValidArg(String[] ...arrays) {
+        return Stream.of(arrays)
+                .flatMap(Stream::of)
+                .toArray(String[]::new);
     }
     //@@author
 

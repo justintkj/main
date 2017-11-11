@@ -20,7 +20,9 @@ public class SortCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " remark"
             + "Example: " + COMMAND_WORD + " email"
             + "Example: " + COMMAND_WORD + " favourite"
-            + "Example: " + COMMAND_WORD + " birthday";
+            + "Example: " + COMMAND_WORD + " birthday"
+            + "Example: " + COMMAND_WORD + " numTimesSearched";
+
 
 
     private String sortType;
@@ -31,8 +33,8 @@ public class SortCommand extends UndoableCommand {
 
     @Override
     public CommandResult executeUndoableCommand() throws CommandException {
-        model.sortPerson(sortType);
-        return new CommandResult(MESSAGE_SORT_SUCCESS + sortType);
+        String fullsortname = model.sortPerson(sortType);
+        return new CommandResult(MESSAGE_SORT_SUCCESS + fullsortname);
     }
 
     @Override

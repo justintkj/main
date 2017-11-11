@@ -98,6 +98,43 @@ public class FindCommandParser implements Parser<FindCommand> {
 
 }
 ```
+###### \java\seedu\address\logic\parser\ParserUtil.java
+``` java
+
+    /**
+     * Tests whether a {@code inputString} is contained in the array {@code items}.
+     * @return True if it is contained, false otherwise
+     */
+    public static boolean stringContainsItemFromList(String inputStr, String[] items) {
+        for (String item:items) {
+            if (item.equals(inputStr)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Parses {@code sortType}returns it. Leading and trailing whitespaces will be
+     * trimmed.
+     * @throws IllegalValueException if the specified index is invalid (not valid sorting type).
+     */
+    public static String parseSortType(String sortType) throws IllegalValueException {
+        String toSort = sortType.trim().toLowerCase();
+        if (!stringContainsItemFromList(toSort, SORTNAME_ARGS)
+                && !stringContainsItemFromList(toSort, SORTNUM_ARGS)
+                && !stringContainsItemFromList(toSort, SORTADD_ARGS)
+                && !stringContainsItemFromList(toSort, SORTEMAIL_ARGS)
+                && !stringContainsItemFromList(toSort, SORTREMARK_ARGS)
+                && !stringContainsItemFromList(toSort, SORTBIRTHDAY_ARGS)
+                && !stringContainsItemFromList(toSort, SORTREMARK_ARGS)
+                && !stringContainsItemFromList(toSort, SORTFAVOURITE_ARGS)
+                && !stringContainsItemFromList(toSort, SORTNUMTIMESSEARCHED_ARGS)) {
+            throw new IllegalValueException(MESSAGE_INVALID_SORT);
+        }
+        return toSort;
+    }
+```
 ###### \java\seedu\address\model\person\NumTimesSearched.java
 ``` java
 /**

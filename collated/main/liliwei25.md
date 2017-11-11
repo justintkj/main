@@ -60,8 +60,6 @@ public class BirthdayCommand extends UndoableCommand {
             + "12-05-2016";
 
     public static final String MESSAGE_BIRTHDAY_PERSON_SUCCESS = "Birthday Updated success: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "Duplicate person in addressbook";
-    public static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
 
     private final Index index;
     private final Birthday birthday;
@@ -83,10 +81,32 @@ public class BirthdayCommand extends UndoableCommand {
         }
 
         ReadOnlyPerson personToEdit = lastShownList.get(index.getZeroBased());
-        ReadOnlyPerson editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(),
+        ReadOnlyPerson editedPerson = getEditedPerson(personToEdit);
+
+        updateModel(personToEdit, editedPerson);
+        return new CommandResult(String.format(MESSAGE_BIRTHDAY_PERSON_SUCCESS, editedPerson));
+    }
+
+    /**
+     * Creates a new {@code Person} with new person data
+     *
+     * @param personToEdit {@code Person} with old data
+     * @return {@code Person} with new data
+     */
+    private Person getEditedPerson(ReadOnlyPerson personToEdit) {
+        return new Person(personToEdit.getName(), personToEdit.getPhone(),
                 personToEdit.getEmail(), personToEdit.getAddress(), personToEdit.getRemark(), birthday,
                 personToEdit.getTags(), personToEdit.getPicture(), personToEdit.getFavourite());
+    }
 
+    /**
+     * Updates the model with the updated person
+     *
+     * @param personToEdit Old person data
+     * @param editedPerson New person data
+     * @throws CommandException when the new person already exists in the address book
+     */
+    private void updateModel(ReadOnlyPerson personToEdit, ReadOnlyPerson editedPerson) throws CommandException {
         try {
             model.updatePerson(personToEdit, editedPerson);
         } catch (DuplicatePersonException dpe) {
@@ -96,15 +116,14 @@ public class BirthdayCommand extends UndoableCommand {
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.updateListToShowAll();
-        return new CommandResult(String.format(MESSAGE_BIRTHDAY_PERSON_SUCCESS, editedPerson));
     }
 
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof BirthdayCommand // instanceof handles nulls
-                && index.equals(((BirthdayCommand)other).index)
-                && birthday.equals(((BirthdayCommand)other).birthday));
+                && index.equals(((BirthdayCommand) other).index)
+                && birthday.equals(((BirthdayCommand) other).birthday));
     }
 }
 ```
@@ -112,8 +131,19 @@ public class BirthdayCommand extends UndoableCommand {
 ``` java
     @Override
     public CommandResult executeUndoableCommand() throws CommandException {
+        String deletedPersons = deleteAllSelectedPersonFromAddressBook();
+        return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, deletedPersons));
+    }
+
+    /**
+     * Deletes all the selected person from address book and returns a StringJoiner containing their names
+     *
+     * @return A {@code StringJoiner} that includes all the names that were deleted
+     * @throws CommandException when person selected is not found
+     */
+    private String deleteAllSelectedPersonFromAddressBook() throws CommandException {
+        StringJoiner joiner = new StringJoiner(COMMA);
         List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
-        StringJoiner joiner = new StringJoiner(", ");
         for (int i = targetIndex.length - 1; i >= 0; i--) {
             if (targetIndex[i].getZeroBased() >= lastShownList.size()) {
                 throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
@@ -121,16 +151,26 @@ public class BirthdayCommand extends UndoableCommand {
 
             ReadOnlyPerson personToDelete = lastShownList.get(targetIndex[i].getZeroBased());
 
-            try {
-                model.deletePerson(personToDelete);
-                joiner.add(personToDelete.getName().toString());
-            } catch (PersonNotFoundException pnfe) {
-                assert false : MESSAGE_MISSING_PERSON;
-            }
+            deletePersonFromAddressBook(joiner, personToDelete);
         }
-
-        return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, joiner.toString()));
+        return joiner.toString();
     }
+
+    /**
+     * Delete selected person from address book
+     *
+     * @param joiner {@code StringJoiner} to join several names together if necessary
+     * @param personToDelete Selected person
+     */
+    private void deletePersonFromAddressBook(StringJoiner joiner, ReadOnlyPerson personToDelete) {
+        try {
+            model.deletePerson(personToDelete);
+            joiner.add(personToDelete.getName().toString());
+        } catch (PersonNotFoundException pnfe) {
+            assert false : MESSAGE_MISSING_PERSON;
+        }
+    }
+
 ```
 ###### \java\seedu\address\logic\commands\EditCommand.java
 ``` java
@@ -138,8 +178,7 @@ public class BirthdayCommand extends UndoableCommand {
      * Creates and returns a {@code Person} with the details of {@code personToEdit}
      * edited with {@code editPersonDescriptor}.
      */
-    private static Person createEditedPerson(ReadOnlyPerson personToEdit,
-                                             EditPersonDescriptor editPersonDescriptor) {
+    private static Person createEditedPerson(ReadOnlyPerson personToEdit, EditPersonDescriptor editPersonDescriptor) {
         assert personToEdit != null;
 
         Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
@@ -152,6 +191,7 @@ public class BirthdayCommand extends UndoableCommand {
         ProfilePicture picture = personToEdit.getPicture();
         Favourite favourite = personToEdit.getFavourite();
         NumTimesSearched numTimesSearched = personToEdit.getNumTimesSearched();
+
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedRemark, updatedBirthday,
                 updatedTags, picture, favourite, numTimesSearched);
     }
@@ -165,14 +205,12 @@ public class ImageCommand extends UndoableCommand {
     public static final String COMMAND_WORD = "image";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Changes the profile picture of the specified person in the addressbook.\n"
+            + ": Changes the profile picture of the specified person in the address book.\n"
             + "Parameters: INDEX (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1";
 
-    public static final String MESSAGE_IMAGE_SUCCESS = "Changed Profile Picture: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "Duplicate person in addressbook";
-    public static final String DEFAULT = "default";
-    private static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
+    static final String MESSAGE_IMAGE_SUCCESS = "Changed Profile Picture: %1$s";
+    static final String DEFAULT = "default";
 
     public final Index index;
     public final boolean remove;
@@ -191,18 +229,23 @@ public class ImageCommand extends UndoableCommand {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
 
+        ReadOnlyPerson personToEdit = updateAddressBook(lastShownList);
+        return new CommandResult(String.format(MESSAGE_IMAGE_SUCCESS, personToEdit));
+    }
+
+    /**
+     * Updates address book with new {@code Person} with new profile picture
+     *
+     * @param lastShownList List of all current {@code Person} in address book
+     * @return Edited {@code Person}
+     * @throws CommandException when a duplicate of the new person is found in the address book
+     */
+    private ReadOnlyPerson updateAddressBook(List<ReadOnlyPerson> lastShownList) throws CommandException {
         ReadOnlyPerson personToEdit = lastShownList.get(index.getZeroBased());
+        ReadOnlyPerson editedPerson;
         try {
-            if (remove) {
-                Person editedPerson = new Person(personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
-                        personToEdit.getAddress(), personToEdit.getRemark(), personToEdit.getBirthday(),
-                        personToEdit.getTags(), new ProfilePicture(DEFAULT), personToEdit.getFavourite());
-                model.updatePerson(personToEdit, editedPerson);
-            } else {
-                model.changeImage(personToEdit);
-                ReadOnlyPerson edited = lastShownList.get(index.getZeroBased());
-                model.updatePerson(personToEdit, edited);
-            }
+            editedPerson = updateDisplayPicture(lastShownList, personToEdit);
+            model.updatePerson(personToEdit, editedPerson);
         } catch (DuplicatePersonException dpe) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         } catch (PersonNotFoundException pnfe) {
@@ -210,14 +253,63 @@ public class ImageCommand extends UndoableCommand {
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         model.updateListToShowAll();
-        return new CommandResult(String.format(MESSAGE_IMAGE_SUCCESS, personToEdit));
+        return personToEdit;
+    }
+
+    /**
+     * Updates profile picture of {@code Person} according to selected mode (remove/ edit)
+     *
+     * @param lastShownList List of all current {@code Person} in address book
+     * @param personToEdit Selected {@code Person} to edit
+     * @return {@code Person} with new profile picture
+     * @throws PersonNotFoundException When selected person is not found in address book
+     */
+    private ReadOnlyPerson updateDisplayPicture(List<ReadOnlyPerson> lastShownList, ReadOnlyPerson personToEdit)
+            throws PersonNotFoundException {
+        ReadOnlyPerson editedPerson;
+        if (remove) {
+            editedPerson = removeDisplayPicture(personToEdit);
+        } else {
+            editedPerson = selectDisplayPicture(lastShownList, personToEdit);
+        }
+        return editedPerson;
+    }
+
+    /**
+     * Opens file browser to choose new image
+     *
+     * @param lastShownList List of all current {@code Person} in address book
+     * @param personToEdit Selected {@code Person} to edit
+     * @return {@code Person} with new profile picture
+     * @throws PersonNotFoundException When selected person is not found in address book
+     */
+    private ReadOnlyPerson selectDisplayPicture(List<ReadOnlyPerson> lastShownList, ReadOnlyPerson personToEdit)
+            throws PersonNotFoundException {
+        ReadOnlyPerson editedPerson;
+        model.changeImage(personToEdit);
+        editedPerson = lastShownList.get(index.getZeroBased());
+        return editedPerson;
+    }
+
+    /**
+     * Removes profile picture of selected person and set it to default
+     *
+     * @param personToEdit Selected {@code Person} to edit
+     * @return {@code Person} with default profile picture
+     */
+    private Person removeDisplayPicture(ReadOnlyPerson personToEdit) {
+        return new Person(personToEdit.getName(), personToEdit.getPhone(),
+                            personToEdit.getEmail(), personToEdit.getAddress(), personToEdit.getRemark(),
+                            personToEdit.getBirthday(), personToEdit.getTags(), new ProfilePicture(DEFAULT),
+                            personToEdit.getFavourite());
     }
 
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof ImageCommand // instanceof handles nulls
-                && this.index.equals(((ImageCommand) other).index)); // state check
+                && this.index.equals(((ImageCommand) other).index)
+                && this.remove == (((ImageCommand) other).remove)); // state check
     }
 }
 ```
@@ -233,7 +325,6 @@ public class MapCommand extends UndoableCommand {
             + "Parameters: INDEX (must be a positive integer) "
             + "Example: " + COMMAND_WORD + " 1 ";
     public static final String MESSAGE_MAP_SHOWN_SUCCESS = "Map for Person: %1$s";
-    private static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
 
     public final Index index;
 
@@ -251,13 +342,22 @@ public class MapCommand extends UndoableCommand {
 
         ReadOnlyPerson personToShow = lastShownList.get(index.getZeroBased());
 
+        mapPerson(personToShow);
+
+        return new CommandResult(String.format(MESSAGE_MAP_SHOWN_SUCCESS, personToShow));
+    }
+
+    /**
+     * Shows the address of the selected {@code Person} on GoogleMaps in a new browser window
+     *
+     * @param personToShow Selected {@code Person} to show
+     */
+    private void mapPerson(ReadOnlyPerson personToShow) {
         try {
             model.mapPerson(personToShow);
         } catch (PersonNotFoundException pnfe) {
             assert false : MESSAGE_MISSING_PERSON;
         }
-
-        return new CommandResult(String.format(MESSAGE_MAP_SHOWN_SUCCESS, personToShow));
     }
 
     @Override
@@ -281,52 +381,136 @@ public class RemoveTagCommand extends UndoableCommand {
             + "Parameters: TAG (must be a valid tag)\n"
             + "Example: " + COMMAND_WORD + " friends";
 
-    public static final String MESSAGE_REMOVE_TAG_SUCCESS = "Removed Tag: %1$s";
-
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
-
     public static final String MESSAGE_TAG_NOT_FOUND = "Specified tag is not found";
-    public static final String MESSAGE_MISSING_PERSON = "The target person cannot be missing";
+
+    public static final String MESSAGE_REMOVE_TAG_SUCCESS = "Removed Tag: %s %s %3$s";
+    public static final String ALL = "all";
+    public static final String FROM = "from";
+    private static final String MESSAGE_TAG_NOT_FOUND_IN_PERSON = "Tag not found in selected person";
 
     public final Tag target;
+    public final String index;
 
-    public RemoveTagCommand(Tag target) {
+    public RemoveTagCommand(String index, Tag target) {
+        requireNonNull(index);
+        requireNonNull(target);
+
         this.target = target;
+        this.index = index;
     }
 
     @Override
     public CommandResult executeUndoableCommand() throws CommandException {
+        String result;
+        if (index.equals(ALL)) {
+            removeTagFromAllPerson();
+            removeTagFromModel();
+            result = ALL;
+        } else {
+            result = removeTagFromPerson(Integer.parseInt(index) - 1);
+        }
+        return new CommandResult(String.format(MESSAGE_REMOVE_TAG_SUCCESS, target, FROM, result));
+    }
+
+    /**
+     * Removes selected {@code Tag} from selected {@code Person} in address book
+     *
+     * @throws CommandException When selected {@code Tag} is not found in address book
+     */
+    private String removeTagFromPerson(int index) throws CommandException {
         List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+        ReadOnlyPerson person = lastShownList.get(index);
+        boolean result = removeAndUpdate(person);
+        if (!result) {
+            throw new CommandException(MESSAGE_TAG_NOT_FOUND_IN_PERSON);
+        }
+        return person.getName().fullName;
+    }
+
+    /**
+     * Removes selected {@code Tag} from person and updates address book
+     *
+     * @param person person selected
+     * @throws CommandException when selected Tag is not found
+     * @return true when tag is found in person
+     */
+    private boolean removeAndUpdate(ReadOnlyPerson person) throws CommandException {
+        if (person.getTags().contains(target)) {
+            Set<Tag> updatedTags = new HashSet<>(person.getTags());
+
+            updatedTags.remove(target);
+
+            Person editedPerson = getEditedPerson(person, updatedTags);
+
+            updateModel(person, editedPerson);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes selected {@code Tag} from all {@code Person} in address book
+     *
+     * @throws CommandException When selected {@code Tag} is not found in address book
+     */
+    private void removeTagFromAllPerson() throws CommandException {
+        List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+        for (ReadOnlyPerson person: lastShownList) {
+            removeAndUpdate(person);
+        }
+    }
+
+    /**
+     * Removes selected {@code Tag} from address book
+     *
+     * @throws CommandException When selected {@code Tag} is not found in address book
+     */
+    private void removeTagFromModel() throws CommandException {
         try {
             model.removeTag(target);
         } catch (UniqueTagList.TagNotFoundException tnf) {
             throw new CommandException(MESSAGE_TAG_NOT_FOUND);
         }
-        for (ReadOnlyPerson person: lastShownList) {
-            if (person.getTags().contains(target)) {
-                Set<Tag> updatedTags = new HashSet<Tag>(person.getTags());
-                updatedTags.remove(target);
-                Person editedPerson = new Person(person.getName(), person.getPhone(), person.getEmail(),
-                        person.getAddress(), person.getRemark(), person.getBirthday(), updatedTags,
-                        person.getPicture(), person.getFavourite(), person.getNumTimesSearched());
-                try {
-                    model.updatePerson(person, editedPerson);
-                } catch (DuplicatePersonException dpe) {
-                    throw new CommandException(MESSAGE_DUPLICATE_PERSON);
-                } catch (PersonNotFoundException pnfe) {
-                    throw new AssertionError(MESSAGE_MISSING_PERSON);
-                }
-            }
+    }
+
+    /**
+     * Updates model with new {@code Person} after removing selected {@code Tag}
+     *
+     * @param person {@code Person} with old data
+     * @param editedPerson {@code Person} with new data
+     * @throws CommandException When there is duplicate of the new person found in the address book
+     */
+    private void updateModel(ReadOnlyPerson person, Person editedPerson) throws CommandException {
+        try {
+            model.updatePerson(person, editedPerson);
+        } catch (DuplicatePersonException dpe) {
+            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        } catch (PersonNotFoundException pnfe) {
+            throw new AssertionError(MESSAGE_MISSING_PERSON);
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        return new CommandResult(String.format(MESSAGE_REMOVE_TAG_SUCCESS, target));
+        model.updateListToShowAll();
+    }
+
+    /**
+     * Creates a new person with the new list of {@code tag}
+     *
+     * @param person Selected {@code Person}
+     * @param updatedTags New list of {@code Tag}
+     * @return Updated {@code Person} with new list
+     */
+    private Person getEditedPerson(ReadOnlyPerson person, Set<Tag> updatedTags) {
+        return new Person(person.getName(), person.getPhone(), person.getEmail(),
+                person.getAddress(), person.getRemark(), person.getBirthday(), updatedTags,
+                person.getPicture(), person.getFavourite(), person.getNumTimesSearched());
     }
 
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof RemoveTagCommand // instanceof handles nulls
-                && this.target.equals(((RemoveTagCommand) other).target)); // state check
+                && this.target.equals(((RemoveTagCommand) other).target)
+                && this.index.equals(((RemoveTagCommand) other).index)); // state check
     }
 }
 ```
@@ -336,6 +520,12 @@ public class RemoveTagCommand extends UndoableCommand {
  * Parses arguments and returns BirthdayCommand
  */
 public class BirthdayCommandParser implements Parser<BirthdayCommand> {
+
+    private static final String SPACE = " ";
+    private static final int INDEX_POS = 0;
+    private static final int BIRTHDAY_POS = 1;
+    private static final int CORRECT_LENGTH = 2;
+
     /**
      * Parses the given {@code String} of arguments in the context of the BirthdayCommand
      * and returns a BirthdayCommand object for execution.
@@ -345,18 +535,23 @@ public class BirthdayCommandParser implements Parser<BirthdayCommand> {
     public BirthdayCommand parse(String args) throws ParseException {
         requireNonNull(args);
 
-        String[] splitArgs = args.trim().split(" ");
+        String[] splitArgs = args.trim().split(SPACE);
 
         Index index;
         Birthday birthday;
         try {
-            index = ParserUtil.parseIndex(splitArgs[0]);
-            if (splitArgs.length < 2) {
+            index = ParserUtil.parseIndex(splitArgs[INDEX_POS]);
+            if (splitArgs.length < CORRECT_LENGTH) {
                 throw new IllegalValueException(Birthday.MESSAGE_BIRTHDAY_CONSTRAINTS);
             }
-            birthday = new Birthday(splitArgs[1]);
+            birthday = new Birthday(splitArgs[BIRTHDAY_POS]);
         } catch (IllegalValueException ive) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, BirthdayCommand.MESSAGE_USAGE), ive);
+            if (ive.getMessage().equals(Birthday.MESSAGE_BIRTHDAY_CONSTRAINTS)) {
+                throw new ParseException(
+                        String.format(MESSAGE_INVALID_COMMAND_FORMAT, BirthdayCommand.MESSAGE_USAGE), ive);
+            } else {
+                throw new ParseException(ive.getMessage());
+            }
         }
 
         return new BirthdayCommand(index, birthday);
@@ -368,21 +563,26 @@ public class BirthdayCommandParser implements Parser<BirthdayCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the DeleteCommand
      * and returns an DeleteCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public DeleteCommand parse(String args) throws ParseException {
         try {
-            String[] arguments = args.trim().split(" ");
-            Index[] index = new Index[arguments.length];
-            int i = 0;
-            for (String e: arguments) {
-                index[i++] = ParserUtil.parseIndex(e);
-            }
+            Index[] index = getIndices(args);
             return new DeleteCommand(index);
         } catch (IllegalValueException ive) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteCommand.MESSAGE_USAGE));
         }
+    }
+
+    private Index[] getIndices(String args) throws IllegalValueException {
+        String[] arguments = args.trim().split(SPACE);
+        Index[] index = new Index[arguments.length];
+        int count = 0;
+        for (String e: arguments) {
+            index[count++] = ParserUtil.parseIndex(e);
+        }
+        return index;
     }
 ```
 ###### \java\seedu\address\logic\parser\ImageCommandParser.java
@@ -391,23 +591,37 @@ public class BirthdayCommandParser implements Parser<BirthdayCommand> {
  * Parses input arguments and creates a new ImageCommand object
  */
 public class ImageCommandParser implements Parser<ImageCommand> {
+
+    private static final String REMOVE = "remove";
+    private static final boolean REMOVE_IMAGE = true;
+    private static final String SPACE = " ";
+    private static final int INDEX_POS = 0;
+    private static final int SELECT_POS = 1;
+    private static final String INVALID_POST_INDEX = "Wrong input after index";
+
     /**
      * Parses the given {@code String} of arguments in the context of the ImageCommand
      * and returns an ImageCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public ImageCommand parse(String args) throws ParseException {
-        String[] splitArgs = args.trim().split(" ");
         try {
-            Index index = ParserUtil.parseIndex(splitArgs[0]);
-            if (splitArgs.length > 1 && splitArgs[1].toLowerCase().equals("remove")) {
-                return new ImageCommand(index, true);
-            } else {
-                return new ImageCommand(index, false);
-            }
+            return getImageCommand(args);
         } catch (IllegalValueException ive) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ImageCommand.MESSAGE_USAGE));
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ImageCommand.MESSAGE_USAGE));
+        }
+    }
+
+    private ImageCommand getImageCommand(String args) throws IllegalValueException {
+        String[] splitArgs = args.trim().split(SPACE);
+        Index index = ParserUtil.parseIndex(splitArgs[INDEX_POS]);
+        if (splitArgs.length > 1 && splitArgs[SELECT_POS].toLowerCase().equals(REMOVE)) {
+            return new ImageCommand(index, REMOVE_IMAGE);
+        } else if (splitArgs.length <= 1) {
+            return new ImageCommand(index, !REMOVE_IMAGE);
+        } else {
+            throw new IllegalValueException(INVALID_POST_INDEX);
         }
     }
 }
@@ -421,6 +635,7 @@ public class MapCommandParser implements Parser<MapCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the MapCommand
      * and returns an MapCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public MapCommand parse(String args) throws ParseException {
@@ -428,8 +643,7 @@ public class MapCommandParser implements Parser<MapCommand> {
             Index index = ParserUtil.parseIndex(args);
             return new MapCommand(index);
         } catch (IllegalValueException ive) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, MapCommand.MESSAGE_USAGE));
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MapCommand.MESSAGE_USAGE));
         }
     }
 }
@@ -440,18 +654,29 @@ public class MapCommandParser implements Parser<MapCommand> {
  * Parses input arguments and creates a new RemoveTagCommand object
  */
 public class RemoveTagCommandParser implements Parser<RemoveTagCommand> {
+
+    private static final String SPACE = " ";
+    private static final int TAG_POS = 1;
+    private static final int INDEX_POS = 0;
+
     /**
      * Parses the given {@code String} of arguments in the context of the RemoveTagCommand
      * and returns an RemoveTagCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public RemoveTagCommand parse(String arg) throws ParseException {
+        String[] splitArgs = arg.trim().split(SPACE);
         try {
-            Tag t = ParserUtil.parseTag(arg);
-            return new RemoveTagCommand(t);
+            if (splitArgs.length < 2) {
+                Tag t = ParserUtil.parseTag(splitArgs[INDEX_POS]);
+                return new RemoveTagCommand(RemoveTagCommand.ALL, t);
+            } else {
+                Tag t = ParserUtil.parseTag(splitArgs[TAG_POS]);
+                return new RemoveTagCommand(splitArgs[INDEX_POS], t);
+            }
         } catch (IllegalValueException ive) {
-            throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, RemoveTagCommand.MESSAGE_USAGE));
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, RemoveTagCommand.MESSAGE_USAGE));
         }
     }
 }
@@ -464,60 +689,64 @@ public class RemoveTagCommandParser implements Parser<RemoveTagCommand> {
     private void startTray() {
         Platform.setImplicitExit(false);
         if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported");
+            logger.warning(MESSAGE_TRAY_UNSUPPORTED);
             return;
         }
-        Image image = new Image("images/address_book_15.png");
+        initTrayIcon();
+        try {
+            tray = SystemTray.getSystemTray();
+            tray.add(trayIcon);
+        } catch (AWTException e) {
+            logger.warning(MESSAGE_ADD_TRAY_ICON_FAIL);
+        }
+    }
 
+    /**
+     * Initialize the tray icon for the app
+     */
+    private void initTrayIcon() {
+        Image image = new Image(TRAY_ICON, ICON_SIZE,ICON_SIZE, true, true);
         PopupMenu popup = new PopupMenu();
-        trayIcon = new TrayIcon(SwingFXUtils.fromFXImage(image, null), "PocketBook", popup);
-        tray = SystemTray.getSystemTray();
 
-        MenuItem exitItem = new MenuItem("Exit");
-        exitItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        stop();
-                    }
-                });
-            }
-        });
+        setupTrayIcon(image, popup);
+        setupPopupMenu(popup);
+        setupMouseListener();
+    }
 
+    /**
+     * Sets up the tray icon
+     */
+    private void setupTrayIcon(Image image, PopupMenu popup) {
+        trayIcon = new TrayIcon(SwingFXUtils.fromFXImage(image, null), APP_NAME, popup);
+        trayIcon.setPopupMenu(popup);
+    }
+
+    /**
+     * Sets up the pop-up menu of the tray icon
+     */
+    private void setupPopupMenu(PopupMenu popup) {
+        MenuItem exitItem = new MenuItem(EXIT);
+        exitItem.addActionListener(e -> Platform.runLater(this::stop));
+        popup.add(exitItem);
+    }
+
+    /**
+     * Sets up the mouse listener for the tray icon
+     */
+    private void setupMouseListener() {
         trayIcon.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
-
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
                     e.consume();
                     if (ui.isShowing()) {
-                        Platform.runLater(new Runnable() {
-                            @Override public void run() {
-                                ui.hide();
-                            }
-                        });
+                        Platform.runLater(() -> ui.hide());
                     } else {
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                ui.show();
-                            }
-                        });
+                        Platform.runLater(() -> ui.show());
                     }
                 }
             }
         });
-        popup.add(exitItem);
-
-        trayIcon.setPopupMenu(popup);
-
-        try {
-            tray.add(trayIcon);
-        } catch (AWTException e) {
-            System.out.println("TrayIcon could not be added.");
-        }
     }
 ```
 ###### \java\seedu\address\model\AddressBook.java
@@ -533,9 +762,17 @@ public class RemoveTagCommandParser implements Parser<RemoveTagCommand> {
  */
 public class BirthdayNotifier {
     public BirthdayNotifier(List<ReadOnlyPerson> list) {
-        LocalDateTime now = LocalDateTime.now();
+        String[] people = getBirthdaysToday(list);
+        if (people.length > 0) {
+            createPopup(people);
+        }
+    }
+
+    private String[] getBirthdaysToday(List<ReadOnlyPerson> list) {
+        LocalDate now = LocalDate.now();
         int date = now.getDayOfMonth();
         int month = now.getMonthValue();
+
         ArrayList<String> people = new ArrayList<>();
 
         for (ReadOnlyPerson e: list) {
@@ -543,11 +780,10 @@ public class BirthdayNotifier {
                 people.add(e.getName().toString());
             }
         }
-        if (people.size() > 0) {
-            createPopup(people.toArray(new String[people.size()]));
-        }
+        return people.toArray(new String[people.size()]);
     }
-    void createPopup(String[] person) {
+
+    private void createPopup(String[] person) {
         new BirthdayPopup(person);
     }
 }
@@ -593,21 +829,30 @@ public class BirthdayNotifier {
 ``` java
 /**
  * Represents a Person's birthday in the address book.
- * Guarantees: immutable; is valid as declared in {@link #isValidBirthday(String)}
+ * Guarantees: immutable; is valid as declared in {@link #isValidBirthday(String[], LocalDate)}
  */
-public class Birthday {
+public class Birthday implements Comparable {
 
     public static final String MESSAGE_BIRTHDAY_CONSTRAINTS =
-            "Birthdays can only contain numbers, and should be in the format dd-mm--yyyy";
-    public static final String BIRTHDAY_VALIDATION_REGEX = "^(?:(?:31(\\/|-|\\.)(?:0?[13578]|1[02]))\\1"
-            + "|(?:(?:29|30)(\\/|-|\\.)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\"
-            + "/|-|\\.)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468]"
-            + "[048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/|-|\\.)(?:(?:0?[1-9])|(?:1[0-2]))\\"
-            + "4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$";
+            "Birthdays can only contain numbers, and should be in the format dd-mm-yyyy";
+    public static final String MESSAGE_WRONG_DATE = "Date entered is wrong";
+    public static final String MESSAGE_LATE_DATE = "Date given should be before today %1$s";
+    private static final String DASH = "-";
+    private static final int DEFAULT_VALUE = 0;
+    private static final String NOT_SET = "Not Set";
+    private static final String EMPTY = "";
+    private static final String REMOVE = "remove";
+    private static final int MIN_MONTHS = 1;
+    private static final int MAX_MONTHS = 12;
+    private static final int MIN_DAYS = 1;
+    private static final int DAY_POS = 0;
+    private static final int MONTH_POS = 1;
+    private static final String DATE_FORMAT = "dd-MM-yyyy";
+
     public final String value;
-    public final int day; //Not implemented yet
-    public final int month;
-    public final int year;
+    private final int day;
+    private final int month;
+    private final int year;
 
     /**
      * Validates given birthday.
@@ -617,51 +862,76 @@ public class Birthday {
     public Birthday(String birthday) throws IllegalValueException {
         requireNonNull(birthday);
         String trimmedBirthday = birthday.trim();
-        if (birthday.equals("") || birthday.equals("Not Set") || birthday.equals("remove")) {
-            this.value = "Not Set";
-            day = month = year = 0;
-        } else if (!isValidBirthday(trimmedBirthday) || !isDateCorrect(trimmedBirthday.split("-"))) {
-            throw new IllegalValueException(MESSAGE_BIRTHDAY_CONSTRAINTS);
-        } else {
-            this.value = trimmedBirthday;
-            String[] splitBirthday = value.split("-");
-            this.day = Integer.parseInt(splitBirthday[0]);
-            this.month = Integer.parseInt(splitBirthday[1]);
-            this.year = Integer.parseInt(splitBirthday[2]);
-        }
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
+
+        if (birthday.equals(EMPTY) || birthday.equals(NOT_SET) || birthday.equals(REMOVE)) {
+            this.value = NOT_SET;
+            day = month = year = DEFAULT_VALUE;
+        } else {
+            LocalDate inputBirthday;
+            try {
+                inputBirthday = LocalDate.parse(birthday, formatter);
+            } catch (DateTimeParseException dtpe) {
+                throw new IllegalValueException(MESSAGE_WRONG_DATE);
+            }
+            if (!isValidBirthday(birthday.split(DASH), inputBirthday)) {
+                throw new IllegalValueException(MESSAGE_WRONG_DATE);
+            } else if (!isDateCorrect(inputBirthday)) {
+                throw new IllegalValueException(String.format(MESSAGE_LATE_DATE, LocalDate.now().format(formatter)));
+            } else {
+                this.value = trimmedBirthday;
+                this.day = inputBirthday.getDayOfMonth();
+                this.month = inputBirthday.getMonthValue();
+                this.year = inputBirthday.getYear();
+            }
+        }
     }
 
     /**
-     * Determines if date entered by user is correct and ensures that it is not after current date
-     * @param birthday
-     * @return
+     * Ensures that the date entered is before current date
+     *
+     * @param birthday {@code LocalDate} containing input by user
+     * @return True when birthday entered by user is before or on current date
      */
-    public static boolean isDateCorrect(String[] birthday) {
-        LocalDateTime now = LocalDateTime.now();
-        int day = now.getDayOfMonth();
-        int month = now.getMonthValue();
-        int year = now.getYear();
-
-        int inputDay = Integer.parseInt(birthday[0]);
-        int inputMonth = Integer.parseInt(birthday[1]);
-        int inputYear = Integer.parseInt(birthday[2]);
-
-        if (inputYear > year) {
-            return false;
-        } else if (inputYear == year && inputMonth > month) {
-            return false;
-        } else if (inputYear == year && inputMonth == month && inputDay > day) {
-            return false;
-        } else {
-            return true;
-        }
+    public static boolean isDateCorrect(LocalDate birthday) {
+        return birthday.isBefore(LocalDate.now()) || birthday.equals(LocalDate.now());
     }
+
     /**
-     * Returns true if a given string is a valid person birthday.
+     * Returns true if a given string is a valid person birthday. Requires both the input string and the parsed date
+     * since the parsed date will be resolved to the correct values by {@code DateTimeFormatter}
+     *
+     * @param test Input birthday String by user
+     * @param testBirthday Parsed birthday from input by user (will be resolved to closest correct date)
+     * @return True when date entered by user is valid
+     */
+    public static boolean isValidBirthday(String[] test, LocalDate testBirthday) {
+        int day = Integer.parseInt(test[DAY_POS]);
+        int month = Integer.parseInt(test[MONTH_POS]);
+
+        return month >= MIN_MONTHS
+                && month <= MAX_MONTHS
+                && day >= MIN_DAYS
+                && day <= testBirthday.lengthOfMonth();
+    }
+
+    /**
+     * Calls {@code isValidBirthday} with parsed values when input is only one String
+     *
+     * @param test Single String input
+     * @return True when {@code isValidBirthday} verifies date entered by user
      */
     public static boolean isValidBirthday(String test) {
-        return test.matches(BIRTHDAY_VALIDATION_REGEX);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String[] split = test.split(DASH);
+        LocalDate testBirthday;
+        try {
+            testBirthday = LocalDate.parse(test, formatter);
+        } catch (DateTimeParseException dtpe) {
+            return false;
+        }
+        return isValidBirthday(split, testBirthday);
     }
 
     @Override
@@ -689,7 +959,103 @@ public class Birthday {
         return month;
     }
 
+    public int getYear() {
+        return year;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Birthday comparedBirthday = (Birthday) o;
+        return this.value.compareTo(comparedBirthday.toString());
+    }
 }
+```
+###### \java\seedu\address\model\person\Person.java
+``` java
+    @Override
+    public void setRemark(Remark remark) {
+        this.remark.set(requireNonNull(remark));
+    }
+
+    @Override
+    public ObjectProperty<Remark> remarkProperty() {
+        return remark;
+    }
+
+    @Override
+    public Remark getRemark() {
+        return remark.get();
+    }
+
+    @Override
+    public ObjectProperty<Birthday> birthdayProperty() {
+        return birthday;
+    }
+
+    @Override
+    public void setBirthday(Birthday birthday) {
+        this.birthday.set(requireNonNull(birthday));
+    }
+
+    @Override
+    public Birthday getBirthday() {
+        return birthday.get();
+    }
+
+    @Override
+    public int getDay() {
+        return birthday.get().getDay();
+    }
+
+    @Override
+    public int getMonth() {
+        return birthday.get().getMonth();
+    }
+
+    @Override
+    public Favourite getFavourite() {
+        return favourite.get();
+    }
+
+    public void setFavourite(Favourite favourite) {
+        this.favourite.set(requireNonNull(favourite));
+    }
+
+    /**
+     * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
+     * if modification is attempted.
+     */
+    @Override
+    public Set<Tag> getTags() {
+        return Collections.unmodifiableSet(tags.get().toSet());
+    }
+
+    public ObjectProperty<UniqueTagList> tagProperty() {
+        return tags;
+    }
+
+    /**
+     * Replaces this person's tags with the tags in the argument tag set.
+     */
+    public void setTags(Set<Tag> replacement) {
+        tags.set(new UniqueTagList(replacement));
+    }
+
+    @Override
+    public ObjectProperty<ProfilePicture> imageProperty() {
+        return image;
+    }
+
+    @Override
+    public ProfilePicture getPicture() {
+        return image.get();
+    }
+
+    @Override
+    public void setImage(String img) {
+        image.set(new ProfilePicture(img));
+    }
+
 ```
 ###### \java\seedu\address\model\person\ProfilePicture.java
 ``` java
@@ -698,12 +1064,10 @@ public class Birthday {
  */
 public class ProfilePicture {
 
-    public final String imageLocation;
+    private final String imageLocation;
 
     /**
-     * Validates given name.
-     *
-     * @throws IllegalValueException if given name string is invalid.
+     * Validates given location of image.
      */
     public ProfilePicture(String location) {
         requireNonNull(location);
@@ -713,6 +1077,7 @@ public class ProfilePicture {
     public String getLocation() {
         return imageLocation;
     }
+
     @Override
     public String toString() {
         return imageLocation;
@@ -739,23 +1104,25 @@ public class ProfilePicture {
 public class XmlImageStorage {
 
     private static final Logger logger = LogsCenter.getLogger(XmlImageStorage.class);
+    private static final String PNG = ".png";
 
     /**
      * Save selected image to image folder
-     * @throws IOException
+     *
+     * @throws IOException when image copy fails
      */
     public void saveImage(File image, String name) throws IOException {
         requireNonNull(image);
         requireNonNull(name);
 
-        File file = new File(name + ".png");
+        File file = new File(name + PNG);
         Files.copy(image.toPath(), file.toPath(), REPLACE_EXISTING);
     }
 
     /**
      * Deletes the selected image from folder
-     * @param image
-     * @throws IOException
+     * @param image to delete
+     * @throws IOException when image deletion fails
      */
     public void removeImage(File image) throws IOException {
         requireNonNull(image);
@@ -763,9 +1130,9 @@ public class XmlImageStorage {
         File[] files = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath())
                 .listFiles();
 
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].getName().equals(image.getName())) {
-                files[i].delete();
+        for (File file : files) {
+            if (file.getName().equals(image.getName())) {
+                file.delete();
             }
         }
     }
@@ -777,6 +1144,16 @@ public class XmlImageStorage {
  * Creates a birthday notification
  */
 public class BirthdayPopup {
+    private static final int WIDTH = 300;
+    private static final int MIN_HEIGHT = 125;
+    private static final int INCREMENT = 50;
+    private static final String BIRTHDAY_ALERT = "Birthday Alert!";
+    private static final String ICON_LOCATION = "src/main/resources/images/birthday_cake.png";
+    private static final String ICON_DESCRIPTION = "birthday icon";
+    private static final String CLOSE_BUTTON = "x";
+    private static final String BIRTHDAY_MESSAGE = "There are birthdays today: \n";
+    private static final int DELAY = 5000;
+
     private JDialog frame = new JDialog();
     private GridBagConstraints constraints = new GridBagConstraints();
 
@@ -790,10 +1167,11 @@ public class BirthdayPopup {
 
     /**
      * Creates the dialog for the popup
-     * @param size
+     *
+     * @param size of popup
      */
-    void createFrame(int size) {
-        frame.setSize(300, 125 + size * 50);
+    private void createFrame(int size) {
+        frame.setSize(WIDTH, MIN_HEIGHT + size * INCREMENT);
         frame.setUndecorated(true);
         frame.setLayout(new GridBagLayout());
         Dimension scrSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -805,9 +1183,7 @@ public class BirthdayPopup {
     /**
      * Creates the icon for the popup
      */
-    void createIcon() {
-        String header = "Birthday Alert!";
-
+    private void createIcon() {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.weightx = 1.0f;
@@ -815,8 +1191,8 @@ public class BirthdayPopup {
         constraints.insets = new Insets(5, 5, 5, 5);
         constraints.fill = GridBagConstraints.BOTH;
 
-        Icon headingIcon = new ImageIcon("src/main/resources/images/birthday_cake.png", "birthday icon");
-        JLabel headingLabel = new JLabel(header);
+        Icon headingIcon = new ImageIcon(ICON_LOCATION, ICON_DESCRIPTION);
+        JLabel headingLabel = new JLabel(BIRTHDAY_ALERT);
         headingLabel.setIcon(headingIcon);
         headingLabel.setOpaque(false);
         frame.add(headingLabel, constraints);
@@ -825,13 +1201,13 @@ public class BirthdayPopup {
     /**
      * Creates the close button for the popup
      */
-    void createCloseButton() {
+    private void createCloseButton() {
         constraints.gridx++;
         constraints.weightx = 0f;
         constraints.weighty = 0f;
         constraints.fill = GridBagConstraints.NONE;
         constraints.anchor = GridBagConstraints.NORTH;
-        JButton closeButton = new JButton(new AbstractAction("x") {
+        JButton closeButton = new JButton(new AbstractAction(CLOSE_BUTTON) {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 frame.dispose();
@@ -844,18 +1220,17 @@ public class BirthdayPopup {
 
     /**
      * create the message for all the person with birthday
-     * @param person
+     *
+     * @param person names that have birthdays
      */
     private void createMessage(String[] person) {
-        String message = "There are birthdays today: \n";
-
         constraints.gridx = 0;
         constraints.gridy++;
         constraints.weightx = 1.0f;
         constraints.weighty = 1.0f;
         constraints.insets = new Insets(5, 5, 5, 5);
         constraints.fill = GridBagConstraints.BOTH;
-        JLabel messageLabel = new JLabel(message);
+        JLabel messageLabel = new JLabel(BIRTHDAY_MESSAGE);
         frame.add(messageLabel, constraints);
         for (String e: person) {
             constraints.gridy++;
@@ -869,19 +1244,23 @@ public class BirthdayPopup {
      * create a timer for the popup
      */
     private void createPopup() {
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000); // time after which pop up will be disappeared.
-                    frame.dispose();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            };
-        }.start();
+        new Thread(() -> {
+            try {
+                Thread.sleep(DELAY);
+                frame.dispose();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }
+```
+###### \java\seedu\address\ui\BrowserPanel.java
+``` java
+    private void loadPersonMap(ReadOnlyPerson person) {
+        loadPage(GOOGLE_MAPS_URL_PREFIX + person.getAddress().toString().replaceAll(" ", "+")
+                + GOOGLE_SEARCH_URL_SUFFIX);
+    }
 ```
 ###### \java\seedu\address\ui\MainWindow.java
 ``` java
@@ -890,7 +1269,7 @@ public class BirthdayPopup {
      */
     private void handleMapEvent(ReadOnlyPerson person) {
         MapWindow mapWindow = new MapWindow(person);
-        mapWindow.show();
+        Platform.runLater(mapWindow::show);
     }
 
     /**
@@ -899,32 +1278,25 @@ public class BirthdayPopup {
     private void handleImageEvent(ReadOnlyPerson person) {
         Stage parent = new Stage();
         FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter filter =
-                new FileChooser.ExtensionFilter("Any Image files", "*.jpg", "*.png", "*.jpeg");
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(BUTTON_DESCRIPTION, IMAGE_EXTENSIONS);
         fileChooser.getExtensionFilters().add(filter);
         File result = fileChooser.showOpenDialog(parent);
         if (result != null) {
             try {
                 imageStorage.saveImage(result, person.getName().toString());
             } catch (IOException io) {
-                logger.warning("failed to copy image");
+                logger.warning(MESSAGE_COPY_FAILURE);
             }
-            person.setImage(person.getName().toString() + ".png");
-        } else {
-            raise(new NewResultAvailableEvent("Image Change Cancelled"));
+            person.setImage(person.getName().toString() + PNG);
         }
     }
-```
-###### \java\seedu\address\ui\MainWindow.java
-``` java
+
     @Subscribe
     private void handleMapPanelEvent(MapPersonEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));
         handleMapEvent(event.getPerson());
     }
-```
-###### \java\seedu\address\ui\MainWindow.java
-``` java
+
     @Subscribe
     private void handleChangeImageEvent(ChangeImageEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));
@@ -938,16 +1310,19 @@ public class BirthdayPopup {
  */
 public class MapWindow extends UiPart<Region> {
 
-    public static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
-    public static final String GOOGLE_SEARCH_URL_SUFFIX = "&cad=h";
+    public static final String TITLE = "Map";
+    public static final String SPACE = " ";
+    public static final String PLUS = "+";
 
+    private static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
+    private static final String GOOGLE_SEARCH_URL_SUFFIX = "&cad=h";
     private static final Logger logger = LogsCenter.getLogger(MapWindow.class);
     private static final String ICON = "/images/help_icon.png";
     private static final String FXML = "MapWindow.fxml";
-    private static final String TITLE = "Map";
+    private static final String MESSAGE_SHOW_MAP = "Showing map window for selected person.";
 
     @FXML
-    private WebView browser;
+    private WebView map;
 
     private final Stage dialogStage;
 
@@ -955,13 +1330,29 @@ public class MapWindow extends UiPart<Region> {
         super(FXML);
         Scene scene = new Scene(getRoot());
         //Null passed as the parent stage to make it non-modal.
-        dialogStage = createDialogStage(TITLE, null, scene);
+        dialogStage = setupStage(scene);
+        displayMap(person);
+    }
+
+    /**
+     * Setup stage for browser pop-up
+     */
+    private Stage setupStage(Scene scene) {
+        Stage dialogStage = createDialogStage(TITLE, null, scene);
         dialogStage.setMaximized(false);
         FxViewUtil.setStageIcon(dialogStage, ICON);
+        return dialogStage;
+    }
 
-        String userGuideUrl = GOOGLE_MAPS_URL_PREFIX + person.getAddress().toString().replaceAll(" ", "+")
+    /**
+     * Displays map of selected person on pop-up browser
+     *
+     * @param person Selected person to map
+     */
+    private void displayMap(ReadOnlyPerson person) {
+        String mapUrl = GOOGLE_MAPS_URL_PREFIX + person.getAddress().getMapableAddress().replaceAll(SPACE, PLUS)
                 + GOOGLE_SEARCH_URL_SUFFIX;
-        browser.getEngine().load(userGuideUrl);
+        map.getEngine().load(mapUrl);
     }
 
     /**
@@ -983,8 +1374,8 @@ public class MapWindow extends UiPart<Region> {
      * </ul>
      */
     public void show() {
-        logger.fine("Showing map window for selected person.");
-        dialogStage.showAndWait();
+        logger.fine(MESSAGE_SHOW_MAP);
+        dialogStage.show();
     }
 }
 ```
@@ -996,7 +1387,13 @@ public class MapWindow extends UiPart<Region> {
 public class PersonInfoPanel extends UiPart<Region> {
 
     private static final String FXML = "PersonInfoPanel.fxml";
+    private static final String EMPTY = "";
+    private static final String DEFAULT = "profiles/default.png";
+    private static final String DEFAULT_TEXT = "default";
+    private static final int RADIUS = 100;
     private final Logger logger = LogsCenter.getLogger(PersonInfoPanel.class);
+    private final ReadOnlyPerson person;
+    private final Circle circle = new Circle(RADIUS, RADIUS, RADIUS);
 
     @FXML
     private ImageView profileImage;
@@ -1018,58 +1415,104 @@ public class PersonInfoPanel extends UiPart<Region> {
     public PersonInfoPanel(ReadOnlyPerson person) {
         super(FXML);
         setConnections(person);
+        this.person = person;
         registerAsAnEventHandler(this);
+        setupProfileImage();
     }
 
-    public PersonInfoPanel() {
-        super(FXML);
-        setDefaultConnections();
-        registerAsAnEventHandler(this);
+    private void setupProfileImage() {
+        profileImage.setClip(circle);
     }
 
+    /**
+     * Updates {@code PersonInfoPanel} with new details from {@code person}
+     *
+     * @param person New details for update
+     */
     public void updateConnections(ReadOnlyPerson person) {
         setConnections(person);
     }
 
     private void setDefaultConnections() {
-        name.setText("");
-        phone.setText("");
-        address.setText("");
-        email.setText("");
-        birthday.setText("");
-        remark.setText("");
-        tags.setAccessibleText("");
-        profileImage.setImage(new Image("profiles/default.png"));
+        setConnections(EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, null, DEFAULT_TEXT);
     }
 
     private void setConnections(ReadOnlyPerson person) {
-        name.setText(person.getName().fullName);
-        phone.setText(person.getPhone().value);
-        address.setText(person.getAddress().value);
-        email.setText(person.getEmail().value);
-        birthday.setText(person.getBirthday().value);
-        remark.setText(person.getRemark().value);
-        tags.getChildren().clear();
-        person.getTags().forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+        if (person == null) {
+            setDefaultConnections();
+        } else {
+            setConnections(person.getName().fullName, person.getPhone().value, person.getAddress().value,
+                    person.getEmail().value, person.getBirthday().value, person.getRemark().value, person.getTags(),
+                    person.getPicture().getLocation());
+        }
+    }
+
+    private void setConnections(String name, String phone, String address, String email, String birthday,
+                                String remark, Set<Tag> tags, String loc) {
+        this.name.setText(name);
+        this.phone.setText(phone);
+        this.address.setText(address);
+        this.email.setText(email);
+        this.birthday.setText(birthday);
+        this.remark.setText(remark);
+        this.tags.getChildren().clear();
+        if (tags != null) {
+            setTags(tags);
+        }
+        setImage(loc);
+    }
+
+    private void setTags(Set<Tag> tagList) {
+        tagList.forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+    }
+
+    private void setImage(String loc) {
         try {
-            String loc = person.getPicture().getLocation();
-            Image image;
-            if (loc.equals("default")) {
-                image = new Image("profiles/default.png");
-            } else {
-                File img = new File(loc);
-                image = new Image(img.toURI().toString());
-            }
+            Image image = getProfileImage(loc);
             profileImage.setImage(image);
         } catch (IllegalArgumentException iae) {
-            profileImage.setImage(new Image("profiles/default.png"));
+            profileImage.setImage(new Image(DEFAULT));
         }
+    }
+
+    private Image getProfileImage(String loc) {
+        Image image;
+        if (loc.equals(DEFAULT_TEXT)) {
+            image = new Image(DEFAULT);
+        } else {
+            File img = new File(loc);
+            image = new Image(img.toURI().toString());
+        }
+        return image;
     }
 
     @Subscribe
     private void handlePersonPanelSelectionChangedEvent(PersonPanelSelectionChangedEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));
         setConnections(event.getNewSelection().person);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        // short circuit if same object
+        if (other == this) {
+            return true;
+        }
+
+        // instanceof handles nulls
+        if (!(other instanceof PersonInfoPanel)) {
+            return false;
+        }
+
+        // state check
+        PersonInfoPanel card = (PersonInfoPanel) other;
+        return name.getText().equals(card.name.getText())
+                && phone.getText().equals(card.phone.getText())
+                && address.getText().equals(card.address.getText())
+                && email.getText().equals(card.email.getText())
+                && birthday.getText().equals(card.birthday.getText())
+                && remark.getText().equals(card.remark.getText())
+                && person.equals(card.person);
     }
 }
 ```
@@ -1499,14 +1942,14 @@ public class PersonInfoPanel extends UiPart<Region> {
 ###### \resources\view\MapWindow.fxml
 ``` fxml
 <StackPane fx:id="mapWindowRoot" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-    <WebView fx:id="browser" />
+    <WebView fx:id="map" />
 </StackPane>
 ```
 ###### \resources\view\PersonInfoPanel.fxml
 ``` fxml
 <VBox xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
     <GridPane fx:id="personInfoPanel" styleClass="grid-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-        <ImageView fx:id="profileImage" fitHeight="200.0" fitWidth="200" preserveRatio="true" GridPane.columnIndex="0" />
+        <ImageView fx:id="profileImage" fitHeight="200.0" fitWidth="200" GridPane.columnIndex="0" />
       <GridPane GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2" >
          <columnConstraints>
            <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />

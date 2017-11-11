@@ -1,4 +1,4 @@
-﻿= AddressBook Level 4 - Developer Guide
+﻿= PocketBook - Developer Guide
 :toc:
 :toc-title:
 :toc-placement: preamble
@@ -12,7 +12,7 @@ endif::[]
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 :repoURL: https://github.com/se-edu/addressbook-level4/tree/master
 
-By: `Team SE-EDU`      Since: `Jun 2016`      Licence: `MIT`
+By: `F09-B3`      Since: `AUG 2017`      Licence: `MIT`      Referenced from: `AddressBook-Level 4`
 
 == Setting up
 
@@ -693,6 +693,214 @@ model.updatePerson(personToEdit, editedPerson);
 
 // end::remark[]
 
+// tag::DeleteMultiple[]
+=== Delete Multiple Mechanism
+
+The delete multiple mechanism is a edit of the previous `delete` command. It enables the user to delete several persons
+from the address book in one command.
+
+The `DeleteCommandParser` will parse all the given `Index`(es) provided by the user and creates a new `DeleteCommand` with the provided indices.
+The `DeleteCommand` will then go through the list of `Person` and delete all the `Person` of the given `Index`
+
+Implementation of deleting multiple `Person` from address book:
+[source, java]
+----
+private String deleteAllSelectedPersonFromAddressBook() throws CommandException {
+    StringJoiner joiner = new StringJoiner(COMMA);
+    List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+    for (int i = targetIndex.length - 1; i >= 0; i--) {
+        if (targetIndex[i].getZeroBased() >= lastShownList.size()) {
+            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+
+        ReadOnlyPerson personToDelete =
+                        lastShownList.get(targetIndex[i].getZeroBased());
+
+        deletePersonFromAddressBook(joiner, personToDelete);
+    }
+    return joiner.toString();
+}
+----
+==== Design Considerations
+
+**Aspect:** Implementation of `DeleteCommandParser` +
+**Alternative 1 (current choice):** Edit the parser to take in several values  +
+**Pros:** Reduce the need for a new class and increases efficiency +
+**Cons:** Editing the previous `DeleteCommandParser` is not ideal +
+**Alternative 2:** Implement another parser called `DeleteMultipleCommandParser` +
+**Pros:** Can call the `DeleteCommandParser` several times rather than creating a new algorithm +
+**Cons:** Extra command. Extra classes. Reduces inefficiency as several `DeleteCommandParser` needs to be created
+
+**Aspect:** Implementation of `DeleteCommand` +
+**Alternative 1 (current choice):** Edit the command to take in several `Index`  +
+**Pros:** Reduce the need for a new class and increases efficiency +
+**Cons:** Editing the previous `DeleteCommand` is not ideal +
+**Alternative 2:** Implement another command called `DeleteMultipleCommand` +
+**Pros:** Can call `DeleteCommand` several times rather than creating a new algorithm +
+**Cons:** Extra command. Extra classes. Reduces inefficiency as several `DeleteCommand` needs to be created
+
+// end::DeleteMultiple[]
+
+// tag::Map[]
+=== Addressing Mapping Mechanism
+
+The mapping mechanism is facilitated by `MapWindow` and `MapCommand`, which resides within `UI` and `Model` component respectively.
+It creates a new pop-up browser showing the `Address` of the selected `Person` on Google Maps.
+This mechanism works side by side with the `Address` field of each `Person`.
+
+`MapCommandParser` parses the `Index` entered by the user and passes it to a new `MapCommand` which will call the `Model` function to show
+the selected `Person` address on a pop-up browser.
+
+[NOTE]
+Multiple maps can be opened at the same time.
+
+Implementation of mapping in `MapWindow`:
+[source, java]
+----
+private void displayMap(ReadOnlyPerson person) {
+    String mapUrl = GOOGLE_MAPS_URL_PREFIX
+                + person.getAddress().getMapableAddress().replaceAll(SPACE, PLUS)
+                + GOOGLE_SEARCH_URL_SUFFIX;
+    map.getEngine().load(mapUrl);
+}
+----
+==== Design Considerations
+
+**Aspect:** Implementation of browser +
+**Alternative 1 (current choice):** Shows map on new pop-up browser  +
+**Pros:** Allows multiple maps to be shown +
+**Cons:** Required more browsers to be shown and may slow down the processing speed of the app +
+**Alternative 2:** Shows map on the built-in browser on app UI +
+**Pros:** Removes the need for more pop-up windows +
+**Cons:** Unable to show several maps at once
+
+**Aspect:** Implementation with or without Google Maps API +
+**Alternative 1 (current choice):** Implement map with browser and Google Maps URl +
+**Pros:** Reduce the need to include Google Maps API with may slow down the app and increase size of app +
+**Cons:** The browser may not be as reliable compared to the API +
+**Alternative 2:** Implement map with Google Maps API +
+**Pros:** More stable and reliable compared to using browser and URL +
+**Cons:** Increases app size and may slow down app
+
+// end::Map[]
+
+// tag::RemoveTag[]
+=== RemoveTag mechanism
+
+The removetag mechanism is facilitated by `RemoveTagCommand` and `RemoveTagCommandParser`, which resides within the `Logic` component.
+It deletes the tag specified by the user from all or one `Person` selected by the user.
+This mechanism works side by side with the `Tag` list of each `Person`.
+
+`RemoveTagCommandParser` parses the `Index` specified by the user and passes it to a new `RemoveTagCommand`.
+If no `Index` were specified by the user, the `Tag` will be deleted from all the `Person` in the address book.
+
+[NOTE]
+The `Tag` will also be deleted from the list of tags in the address book if it is deleted from all `Person`
+
+Implementation of removing tag from single `Person`:
+[source, java]
+----
+private String removeTagFromPerson(int index) throws CommandException {
+    List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+    ReadOnlyPerson person = lastShownList.get(index);
+    boolean result = removeAndUpdate(person);
+    if (!result) {
+        throw new CommandException(MESSAGE_TAG_NOT_FOUND_IN_PERSON);
+    }
+    return person.getName().fullName;
+}
+----
+
+Implementation of removing tag from all `Person`:
+[source, java]
+----
+ private void removeTagFromAllPerson() throws CommandException {
+    List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+    for (ReadOnlyPerson person: lastShownList) {
+        removeAndUpdate(person);
+    }
+}
+----
+==== Design Considerations
+
+**Aspect:** Implementation to delete `Tag` from all or single `Person` +
+**Alternative 1 (current choice):** Allows users to choose between deleting from single or all `Person` +
+**Pros:** Allows more freedom for the user +
+**Cons:** Requires more processing and more prone to errors +
+**Alternative 2:** Only allow user to delete `Tag` from all `Person` +
+**Pros:** Reduces the complexity and reduces chances for errors +
+**Cons:** Very rigid. User cannot choose to delete from single user and may not be useful.
+
+// end::RemoveTag[]
+
+// tag::Background[]
+=== App running in background mechanism
+
+The background app mechanism is facilitated by the `MainApp`. It creates a system tray icon whenever a new PocketBook app is started.
+
+`MainApp` first determines if the system tray is supported in the current platform. It then creates a tray icon with a pop-up menu.
+It will try to add the tray icon to the system tray and provides an easier access to the app. Moreover, it will be able to reduce subsequent startup times of the app.
+
+[NOTE]
+The app can only be exited fully using the `Exit` command or menu option.
+
+Implementation to add icon to system tray:
+[source, java]
+----
+private void startTray() {
+    Platform.setImplicitExit(false);
+    if (!SystemTray.isSupported()) {
+        logger.warning(MESSAGE_TRAY_UNSUPPORTED);
+        return;
+    }
+    initTrayIcon();
+    try {
+        tray = SystemTray.getSystemTray();
+        tray.add(trayIcon);
+    } catch (AWTException e) {
+        logger.warning(MESSAGE_ADD_TRAY_ICON_FAIL);
+    }
+}
+----
+// end::Background[]
+
+// tag::Image[]
+
+=== Image mechanism
+
+The image mechanism is facilitated by the `ImageCommandParser` and `ImageCommand`, which resides within the `Logic` component,
+It adds/edits/removes the `ProfilePicture` of a `Person`.
+
+`ImageCommandParser` parses the `Index` provided by the user and passes it to a new `ImageCommand`. +
+If `remove` is detected in the input, the `ProfilePicture` of the selected by the user will be deleted and reset to default. +
+Else, a file browser pop-up to allow user to choose which picture they would like to choose as the `Person` 's `ProfilePicture`.
+
+Implementation of `ImageCommand`:
+[source, java]
+----
+private ReadOnlyPerson updateDisplayPicture(List<ReadOnlyPerson> lastShownList,
+    ReadOnlyPerson personToEdit) throws PersonNotFoundException {
+
+    ReadOnlyPerson editedPerson;
+    if (remove) {
+        editedPerson = removeDisplayPicture(personToEdit);
+    } else {
+        editedPerson = selectDisplayPicture(lastShownList, personToEdit);
+    }
+    return editedPerson;
+}
+----
+==== Design Considerations
+
+**Aspect:** Implementation of method to choose file +
+**Alternative 1 (current choice):** Opens a FileChooser dialog to allow user to choose photo +
+**Pros:** Allows more freedom for the user +
+**Cons:** Requires more processing and more prone to errors +
+**Alternative 2:** Only allow user to input the file location in CLI +
+**Pros:** Reduces the complexity and reduces chances for errors +
+**Cons:** Very rigid. User will have a hard time finding the file path of the image.
+// end::Image[]
+
 // tag::BirthdayNotifier[]
 === Birthday and Birthday Notifier mechanism
 
@@ -803,7 +1011,7 @@ image::BirthdayNotifierActivityDiagram.png[width = "200"]
 ---
 // end::BirthdayNotifier[]
 
-// tag::ShowCommand[]
+// tag::findbytag[]
 === Find command
 
 The 'find' command was originally used only to search for users by name. Now it can be used to display all members of a single tag. An example of its use is shown below:
@@ -844,7 +1052,37 @@ image::FindCommandArchitecture.png[width="800"]
 
 ---
 
-// end::ShowCommand[]
+// end::findbytag[]
+
+
+// tag::numtimessearched[]
+=== Tracking and sorting by number of times searched
+
+Every person has an invisible numTimesSearched field that begins at 0 and is incremented by 1 every time they
+found by the `find` command.
+
+The `sort` command has been enhanced to allow for displayed users to be sorted by numTimesSearched,
+so that the most-searched persons appear at the top. An example of its use:
+
+    AddressBook contains: Malcolm (searched for 3 times), Tony (searched for 0 times), and Julia (searched 10 times).
+    User enters the command: 'sort numtimessearched'
+    ---------------------
+    The program returns by listing: Julia, Malcolm, Tony
+    ---------------------
+    User enters this command five times: 'find Tony'
+    User enters this command: 'sort numtimessearched'
+    ---------------------
+    The program returns by listing: Julia, Tony, Malcolm
+
+This field required the creation of the class numTimesSearched, which contains the integer value,
+and methods for incrementing and returning the value.
+
+ParserUtil.java was updated to implement the new sorting method: notably, while other fields are sorted lexicographically,
+this field had to be compared numerically
+(e.g. lexicographically, 5 would come after 10, which is not the intended way to sort).
+
+---
+// end::numtimessearched[]
 
 // tag::Fuzzyfinder[]
 === Fuzzyfinder

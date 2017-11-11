@@ -27,7 +27,7 @@ public interface Model {
 
     //@@author justintkj
     /**Sorts all the people in the current database*/
-    void sortPerson(String sortType);
+    String sortPerson(String sortType);
     //@@author
 
     /** Adds the given person */
@@ -70,4 +70,9 @@ public interface Model {
      * Edits the profile picture for selected person
      */
     void changeImage(ReadOnlyPerson target) throws PersonNotFoundException;
+
+    /**
+     * Clears the info panel
+     */
+    void clearInfoPanel();
 }

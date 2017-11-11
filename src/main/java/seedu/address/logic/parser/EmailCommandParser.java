@@ -34,6 +34,7 @@ public class EmailCommandParser implements Parser<EmailCommand> {
         String subject;
         String message;
         try {
+
             String[] messages = args.trim().split(COMMA_STRING);
             checkValidNumberOfArguments(messages);
             String[] splitArgs = messages[FIRST_PART_MESSAGE].trim().split(SPACE_STRING);

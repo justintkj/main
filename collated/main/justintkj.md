@@ -42,7 +42,18 @@ public class EmailCommand extends Command {
             + "Example: " + COMMAND_WORD + " 1"
             + ",subjectmessage,textmessage";
     public static final String INCORRECT_EMAIL_FORMAT = "Incorrect Email format";
-    public static final String CORRET_EMAIL_FORMAT = "Email successfully sent to : ";
+    public static final String CORRECT_EMAIL_FORMAT = "Email successfully sent to : ";
+    public static final String HOST_EMAIL = "smtp.gmail.com";
+    public static final String TEAM_EMAIL_ADDRESS = "cs2103f09b3@gmail.com";
+    public static final String TEAM_EMAIL_PASSWORD = "pocketbook";
+    public static final String SMTP_ENABLE = "mail.smtp.starttls.enable";
+    public static final String TRUE = "true";
+    public static final String SMTP_HOST = "mail.smtp.host";
+    public static final String SMTP_PORT = "mail.smtp.port";
+    public static final String PORT_NUMBER = "587";
+    public static final String SMTP_AUTHENTICATION = "mail.smtp.auth";
+    public static final String SMTP_STARTTLS = "mail.smtp.starttls.required";
+    public static final String SMTP = "smtp";
     public final Index index;
     public final String subject;
     public final String message;
@@ -54,7 +65,7 @@ public class EmailCommand extends Command {
     private String from;
 
     private Session mailSession;
-    private Message msg;
+    private Message composedMessage;
 
     public EmailCommand(Index index, String subject, String message) {
         requireNonNull(index);
@@ -90,55 +101,60 @@ public class EmailCommand extends Command {
             composeMethod(messageText, sessionDebug, props);
 
             //Sends the Message
-            sendsMessage(host, user, pass, mailSession, msg);
+            sendMessage(host, user, pass, mailSession, composedMessage);
 
         } catch (Exception ex) {
             throw new CommandException(INCORRECT_EMAIL_FORMAT);
         }
-        return new CommandResult(CORRET_EMAIL_FORMAT + personToEmail.getName());
+        return new CommandResult(CORRECT_EMAIL_FORMAT + personToEmail.getName());
     }
 
     /**
-     * Compose the Email object
+     * Creates the Email object
+     *
      * @param messageText The message to be sent out
      * @param sessionDebug
      * @param props
      * @throws MessagingException
      */
     private void composeMethod(String messageText, boolean sessionDebug, Properties props) throws MessagingException {
-        java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+        Provider provider = new com.sun.net.ssl.internal.ssl.Provider();
+        java.security.Security.addProvider(provider);
         mailSession = Session.getDefaultInstance(props, null);
         mailSession.setDebug(sessionDebug);
-        msg = composeMessage(to, from, subject, messageText, mailSession);
+        composedMessage = composeMessage(to, from, subject, messageText, mailSession);
     }
 
     /**
      *  Initialises basic sending credentials
-     * @param personToEmail Person to recieve the email
+     *
+     *  @param personToEmail Person to recieve the email
      */
     private void generateInitialLoginCred(ReadOnlyPerson personToEmail) {
-        host = "smtp.gmail.com";
-        user = "cs2103f09b3@gmail.com";
-        pass = "pocketbook";
+        host = HOST_EMAIL;
+        user = TEAM_EMAIL_ADDRESS;
+        pass = TEAM_EMAIL_PASSWORD;
         to = personToEmail.getEmail().toString();
-        from = "cs2103f09b3@gmail.com";
+        from = TEAM_EMAIL_ADDRESS;
     }
 
     /**
-     * Updates initial properties of javaMail
+     * Creates initial properties of javaMail
+     *
      * @param host DNS name of a server
      * @param props Properties of javamail API
      */
     private void updateProperties(String host, Properties props) {
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.required", "true");
+        props.put(SMTP_ENABLE, TRUE);
+        props.put(SMTP_HOST, host);
+        props.put(SMTP_PORT, PORT_NUMBER);
+        props.put(SMTP_AUTHENTICATION, TRUE);
+        props.put(SMTP_STARTTLS, TRUE);
     }
 
     /**
      * Sends the message to the email chosen
+     *
      * @param host DNS name of a server
      * @param user Email of CS2103F09B3 Team
      * @param pass Password of CS2103F09B3 Team
@@ -146,18 +162,19 @@ public class EmailCommand extends Command {
      * @param msg Message to be sent out
      * @throws MessagingException Invalid parameters used
      */
-    private void sendsMessage(String host, String user, String pass, Session mailSession,
-                              Message msg) throws MessagingException {
-        assert host == "smtp.gmail.com";
-        assert user == "cs2103f09b3@gmail.com";
-        assert pass == "pocketbook";
-        Transport transport = mailSession.getTransport("smtp");
+    private void sendMessage(String host, String user, String pass, Session mailSession,
+                             Message msg) throws MessagingException {
+        assert host == HOST_EMAIL;
+        assert user == TEAM_EMAIL_ADDRESS;
+        assert pass == TEAM_EMAIL_PASSWORD;
+        Transport transport = mailSession.getTransport(SMTP);
         transport.connect(host, user, pass);
         transport.sendMessage(msg, msg.getAllRecipients());
         transport.close();
     }
 
     /**
+     * Creates the message using the valid parameters.
      *
      * @param to Email of person to send
      * @param from Email of Sender
@@ -181,6 +198,7 @@ public class EmailCommand extends Command {
 
     /**
      * Creates the signature at the end of the email provided by CS2103F03B3 Team
+     *
      * @return New message attached with signature
      */
     private String teamSignatureGenerator() {
@@ -250,7 +268,7 @@ public class FavouriteCommand extends UndoableCommand {
         } catch (DuplicatePersonException dpe) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         } catch (PersonNotFoundException pnfe) {
-            throw new AssertionError("The target person cannot be missing");
+            throw new AssertionError(MESSAGE_MISSING_PERSON);
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         return new CommandResult(String.format(MESSAGE_FAVOURITE_SUCCESS, editedPerson));
@@ -259,10 +277,11 @@ public class FavouriteCommand extends UndoableCommand {
 
     /**
      * Toggles the current color state of the person selected
+     *
      * @param editedPerson selected person to edit
      */
     private void toggleColor(ReadOnlyPerson editedPerson) {
-        if (editedPerson.getFavourite().toString().equals("true")) {
+        if (editedPerson.getFavourite().toString().equals(Favourite.COLOR_SWITCH)) {
             favourite.inverse();
         }
     }
@@ -306,7 +325,8 @@ public class FavouriteCommand extends UndoableCommand {
     }
 
     /**
-     * Redo for numRedo number of times
+     * Repeats numRedo commands number of times
+     *
      * @throws CommandException if redo while stack is empty
      */
     private void redoMultipleTimes() throws CommandException {
@@ -321,6 +341,7 @@ public class FavouriteCommand extends UndoableCommand {
 
     /**
      * Checks if number of redos is not bigger than current avaliable number of redos
+     *
      * @throws CommandException if redo while stack is empty
      */
     private void checksRedoSizeNotBiggerThanStack() throws CommandException {
@@ -331,10 +352,11 @@ public class FavouriteCommand extends UndoableCommand {
 
     /**
      * Checks if current number of redo avaliable is zero
+     *
      * @throws CommandException if current stack size is zero
      */
     private void checksStackNotEmpty() throws CommandException {
-        if (undoRedoStack.getRedoStackSize() == 0) {
+        if (undoRedoStack.getRedoStackSize() == EMPTY_STACK) {
             throw new CommandException(EMPTY_STACK_ERROR_MESSAGE);
         }
     }
@@ -364,9 +386,7 @@ public class RemarkCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_REMARK + "Likes to swim.";
 
-    public static final String MESSAGE_REMARK_SUCCESS = "Remark edited for Person: ";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
-    public static final String MISSING_PERSON = "Person cannot be found";
+    private static final String MESSAGE_REMARK_SUCCESS = "Remark edited for Person: ";
 
     private final Index index;
     private final Remark remark;
@@ -401,7 +421,7 @@ public class RemarkCommand extends UndoableCommand {
         } catch (DuplicatePersonException dpe) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         } catch (PersonNotFoundException pnfe) {
-            throw new AssertionError(MISSING_PERSON);
+            throw new AssertionError(MESSAGE_MISSING_PERSON);
         }
 
         model.updateListToShowAll();
@@ -409,7 +429,8 @@ public class RemarkCommand extends UndoableCommand {
     }
 
     /**
-     * Change the remark field of the selected person to edit
+     * Changes the remark field of the selected person to edit
+     *
      * @param personToEdit Selected person to edit
      * @return A new person with remark field edited
      */
@@ -455,7 +476,9 @@ public class SortCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " address"
             + "Example: " + COMMAND_WORD + " remark"
             + "Example: " + COMMAND_WORD + " email"
-            + "Example: " + COMMAND_WORD + " birthday";
+            + "Example: " + COMMAND_WORD + " birthday"
+            + "Example: " + COMMAND_WORD + " numTimesSearched"
+            + "Example: " + COMMAND_WORD + " favourite";
 
 
     private String sortType;
@@ -499,7 +522,8 @@ public class SortCommand extends UndoableCommand {
         return new CommandResult(MESSAGE_SUCCESS);
     }
     /**
-     * Undo for numUndo number of times
+     * Remove commands for numUndo number of times
+     *
      * @throws CommandException if undo while stack is empty
      */
     private void undoMultipleTimes() throws CommandException {
@@ -514,6 +538,7 @@ public class SortCommand extends UndoableCommand {
 
     /**
      * Checks if number of undos is not bigger than current avaliable number of undo
+     *
      * @throws CommandException if redo while stack is empty
      */
     private void checkUndoSizeNotBiggerThanStack() throws CommandException {
@@ -524,10 +549,11 @@ public class SortCommand extends UndoableCommand {
 
     /**
      * Checks if current number of redo avaliable is zero
+     *
      * @throws CommandException if current stack size is zero
      */
     private void checkStackNotEmpty() throws CommandException {
-        if (undoRedoStack.getUndoStackSize() == 0) {
+        if (undoRedoStack.getUndoStackSize() == EMPTY_STACK) {
             throw new CommandException(MESSAGE_EMPTYSTACK);
         }
     }
@@ -548,21 +574,68 @@ public class SortCommand extends UndoableCommand {
 public class AddCommandParser implements Parser<AddCommand> {
 
     public static final int SIZE_2 = 2;
+    public static final String EMAIL_REGEX = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+";
+    public static final String EMAIL_EXCEPTION_MESSAGE = "invalid email\n Example: Jason@example.com";
+    public static final String BLOCK_REGEX = "block \\d{1,3}";
+    public static final String BLOCK_EXCEPTION_MESSAGE = "invalid address, Block Number. \nExample: Block 123"
+            + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String STREET_REGEX = "[a-zA-z]+ street \\d{1,2}";
+    public static final String STREET_EXCEPTION_MESSAGE = "invalid address, Street. \nExample: Jurong Street 11"
+            + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String UNIT_REGEX = "#\\d\\d-\\d{1,3}[a-zA-Z]{0,1}";
+    public static final String UNIT_EXCEPTION_MESSAGE = "invalid address, Unit. \n Example: #01-12B"
+            + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String POSTAL_REGEX = "singapore \\d{6,6}";
+    public static final String PHONE_REGEX = "\\d{8}";
+    public static final String PHONE_EXCEPTION_MESSAGE = "Number should be 8 digits long!\n"
+            + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String BIRTHDAY_REGEX = "\\d{1,2}-\\d{1,2}-\\d{4,4}";
 
+    public static final String BIRTHDAY_EXCEPTION_MESSAGE = "invalid birthday,\n Example: 12-09-1994";
+    public static final String NAME_EXCEPTION_MESSAGE = "Missing Name!\n" + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String FALSE = "false";
+    public static final String DEFAULT = "default";
+    public static final String ALTERNATIVE_METHOD_LOG_MESSAGE = "Adding a person using alternative method ";
+    public static final String PREFIX_METHOD_LOG_MESSAGE = "Adding a person using prefix method";
+    public static final String SPACE_REGEX = "\\ {1,1}";
+    public static final String COMMA_REGEX = "\\,{1,1}";
+    public static final String START_REGEX = "^";
+    public static final String END_REGEX = "$";
+    public static final int INDEX_ONE = 1;
+    public static final int INDEX_TWO = 2;
+    public static final int INDEX_THREE = 3;
+    public static final int INDEX_FOUR = 4;
+    public static final int INDEX_FIVE = 5;
+    public static final int INDEX_SIX = 6;
+    public static final int INDEX_SEVEN = 7;
+    public static final int INDEX_EIGHT = 8;
+
+    private static final Logger logger = LogsCenter.getLogger(AddCommandParser.class);
+    private static Level currentLogLevel = Level.INFO;
+    private String[] emailPatterns = {EMAIL_REGEX};
+    private String[] blockPatterns = {BLOCK_REGEX};
+    private String[] streetPatterns = {STREET_REGEX};
+    private String[] unitPatterns = {UNIT_REGEX};
+    private String[] postalPatterns = {POSTAL_REGEX};
+    private String[] phonePatterns = {PHONE_REGEX};
+    private String[] birthdayPatterns = {BIRTHDAY_REGEX};
     /**
      * Parses the given {@code String} of arguments in the context of the AddCommand
      * and returns an AddCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public AddCommand parse(String args) throws ParseException {
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG,
-                        PREFIX_REMARK, PREFIX_BIRTHDAY);
+                        PREFIX_REMARK, PREFIX_BIRTHDAY, PREFIX_FAVOURITE);
         try {
             if (containsAnyPrefix(args)) {
+                logger.info(PREFIX_METHOD_LOG_MESSAGE + currentLogLevel);
                 validatesAllPrefixPresent(argMultimap);
                 return createNewPerson(argMultimap);
             } else {
+                logger.info(ALTERNATIVE_METHOD_LOG_MESSAGE + currentLogLevel);
                 return alternativeCreateNewPerson(args);
             }
         } catch (IllegalValueException ive) {
@@ -572,36 +645,39 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     /**
      * Creates a new person without using any prefix
+     *
      * @param args input string given
      * @return New AddCommand with a new person
      * @throws IllegalValueException Invalid parameter for any of person's details
      */
     private AddCommand alternativeCreateNewPerson(String args) throws IllegalValueException {
-        String[] allArgs = args.split(",");
+        String[] allArgs = args.split(COMMA_STRING);
         checkNameFormat(allArgs);
 
         //Initial person's details
-        Name name = new Name(allArgs[0]);
-        Remark remark = new Remark("");
-        Birthday birthday = new Birthday("");
+        Name name = new Name(allArgs[INDEX_ZERO]);
+        Remark remark = new Remark(EMPTY_STRING);
+        Birthday birthday = new Birthday(EMPTY_STRING);
         Email email;
         Phone phone;
         String blocknum;
         String streetnum;
         String unitnum;
         String postalnum = "";
-        Favourite favourite = new Favourite("false");
-        ProfilePicture picture = new ProfilePicture("default");
+        Address address;
+        Favourite favourite = new Favourite(FALSE);
+        ProfilePicture picture = new ProfilePicture(DEFAULT);
 
         //Generate person's details
-        email = getEmailFromString(args);
-        blocknum = getBlockFromString(args);
-        streetnum = getStreetFromString(args);
-        unitnum = getUnitFromString(args);
-        postalnum = getPostalFromString(args, postalnum);
-        phone = getPhoneFromString(args);
-        birthday = getBirthdayFromString(args, birthday);
-        Address address = new Address(blocknum + ", " + streetnum + ", " + unitnum + postalnum);
+        email = new Email (getOutputFromString(args, emailPatterns, EMAIL_EXCEPTION_MESSAGE));
+        blocknum = getOutputFromString(args, blockPatterns, BLOCK_EXCEPTION_MESSAGE);
+        streetnum = getOutputFromString(args, streetPatterns, STREET_EXCEPTION_MESSAGE);
+        unitnum = getOutputFromString(args, unitPatterns, UNIT_EXCEPTION_MESSAGE);
+        postalnum = getOutputFromString(args, postalPatterns, EMPTY_STRING);
+        phone = new Phone(getOutputFromString(args, phonePatterns, PHONE_EXCEPTION_MESSAGE)
+                .trim().replace(COMMA_STRING, EMPTY_STRING));
+        birthday = validateBirthdayNotFuture(args);
+        address = generatesAddress(blocknum, streetnum, unitnum, postalnum);
         Set<Tag> tagList = new HashSet<>();
         ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList, picture,
                 favourite);
@@ -609,187 +685,156 @@ public class AddCommandParser implements Parser<AddCommand> {
     }
 
     /**
-     * Go through the list of string to look for a valid birthday parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @param birthday Birthday object to store birthday details of a person
-     * @return new Birthday if found a valid birthday
-     * @throws IllegalValueException Nothing conforms to legal birthday format
+     * Creates an Address using all it's relevant parameter
+     *
+     * @param blocknum Block number
+     * @param streetnum Street number
+     * @param unitnum Unit number
+     * @param postalnum Postal Number (Optional)
+     * @return Address with all valid fields
+     * @throws IllegalValueException Any of the non-optional field is invalid
      */
-    private Birthday getBirthdayFromString(String args, Birthday birthday) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        Pattern birthpattern = Pattern.compile("\\d{1,2}-\\d{1,2}-\\d{4,4}",
-                Pattern.CASE_INSENSITIVE);
-        matcher = birthpattern.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            if (Birthday.isValidBirthday(matcher.group(0))) {
-                birthday = new Birthday(matcher.group(0));
-            } else {
-                throw new IllegalValueException("invalid birthday,\n Example: 12-09-1994");
-            }
+    private Address generatesAddress(String blocknum, String streetnum, String unitnum, String postalnum)
+            throws IllegalValueException {
+        Address address;
+
+        if (postalnum != EMPTY_STRING) {
+            address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING
+                + unitnum + COMMA_SPACE_STRING + postalnum);
+        } else {
+            address = new Address(blocknum + COMMA_SPACE_STRING + streetnum + COMMA_SPACE_STRING + unitnum + postalnum);
+        }
+        return address;
+    }
+
+    /**
+     * Creates a birthday if the given birthday is not in the future.
+     *
+     * @param args birthday in string
+     * @return birthday in past
+     * @throws IllegalValueException birthday is in future
+     */
+    private Birthday validateBirthdayNotFuture(String args) throws IllegalValueException {
+        Birthday birthday;
+        String unprocessedBirthday = getOutputFromString(args, birthdayPatterns, EMPTY_STRING);
+        if (unprocessedBirthday.equals(EMPTY_STRING)) {
+            return new Birthday (EMPTY_STRING);
+        } else if (Birthday.isValidBirthday(unprocessedBirthday)) {
+            birthday = new Birthday(unprocessedBirthday);
+        } else {
+            throw new IllegalValueException(BIRTHDAY_EXCEPTION_MESSAGE);
         }
         return birthday;
     }
 
     /**
-     * Go through the list of string to look for a valid phone number parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new Phone if found a valid birthday
-     * @throws IllegalValueException Nothing conforms to legal birthday format
+     * Goes through the argument string to look for an expression that fix regex in patterns.
+     *
+     * @param args user input string
+     * @param patterns Regex array for all the patterns to compare
+     * @param exceptionMessage Output error message
+     * @return String that is valid according to patterns
+     * @throws IllegalValueException no valid expression found
      */
-    private Phone getPhoneFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        Phone phone;
-        Pattern phonepattern = Pattern.compile("\\ {0,1}\\d{8}\\ {0,1}");
-        matcher = phonepattern.matcher(args);
-        matchFound = matcher.find();
+    private String getOutputFromString(String args, String[] patterns, String exceptionMessage)
+            throws IllegalValueException {
+
+        Matcher matcher = null;
+        boolean isMatchFound = false;
+        boolean isAnyMatchFound = false;
+        ArrayList<String> listOfValidOutput = new ArrayList<String>();
+        String[] constraintpatterns = constraintPatterns(patterns[INDEX_ZERO]);
+
+        for (int i = INDEX_ZERO; i < constraintpatterns.length; i++) {
+            Pattern pattern = Pattern.compile(constraintpatterns[i], Pattern.CASE_INSENSITIVE);
+            matcher = pattern.matcher(args);
+            isMatchFound = matcher.find();
+            if (isMatchFound) {
+                isAnyMatchFound = true;
+                listOfValidOutput.add(matcher.group(INDEX_ZERO).trim());
+            }
+        }
+        return processOptionalFields(args, exceptionMessage, listOfValidOutput, isAnyMatchFound);
+    }
+
+    /**
+     * Creates the constaint for regex to accept space/comma in front and behind
+     *
+     * @param pattern Regex to process
+     * @return Array string of constainted different regex
+     */
+    private String[] constraintPatterns(String pattern) {
+        String contraintpattern = pattern;
+        String[] constraintpatterns = new String[INDEX_EIGHT];
+        constraintpatterns[INDEX_ZERO] = SPACE_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_ONE] = COMMA_REGEX + contraintpattern + COMMA_REGEX;
+        constraintpatterns[INDEX_TWO] = SPACE_REGEX + contraintpattern + COMMA_REGEX;
+        constraintpatterns[INDEX_THREE] = COMMA_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_FOUR] = START_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_FIVE] = START_REGEX + contraintpattern + SPACE_REGEX;
+        constraintpatterns[INDEX_SIX] = SPACE_REGEX + contraintpattern + END_REGEX;
+        constraintpatterns[INDEX_SEVEN] = COMMA_REGEX + contraintpattern + END_REGEX;
+        return constraintpatterns;
+    }
+
+    /**
+     * Processes the input if match is not found, and is empty string (Optional fields)
+     *
+     * @param args The input message from user
+     * @param exceptionMessage Exception message if match is not found and is not empty
+     * @param listOfValidOuput Stores processed field if match found
+     * @param matchFound Valids if match is found
+     * @return processed field
+     * @throws IllegalValueException not a valid processable input
+     */
+    private String processOptionalFields(String args, String exceptionMessage, ArrayList<String> listOfValidOuput,
+                                         boolean matchFound)
+            throws IllegalValueException {
         if (!matchFound) {
-            phonepattern = Pattern.compile("\\,{0,1}\\d{8}\\,{0,1}");
-            matcher = phonepattern.matcher(args);
-            matchFound = matcher.find();
-        }
-        if (matchFound) {
-            phone = new Phone(matcher.group(0).trim().replace(",", ""));
+            if (exceptionMessage == EMPTY_STRING) {
+                return EMPTY_STRING;
+            } else {
+                throw new IllegalValueException(exceptionMessage);
+            }
         } else {
-            throw new IllegalValueException("Number should be 8 digits long!\n" + AddCommand.MESSAGE_USAGE_ALT);
+            return getLeftMostValidOutput(args, listOfValidOuput);
         }
-        return phone;
     }
 
     /**
-     * Go through the list of string to look for a valid postal parameter
-     * Chooses the first valid argument
-     * No exception as this field is optional
-     * @param args input string given by user
-     * @param postalnum empty postal number
-     * @return new Postal if found a valid Postal Number
+     * Generates the value that fits the regex according to left most output, without comma
+     *
+     * @param args input given by user
+     * @param listOfValidOuput all the output that fits the regexs
+     * @return The leftmost valid output
      */
-    private String getPostalFromString(String args, String postalnum) {
-        Matcher matcher;
-        boolean matchFound;
-        Pattern postal = Pattern.compile("singapore \\d{6,6}", Pattern.CASE_INSENSITIVE);
-        matcher = postal.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            postalnum = ", " + matcher.group(0);
+    private String getLeftMostValidOutput(String args, ArrayList<String> listOfValidOuput) {
+        int leftmostStringIndex = args.length();
+        String leftMostOutput = EMPTY_STRING;
+        for (int i = INDEX_ZERO; i < listOfValidOuput.size(); i++) {
+            if (args.indexOf(listOfValidOuput.get(i)) < leftmostStringIndex) {
+                leftmostStringIndex = args.indexOf(listOfValidOuput.get(i));
+                leftMostOutput = listOfValidOuput.get(i);
+            }
         }
-        return postalnum;
+        return leftMostOutput.replaceAll(COMMA_STRING, EMPTY_STRING);
     }
 
     /**
-     * Go through the list of string to look for a valid unit parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new unit if found a valid unit number
-     * @throws IllegalValueException Nothing conforms to legal unit format
-     */
-    private String getUnitFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        String unitnum;
-        Pattern unit = Pattern.compile("#\\d\\d-\\d{1,3}[a-zA-Z]{0,1}", Pattern.CASE_INSENSITIVE);
-        matcher = unit.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            unitnum = matcher.group(0);
-        } else {
-            throw new IllegalValueException("invalid address, Unit. \n Example: #01-12B"
-                + AddCommand.MESSAGE_USAGE_ALT);
-        }
-        return unitnum;
-    }
-
-    /**
-     * Go through the list of string to look for a valid street parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new street if found a valid street format
-     * @throws IllegalValueException Nothing conforms to legal street format
-     */
-    private String getStreetFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        String streetnum;
-        Pattern street = Pattern.compile("[a-zA-z]+ street \\d{1,2}", Pattern.CASE_INSENSITIVE);
-        matcher = street.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            streetnum = matcher.group(0);
-        } else {
-            throw new IllegalValueException("invalid address, Street. \nExample: Jurong Street 11"
-                + AddCommand.MESSAGE_USAGE_ALT);
-        }
-        return streetnum;
-    }
-
-    /**
-     * Go through the list of string to look for a valid block parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new block if found a valid block format
-     * @throws IllegalValueException Nothing conforms to legal block format
-     */
-    private String getBlockFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        String blocknum;
-        Pattern block = Pattern.compile("block \\d{1,3}", Pattern.CASE_INSENSITIVE);
-        matcher = block.matcher(args);
-        Pattern blk = Pattern.compile("blk \\d{1,3}", Pattern.CASE_INSENSITIVE);
-        Matcher blkmatcher = blk.matcher(args);
-        matchFound = matcher.find();
-        if (!matchFound) {
-            matchFound = blkmatcher.find();
-            matcher = blkmatcher;
-        }
-        if (matchFound) {
-            blocknum = matcher.group(0);
-        } else {
-            throw new IllegalValueException("invalid address, Block Number. \nExample: Block 123"
-                + AddCommand.MESSAGE_USAGE_ALT);
-        }
-        return blocknum;
-    }
-
-    /**
-     * Go through the list of string to look for a valid email parameter
-     * Chooses the first valid argument
-     * @param args input string given by user
-     * @return new email if found a valid email format
-     * @throws IllegalValueException Nothing conforms to legal email format
-     */
-    private Email getEmailFromString(String args) throws IllegalValueException {
-        Matcher matcher;
-        boolean matchFound;
-        Email email;
-        Pattern emailpattern = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+");
-        matcher = emailpattern.matcher(args);
-        matchFound = matcher.find();
-        if (matchFound) {
-            email = new Email(matcher.group(0));
-        } else {
-            throw new IllegalValueException("invalid email\n Example: Jason@example.com");
-        }
-        return email;
-    }
-
-    /**
-     *  Go through the list of string to look for a valid email parameter
+     * Goes through the list of string to look for a valid email parameter
+     *
      * @param allArgs input string given by user
      * @throws IllegalValueException Nothing conforms to legal email format
      */
     private void checkNameFormat(String[] allArgs) throws IllegalValueException {
         if (allArgs.length < SIZE_2) {
-            throw new IllegalValueException("Missing Name!\n" + AddCommand.MESSAGE_USAGE_ALT);
+            throw new IllegalValueException(NAME_EXCEPTION_MESSAGE);
         }
     }
 
     /**
      * Adds a person using fields formatted by prefixes
+     *
      * @param argMultimap All the prefix that should be used.
      * @return A new add command with the new person.
      * @throws IllegalValueException invalid parameter type
@@ -799,11 +844,21 @@ public class AddCommandParser implements Parser<AddCommand> {
         Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE)).get();
         Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL)).get();
         Address address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS)).get();
-        Remark remark = ParserUtil.parseRemark(argMultimap.getValue(PREFIX_REMARK)).get();
-        Birthday birthday = ParserUtil.parseBirthday(argMultimap.getValue(PREFIX_BIRTHDAY)).get();
+        Remark remark;
+        Birthday birthday;
+        if (argMultimap.getValue(PREFIX_REMARK).equals(Optional.empty())) {
+            remark = new Remark("");
+        } else {
+            remark = ParserUtil.parseRemark(argMultimap.getValue(PREFIX_REMARK)).get();
+        }
+        if (argMultimap.getValue(PREFIX_BIRTHDAY).equals(Optional.empty())) {
+            birthday = new Birthday("");
+        } else {
+            birthday = ParserUtil.parseBirthday(argMultimap.getValue(PREFIX_BIRTHDAY)).get();
+        }
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
         Favourite favourite = new Favourite(Favourite.COLOR_OFF);
-        ProfilePicture picture = new ProfilePicture("default");
+        ProfilePicture picture = new ProfilePicture(DEFAULT);
         ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList, picture,
                 favourite);
         return new AddCommand(person);
@@ -811,6 +866,7 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     /**
      * Checks if all prefixes are present
+     *
      * @param argMultimap All the prefixes to be used
      * @throws ParseException Missing prefix
      */
@@ -822,6 +878,7 @@ public class AddCommandParser implements Parser<AddCommand> {
 
     /**
      * Checks if user input uses any prefix of any type
+     *
      * @param args User input
      * @return true if contains prefix, false if does not
      */
@@ -981,10 +1038,10 @@ public class AddCommandParser implements Parser<AddCommand> {
  */
 public class EmailCommandParser implements Parser<EmailCommand> {
 
-    public static final String EMPTY_STRING = "";
     public static final int FIRST_PART_MESSAGE = 0;
     public static final int SECOND_PART_MESSAGE = 1;
     public static final int THIRD_PART_MESSAGE = 2;
+    public static final int THREE_PARTS = 3;
 
     /**
      * Parses the given {@code String} of arguments in the context of the EmailCommand
@@ -999,9 +1056,10 @@ public class EmailCommandParser implements Parser<EmailCommand> {
         String subject;
         String message;
         try {
-            String[] messages = args.trim().split(",");
+
+            String[] messages = args.trim().split(COMMA_STRING);
             checkValidNumberOfArguments(messages);
-            String[] splitArgs = messages[FIRST_PART_MESSAGE].trim().split(" ");
+            String[] splitArgs = messages[FIRST_PART_MESSAGE].trim().split(SPACE_STRING);
             index = ParserUtil.parseIndex(splitArgs[FIRST_PART_MESSAGE]);
             subject = (messages[SECOND_PART_MESSAGE]);
             message = (messages[THIRD_PART_MESSAGE]);
@@ -1011,13 +1069,16 @@ public class EmailCommandParser implements Parser<EmailCommand> {
         return new EmailCommand(index, subject, message);
     }
 
-    private EmailCommand makeParseException() throws ParseException {
-        throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EmailCommand.MESSAGE_USAGE));
-    }
 
+    /**
+     * Validates there are three different message parts
+     *
+     * @param messages Arrays of string message
+     * @throws ParseException if messsages is not of three parts
+     */
     private void checkValidNumberOfArguments(String[] messages) throws ParseException {
-        if (messages.length != 3) {
-            makeParseException();
+        if (messages.length != THREE_PARTS) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EmailCommand.MESSAGE_USAGE));
         }
     }
 }
@@ -1066,20 +1127,6 @@ public class FavouriteCommandParser implements Parser<FavouriteCommand> {
         return Integer.parseInt(trimmedNumber);
     }
 
-    /**
-     * Parses {@code sortType}returns it. Leading and trailing whitespaces will be
-     * trimmed.
-     * @throws IllegalValueException if the specified index is invalid (not valid sorting type).
-     */
-    public static String parseSortType(String sortType) throws IllegalValueException {
-        String toSort = sortType.trim().toLowerCase();
-        if (!toSort.equals(SORTNAME_ARG) && !toSort.equals(SORTNUM_ARG)
-            && !toSort.equals(SORTADD_ARG) && !toSort.equals(SORTEMAIL_ARG)
-            && !toSort.equals(SORTREMARK_ARG) && !toSort.equals(SORTBIRTHDAY_ARG)) {
-            throw new IllegalValueException(MESSAGE_INVALID_SORT);
-        }
-        return toSort;
-    }
 ```
 ###### \java\seedu\address\logic\parser\RedoCommandParser.java
 ``` java
@@ -1094,6 +1141,7 @@ public class RedoCommandParser implements Parser<RedoCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the UndoCommand
      * and returns an RedoCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public RedoCommand parse(String args) throws ParseException {
@@ -1110,6 +1158,7 @@ public class RedoCommandParser implements Parser<RedoCommand> {
     }
     /**
      * Generates number of redo to be done
+     *
      * @param splitArg Message given by user
      * @return Number of redo to be done
      * @throws IllegalValueException invalid number of redo to be done
@@ -1149,7 +1198,7 @@ public class RemarkCommandParser implements Parser<RemarkCommand> {
         } catch (IllegalValueException ive) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, RemarkCommand.MESSAGE_USAGE));
         }
-        Remark remark = new Remark(argMultimap.getValue(PREFIX_REMARK).orElse(""));
+        Remark remark = new Remark(argMultimap.getValue(PREFIX_REMARK).orElse(EMPTY_STRING));
         return new RemarkCommand(index, remark);
     }
 }
@@ -1164,6 +1213,7 @@ public class SortCommandParser implements Parser<SortCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the SortCommand
      * and returns an SortCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public SortCommand parse(String args) throws ParseException {
@@ -1192,6 +1242,7 @@ public class UndoCommandParser implements Parser<UndoCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the UndoCommand
      * and returns an UndoCommand object for execution.
+     *
      * @throws ParseException if the user input does not conform the expected format
      */
     public UndoCommand parse(String args) throws ParseException {
@@ -1210,6 +1261,7 @@ public class UndoCommandParser implements Parser<UndoCommand> {
 
     /**
      * Generates number of undo to be done
+     *
      * @param splitArg Message given by user
      * @return Number of undo to be done
      * @throws IllegalValueException invalid number of undo to be done
@@ -1271,13 +1323,13 @@ public class UndoCommandParser implements Parser<UndoCommand> {
  * Represents a person's Favourite/color on in the addressBook
  * Guarantees: immutable; is valid as declared in {@link #isValidInput(String)}
  */
-public class Favourite {
+public class Favourite implements Comparable {
 
     public static final String MESSAGE_FAVOURITE_CONSTRAINTS =
             "Person favourite should only be true or false, and it should not be blank";
     public static final String COLOR_SWITCH = "true";
     public static final String COLOR_OFF = "false";
-    private Boolean colorOn = false;
+    private Boolean isColorOn = false;
 
     /**
      * Validates given Favourite.
@@ -1306,14 +1358,14 @@ public class Favourite {
     }
 
     /**
-     * Changes the colorOn state if input is true
+     * Changes the isColorOn state if input is true
      * @param trimmedinput input given as true or false
      */
     private void updateColor(String trimmedinput) {
-        if (trimmedinput.equals(COLOR_SWITCH) && !colorOn) {
-            this.colorOn = true;
+        if (trimmedinput.equals(COLOR_SWITCH) && !isColorOn) {
+            this.isColorOn = true;
         } else {
-            this.colorOn = false;
+            this.isColorOn = false;
         }
     }
 
@@ -1321,7 +1373,7 @@ public class Favourite {
      * Inverses the current state of Favourite
      */
     public void inverse() {
-        colorOn = false;
+        isColorOn = false;
     }
 
     /**
@@ -1338,7 +1390,7 @@ public class Favourite {
 
     @Override
     public String toString() {
-        if (colorOn) {
+        if (isColorOn) {
             return COLOR_SWITCH;
         } else {
             return COLOR_OFF;
@@ -1349,9 +1401,45 @@ public class Favourite {
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof Favourite // instanceof handles nulls
-                && this.colorOn.equals(((Favourite) other).colorOn)); // state check
+                && this.isColorOn.equals(((Favourite) other).isColorOn)); // state check
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Favourite comparedFavourite = (Favourite) o;
+        return (comparedFavourite.toString()).compareTo(this.toString());
     }
 }
+```
+###### \java\seedu\address\model\person\UniquePersonList.java
+``` java
+    /**
+     * Installs the comparator for the different sortType into comparatorMap
+     */
+    public UniquePersonList () {
+        comparatorMap = new HashMap<String, Comparator<Person>>();
+        for (String arg:SORTNAME_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getName));
+        }
+        for (String arg:SORTNUM_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getPhone));
+        }
+        for (String arg:SORTADD_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getAddress));
+        }
+        for (String arg:SORTEMAIL_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getEmail));
+        }
+        for (String arg:SORTREMARK_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getRemark));
+        }
+        for (String arg:SORTBIRTHDAY_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getBirthday));
+        }
+        for (String arg:SORTFAVOURITE_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getFavourite));
+        }
+    }
 ```
 ###### \java\seedu\address\model\person\UniquePersonList.java
 ``` java
@@ -1359,24 +1447,11 @@ public class Favourite {
      * Sorts the internalList as declared by the arguments
      */
     public void sort(String sortType) {
-        if (sortType.equals(SORTNAME_ARG)) {
+        if (stringContainsItemFromList(sortType, SORTNUMTIMESSEARCHED_ARGS)) {
             Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getName().toString().compareTo(p2.getName().toString()));
-        } else if (sortType.equals(SORTNUM_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getPhone().toString().compareTo(p2.getPhone().toString()));
-        } else if (sortType.equals(SORTADD_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getAddress().toString().compareTo(p2.getAddress().toString()));
-        } else if (sortType.equals(SORTEMAIL_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getEmail().toString().compareTo(p2.getEmail().toString()));
-        } else if (sortType.equals(SORTREMARK_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getRemark().toString().compareTo(p2.getRemark().toString()));
-        } else if (sortType.equals(SORTBIRTHDAY_ARG)) {
-            Collections.sort(internalList, (Person p1, Person p2) ->
-                p1.getBirthday().toString().compareTo(p2.getBirthday().toString()));
+                    p2.getNumTimesSearched().getValue() - p1.getNumTimesSearched().getValue());
+        } else {
+            Collections.sort(internalList, comparatorMap.get(sortType));
         }
     }
 ```
@@ -1387,6 +1462,8 @@ public class Favourite {
  */
 public class Sound {
     public static final String EMPTY = "";
+    public static final String ERROR_SOUND_LOG_MESSAGE = "Error with playing sound.";
+
     private static final Logger logger = LogsCenter.getLogger("Error Sound");
 
     private static ArrayList<String> musicList = new ArrayList<String>(Arrays.asList("ErrorSound.mp3"));
@@ -1403,7 +1480,7 @@ public class Sound {
             createsNewMediaPlayer();
             mediaPlayer.play();
         } catch (Exception ex) {
-            logger.info("Error with playing sound.");
+            logger.info(ERROR_SOUND_LOG_MESSAGE);
             ex.printStackTrace();
         }
     }
@@ -1421,28 +1498,145 @@ public class Sound {
     }
 }
 ```
+###### \java\seedu\address\storage\StorageManager.java
+``` java
+    /**
+     * Extracts and Returns an Arraylist of strings to be used in autocomplete from XML
+     *
+     * @return ArrayList of String with valid inputs
+     * @throws IOException unable to create new XML file
+     */
+    public ArrayList<String> updateAutocomplete() throws IOException {
+        try {
+            return XmlAutocomplete.updateAutocompleteWithStorageFile();
+        } catch (Exception ex) {
+            return XmlAutocomplete.createNewStorageFile(ex);
+        }
+    }
+
+    /**
+     * Adds a new command string to the XML file for autocomplete
+     * @param commandWord command to be added
+     * @return new ArrayList including the new valid command
+     * @throws CommandException if autocomplete.xml cannot be made.
+     */
+    public ArrayList<String> setAddSuggestion(String commandWord) throws CommandException {
+        return XmlAutocomplete.setAddSuggestion(commandWord);
+    }
+```
+###### \java\seedu\address\storage\XmlAutocomplete.java
+``` java
+/**
+ * Stores Autocomplete data in an XML file
+ */
+public class XmlAutocomplete {
+    private static String[] possibleSuggestion = {"add", "birthday", "clear", "list", "help", "removetag", "image",
+        "edit", "find", "delete", "select", "favourite", "history", "undo", "redo", "email", "sort", "sort name",
+        "map", "sort number", "sort email", "sort address", "sort remark", "sort birthday", "sort favourite",
+        "exit", "fuzzyfind"};
+    private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
+
+    /**
+     * Creates a new storage file named Autocomplete.xml
+     *
+     * @param ex exception to be handled
+     */
+    public static ArrayList<String> createNewStorageFile(Exception ex) throws IOException {
+        File file = new File(STORAGE_FILE_NAME);
+        file.createNewFile();
+        addNewDataInStorage(EMPTY_STRING);
+        return  mainPossibleSuggestion;
+    }
+
+    /**
+     * Overloads the createNewStorageFile method
+     *
+     * @throws CommandException unable to create new file
+     */
+    public static void createNewStorageFile() throws CommandException {
+        try {
+            File file = new File(STORAGE_FILE_NAME);
+            file.createNewFile();
+            addNewDataInStorage(EMPTY_STRING);
+        } catch (IOException ioe) {
+            throw new CommandException(ERROR_MESSAGE_CREATE_FILE_FAILED);
+        }
+    }
+    /**
+     * Updates Storagefile with new content, used as refresh if no content
+     *
+     * @param commandWord input to be added to storage
+     * @throws FileNotFoundException file cannot be found
+     */
+    public static void addNewDataInStorage(String commandWord) throws FileNotFoundException {
+        if (!commandWord.equals(EMPTY_STRING)) {
+            mainPossibleSuggestion.add(commandWord.trim());
+        }
+        XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(AUTOCOMPLETE_FILE_NAME)));
+        e.writeObject(mainPossibleSuggestion);
+        e.close();
+    }
+    /**
+     * Reads the storage file to update mainpossiblesuggestion
+     *
+     * @throws FileNotFoundException storage file cannot be found
+     */
+    public static ArrayList<String> updateAutocompleteWithStorageFile() throws FileNotFoundException {
+        XMLDecoder e = readStorageFile();
+        mainPossibleSuggestion = ((ArrayList<String>) e.readObject());
+        e.close();
+        return mainPossibleSuggestion;
+    }
+
+    /**
+     * Reads the storage file
+     *
+     * @return  an input stream for reading archive
+     * @throws FileNotFoundException storagefile cannot be found
+     */
+    public static XMLDecoder readStorageFile() throws FileNotFoundException {
+        return new XMLDecoder(new FileInputStream(STORAGE_FILE_NAME));
+    }
+
+    /**
+     * Adds in a valid command string into autocomplete.xml storage
+     *
+     * @param commandWord
+     * @throws CommandException if autocomplete.xml cannot be made.
+     */
+    public static ArrayList<String> setAddSuggestion(String commandWord) throws CommandException {
+        if (mainPossibleSuggestion.contains(commandWord)) {
+            return mainPossibleSuggestion;
+        }
+        try {
+            addNewDataInStorage(commandWord);
+        } catch (Exception ex) {
+            createNewStorageFile();
+        }
+        return mainPossibleSuggestion;
+    }
+}
+```
 ###### \java\seedu\address\ui\CommandBox.java
 ``` java
 /**
  * The UI component that is responsible for receiving user command inputs.
  */
 public class CommandBox extends UiPart<Region> {
-
     public static final String AUTOCOMPLETE_FILE_NAME = "Autocomplete.xml";
     public static final String ERROR_STYLE_CLASS = "error";
     public static final String STORAGE_FILE_NAME = "Autocomplete.xml";
     public static final String ERROR_MESSAGE_CREATE_FILE_FAILED = "Unable to create file Autocomplete.xml";
-    public static final String EMPTY_STRING = "";
 
     private static final String FXML = "CommandBox.fxml";
 
-    private static String[] possibleSuggestion = {"add", "birthday", "clear", "list", "help", "removetag", "image",
-        "edit", "find", "delete", "select", "favourite", "history", "undo", "redo", "email", "sort", "sort name", "map",
-        "sort number", "sort email", "sort address", "sort remark", "sort birthday", "exit"};
-    private static ArrayList<String> mainPossibleSuggestion = new ArrayList<String>(Arrays.asList(possibleSuggestion));
+    private static ArrayList<String> mainPossibleSuggestion;
     private final Logger logger = LogsCenter.getLogger(CommandBox.class);
     private final Logic logic;
     private ListElementPointer historySnapshot;
+    private AddressBookStorage addressBookStorage;
+    private UserPrefsStorage userPrefsStorage;
+    protected Storage storage = new StorageManager(addressBookStorage, userPrefsStorage);
 
     @FXML
     private TextField commandTextField;
@@ -1455,40 +1649,22 @@ public class CommandBox extends UiPart<Region> {
         // calls #setStyleToDefault() whenever there is a change to the text of the command box.
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
         historySnapshot = logic.getHistorySnapshot();
-        updateAutocomplete();
+        updateAutocompleteTextField();
         autocompletionbinding = TextFields.bindAutoCompletion(commandTextField, mainPossibleSuggestion);
     }
-
+```
+###### \java\seedu\address\ui\CommandBox.java
+``` java
     /**
-     * Updates autocomplete with Autocomplete.xml file
+     * updates the autocompleteTextField
      */
-    private void updateAutocomplete() {
+    private void updateAutocompleteTextField() {
         try {
-            updateAutocompleteWithStorageFile();
-        } catch (Exception ex) {
-            createNewStorageFile(ex);
+            mainPossibleSuggestion = storage.updateAutocomplete();
+        } catch (IOException ioe) {
+            raise(new DataSavingExceptionEvent(ioe));
         }
     }
-
-    /**
-     * Reads the storage file to update mainpossiblesuggestion
-     * @throws FileNotFoundException storage file cannot be found
-     */
-    private void updateAutocompleteWithStorageFile() throws FileNotFoundException {
-        XMLDecoder e = readStorageFile();
-        mainPossibleSuggestion = ((ArrayList<String>) e.readObject());
-        e.close();
-    }
-
-    /**
-     *  Reads the storage file
-     * @return  an input stream for reading archive
-     * @throws FileNotFoundException storagefile cannot be found
-     */
-    private XMLDecoder readStorageFile() throws FileNotFoundException {
-        return new XMLDecoder(new FileInputStream(STORAGE_FILE_NAME));
-    }
-
 ```
 ###### \java\seedu\address\ui\CommandBox.java
 ``` java
@@ -1499,57 +1675,18 @@ public class CommandBox extends UiPart<Region> {
      * @throws CommandException if autocomplete.xml cannot be made.
      */
     public static void setAddSuggestion(String commandWord) throws CommandException {
-        if (mainPossibleSuggestion.contains(commandWord)) {
-            return;
-        }
-        try {
-            addNewDataInStorage(commandWord);
-        } catch (Exception ex) {
-            createNewStorageFile();
-        }
-
+        Storage storage = generateStorage();
+        mainPossibleSuggestion = storage.setAddSuggestion(commandWord);
     }
 
     /**
-     * Creates a new storage file named Autocomplete.xml
-     * @param ex exception to be handled
+     * Creates an empty addressbook storageManager instance to be used for autocomplete
+     * @return StorageManager
      */
-    private void createNewStorageFile(Exception ex)  {
-        try {
-            File file = new File(STORAGE_FILE_NAME);
-            file.createNewFile();
-            addNewDataInStorage(EMPTY_STRING);
-        } catch (IOException ioe) {
-            raise(new DataSavingExceptionEvent(ex));
-        }
-    }
-
-    /**
-     * Overloads the createNewStorageFile method
-     * @throws CommandException unable to create new file
-     */
-    private static void createNewStorageFile() throws CommandException {
-        try {
-            File file = new File(STORAGE_FILE_NAME);
-            file.createNewFile();
-            addNewDataInStorage(EMPTY_STRING);
-        } catch (IOException ioe) {
-            throw new CommandException(ERROR_MESSAGE_CREATE_FILE_FAILED);
-        }
-    }
-
-    /**
-     * Updates Storagefile with new content, used as refresh if no content
-     * @param commandWord input to be added to storage
-     * @throws FileNotFoundException file cannot be found
-     */
-    private static void addNewDataInStorage(String commandWord) throws FileNotFoundException {
-        if (!commandWord.equals(EMPTY_STRING)) {
-            mainPossibleSuggestion.add(commandWord.trim());
-        }
-        XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(AUTOCOMPLETE_FILE_NAME)));
-        e.writeObject(mainPossibleSuggestion);
-        e.close();
+    private static Storage generateStorage() {
+        AddressBookStorage addressBookStorage = null;
+        UserPrefsStorage userPrefsStorage = null;
+        return new StorageManager(addressBookStorage, userPrefsStorage);
     }
 
 ```
@@ -1562,10 +1699,10 @@ public class CommandBox extends UiPart<Region> {
      */
     private void bindListeners(ReadOnlyPerson person) {
         name.textProperty().bind(Bindings.convert(person.nameProperty()));
-        if (person.getFavourite().toString().equals("true")) {
-            name.setStyle("-fx-background-color : #ff0000");
-        } else if (person.getFavourite().toString().equals("false")) {
-            name.setStyle("-fx-background-color : transparent");
+        if (person.getFavourite().toString().equals(TRUE_STRING)) {
+            name.setStyle(RED_COLOUR);
+        } else if (person.getFavourite().toString().equals(FALSE_STRING)) {
+            name.setStyle(NO_COLOUR);
         }
     }
 ```

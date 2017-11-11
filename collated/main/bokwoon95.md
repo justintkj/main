@@ -24,7 +24,7 @@
         String[] wordsInPreppedSentence = preppedSentence.split("\\s+");
 
         for (String wordInSentence: wordsInPreppedSentence) {
-            if (wordInSentence.contains(preppedWord)) {
+            if (wordInSentence.toLowerCase().contains(preppedWord.toLowerCase())) {
                 return true;
             }
         }
@@ -143,6 +143,59 @@ public class FuzzyfindCommandParser implements Parser<FuzzyfindCommand> {
         syncMasterTagListWith(editedPerson);
     }
 ```
+###### \java\seedu\address\model\person\Instagram.java
+``` java
+public class Instagram implements Comparable {
+
+    public static final String MESSAGE_INSTAGRAM_CONSTRAINTS =
+            "Person addresses can take any values, and it should not be blank";
+
+    /*
+     * The first character of the address must not be a whitespace,
+     * otherwise " " (a blank string) becomes a valid input.
+     */
+    public static final String INSTAGRAM_VALIDATION_REGEX = "[^\\s].*";
+
+    public final String value;
+
+    /**
+     * Validates given address.
+     *
+     * @throws IllegalValueException if given address string is invalid.
+     */
+    public Instagram(String instagram) throws IllegalValueException {
+        requireNonNull(instagram);
+        if (!isValidInstagram(instagram)) {
+            throw new IllegalValueException(MESSAGE_INSTAGRAM_CONSTRAINTS);
+        }
+        this.value = instagram;
+    }
+
+    /**
+     * Returns true if a given string is a valid person email.
+     */
+    public static boolean isValidInstagram(String test) {
+        return test.matches(INSTAGRAM_VALIDATION_REGEX);
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Instagram comparedInstagram = (Instagram) o;
+        return this.value.compareTo(comparedInstagram.toString());
+    }
+
+}
+```
 ###### \java\seedu\address\model\person\NameContainsSubstringsPredicate.java
 ``` java
 /**
@@ -168,44 +221,5 @@ public class NameContainsSubstringsPredicate implements Predicate<ReadOnlyPerson
                 && this.keywords.equals(((NameContainsSubstringsPredicate) other).keywords)); // state check
     }
 
-}
-```
-###### \java\seedu\address\ui\HelpWindow.java
-``` java
-    public HelpWindow() {
-        super(FXML);
-        Scene scene = new Scene(getRoot());
-        //Null passed as the parent stage to make it non-modal.
-        dialogStage = createDialogStage(TITLE, null, scene);
-        dialogStage.setMaximized(false);
-        FxViewUtil.setStageIcon(dialogStage, ICON);
-
-        String userGuideUrl = getClass().getResource(USERGUIDE_FILE_PATH).toString();
-        browser.getEngine().load(userGuideUrl);
-    }
-    //author
-
-    /**
-     * Shows the help window.
-     * @throws IllegalStateException
-     * <ul>
-     *     <li>
-     *         if this method is called on a thread other than the JavaFX Application Thread.
-     *     </li>
-     *     <li>
-     *         if this method is called during animation or layout processing.
-     *     </li>
-     *     <li>
-     *         if this method is called on the primary stage.
-     *     </li>
-     *     <li>
-     *         if {@code dialogStage} is already showing.
-     *     </li>
-     * </ul>
-     */
-    public void show() {
-        logger.fine("Showing help page about the application.");
-        dialogStage.showAndWait();
-    }
 }
 ```

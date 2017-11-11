@@ -1,6 +1,7 @@
 package seedu.address.ui;
 
 import java.io.File;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.common.eventbus.Subscribe;
@@ -12,9 +13,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 
+import javafx.scene.shape.Circle;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.events.ui.PersonPanelSelectionChangedEvent;
 import seedu.address.model.person.ReadOnlyPerson;
+import seedu.address.model.tag.Tag;
 
 //@@author liliwei25
 /**
@@ -26,8 +29,10 @@ public class PersonInfoPanel extends UiPart<Region> {
     private static final String EMPTY = "";
     private static final String DEFAULT = "profiles/default.png";
     private static final String DEFAULT_TEXT = "default";
+    private static final int RADIUS = 100;
     private final Logger logger = LogsCenter.getLogger(PersonInfoPanel.class);
     private final ReadOnlyPerson person;
+    private final Circle circle = new Circle(RADIUS, RADIUS, RADIUS);
 
     @FXML
     private ImageView profileImage;
@@ -51,58 +56,83 @@ public class PersonInfoPanel extends UiPart<Region> {
         setConnections(person);
         this.person = person;
         registerAsAnEventHandler(this);
+        setupProfileImage();
     }
 
-    public PersonInfoPanel() {
-        super(FXML);
-        setDefaultConnections();
-        person = null;
-        registerAsAnEventHandler(this);
+    private void setupProfileImage() {
+        profileImage.setClip(circle);
     }
 
+    /**
+     * Updates {@code PersonInfoPanel} with new details from {@code person}
+     *
+     * @param person New details for update
+     */
     public void updateConnections(ReadOnlyPerson person) {
         setConnections(person);
     }
 
     private void setDefaultConnections() {
-        name.setText(EMPTY);
-        phone.setText(EMPTY);
-        address.setText(EMPTY);
-        email.setText(EMPTY);
-        birthday.setText(EMPTY);
-        remark.setText(EMPTY);
-        tags.setAccessibleText(EMPTY);
-        profileImage.setImage(new Image(DEFAULT));
+        setConnections(EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, null, DEFAULT_TEXT);
     }
 
     private void setConnections(ReadOnlyPerson person) {
-        name.setText(person.getName().fullName);
-        phone.setText(person.getPhone().value);
-        address.setText(person.getAddress().value);
-        email.setText(person.getEmail().value);
-        birthday.setText(person.getBirthday().value);
-        remark.setText(person.getRemark().value);
-        tags.getChildren().clear();
-        person.getTags().forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+        if (person == null) {
+            setDefaultConnections();
+        } else {
+            setConnections(person.getName().fullName, person.getPhone().value, person.getAddress().value,
+                    person.getEmail().value, person.getBirthday().value, person.getRemark().value, person.getTags(),
+                    person.getPicture().getLocation());
+        }
+    }
+
+    private void setConnections(String name, String phone, String address, String email, String birthday,
+                                String remark, Set<Tag> tags, String loc) {
+        this.name.setText(name);
+        this.phone.setText(phone);
+        this.address.setText(address);
+        this.email.setText(email);
+        this.birthday.setText(birthday);
+        this.remark.setText(remark);
+        this.tags.getChildren().clear();
+        if (tags != null) {
+            setTags(tags);
+        }
+        setImage(loc);
+    }
+
+    private void setTags(Set<Tag> tagList) {
+        tagList.forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+    }
+
+    private void setImage(String loc) {
         try {
-            String loc = person.getPicture().getLocation();
-            Image image;
-            if (loc.equals(DEFAULT_TEXT)) {
-                image = new Image(DEFAULT);
-            } else {
-                File img = new File(loc);
-                image = new Image(img.toURI().toString());
-            }
+            Image image = getProfileImage(loc);
             profileImage.setImage(image);
         } catch (IllegalArgumentException iae) {
             profileImage.setImage(new Image(DEFAULT));
         }
     }
 
+    private Image getProfileImage(String loc) {
+        Image image;
+        if (loc.equals(DEFAULT_TEXT)) {
+            image = new Image(DEFAULT);
+        } else {
+            File img = new File(loc);
+            image = new Image(img.toURI().toString());
+        }
+        return image;
+    }
+
     @Subscribe
     private void handlePersonPanelSelectionChangedEvent(PersonPanelSelectionChangedEvent event) {
         logger.info(LogsCenter.getEventHandlingLogMessage(event));
-        setConnections(event.getNewSelection().person);
+        if (event.getNewSelection() == null) {
+            setDefaultConnections();
+        } else {
+            setConnections(event.getNewSelection().person);
+        }
     }
 
     @Override
