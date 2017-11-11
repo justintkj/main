@@ -56,7 +56,8 @@ public class EmailCommand extends Command {
     public static final String SMTP = "smtp";
     public static final String LINE_SEPARATOR = "line.separator";
     public static final String TEAM_SIGNATURE_MESSAGE = "This is a generated mail provided by CS2103F09B3 Team.";
-    public static final String INTERNET_CONNECTION_ERROR_MESSAGE = "Check if you are connected to a valid internet connection";
+    public static final String INTERNET_CONNECTION_ERROR_MESSAGE = "Check if you are connected to a valid"
+            + " internet connection";
     public final Index index;
     public final String subject;
     public final String message;

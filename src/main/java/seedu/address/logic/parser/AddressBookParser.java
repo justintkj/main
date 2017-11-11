@@ -40,9 +40,9 @@ public class AddressBookParser {
      * Used for initial separation of command word and args.
      */
     public static final String MISSING_AUTOCOMPLETEFILE = "Autocomplete.xml may be missing";
-    private static final Pattern BASIC_COMMAND_FORMAT = Pattern.compile("(?<commandWord>\\S+)(?<arguments>.*)");
     public static final String COMMAND_WORD = "commandWord";
     public static final String ARGUMENTS = "arguments";
+    private static final Pattern BASIC_COMMAND_FORMAT = Pattern.compile("(?<commandWord>\\S+)(?<arguments>.*)");
 
     //@@author justintkj
     /**

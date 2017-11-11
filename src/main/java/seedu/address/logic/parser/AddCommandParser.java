@@ -65,8 +65,8 @@ public class AddCommandParser implements Parser<AddCommand> {
     public static final String BIRTHDAY_REGEX = "\\d{1,2}-\\d{1,2}-\\d{4,4}";
 
     public static final String BIRTHDAY_EXCEPTION_MESSAGE = "invalid birthday,\n Example: 12-09-1994\n";
-    public static final String NAME_EXCEPTION_MESSAGE = "Missing Name! Name should follow with a comma\n" +
-            "Example: Johnny,\n" + AddCommand.MESSAGE_USAGE_ALT;
+    public static final String NAME_EXCEPTION_MESSAGE = "Missing Name! Name should follow with a comma\n"
+            + "Example: Johnny,\n" + AddCommand.MESSAGE_USAGE_ALT;
     public static final String FALSE = "false";
     public static final String DEFAULT = "default";
     public static final String ALTERNATIVE_METHOD_LOG_MESSAGE = "Adding a person using alternative method ";

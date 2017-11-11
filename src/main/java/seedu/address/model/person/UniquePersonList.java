@@ -93,10 +93,11 @@ public class UniquePersonList implements Iterable<Person> {
      * @return full name sort type
      */
     public String findFullNameSort (String sortType) {
-        return findFullSortType(sortType, SORTNAME_ARGS) + findFullSortType(sortType, SORTNUM_ARGS) +
-                findFullSortType(sortType, SORTADD_ARGS) + findFullSortType(sortType, SORTEMAIL_ARGS) +
-                findFullSortType(sortType, SORTREMARK_ARGS) + findFullSortType(sortType, SORTBIRTHDAY_ARGS) +
-                findFullSortType(sortType, SORTFAVOURITE_ARGS) + findFullSortType(sortType, SORTNUMTIMESSEARCHED_ARGS);
+        return findFullSortType(sortType, SORTNAME_ARGS) + findFullSortType(sortType, SORTNUM_ARGS)
+                + findFullSortType(sortType, SORTADD_ARGS) + findFullSortType(sortType, SORTEMAIL_ARGS)
+                + findFullSortType(sortType, SORTREMARK_ARGS) + findFullSortType(sortType, SORTBIRTHDAY_ARGS)
+                + findFullSortType(sortType, SORTFAVOURITE_ARGS)
+                + findFullSortType(sortType, SORTNUMTIMESSEARCHED_ARGS);
     }
     /**
      * Returns index zero of array if sortType is inside the array
@@ -107,7 +108,7 @@ public class UniquePersonList implements Iterable<Person> {
      */
     public String findFullSortType (String sortType, String[] sortParam) {
         for (String arg: sortParam) {
-            if(arg.trim().toLowerCase().equals(sortType.trim().toLowerCase())) {
+            if (arg.trim().toLowerCase().equals(sortType.trim().toLowerCase())) {
                 return sortParam[INDEX_ZERO];
             }
         }
