@@ -318,21 +318,17 @@ public class AddCommandParser implements Parser<AddCommand> {
         Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE)).get();
         Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL)).get();
         Address address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS)).get();
-        Remark remark;
-        Birthday birthday;
-        if (argMultimap.getValue(PREFIX_REMARK).equals(Optional.empty())) {
-            remark = new Remark(EMPTY_STRING);
-        } else {
+        Remark remark = new Remark(EMPTY_STRING);
+        Birthday birthday = new Birthday(EMPTY_STRING);
+        if (!argMultimap.getValue(PREFIX_REMARK).equals(Optional.empty())) {
             remark = ParserUtil.parseRemark(argMultimap.getValue(PREFIX_REMARK)).get();
-        }
-        if (argMultimap.getValue(PREFIX_BIRTHDAY).equals(Optional.empty())) {
-            birthday = new Birthday(EMPTY_STRING);
-        } else {
-            birthday = ParserUtil.parseBirthday(argMultimap.getValue(PREFIX_BIRTHDAY)).get();
         }
         Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
         Favourite favourite = new Favourite(Favourite.COLOR_OFF);
         ProfilePicture picture = new ProfilePicture(DEFAULT);
+        if (!argMultimap.getValue(PREFIX_BIRTHDAY).equals(Optional.empty())) {
+            birthday = ParserUtil.parseBirthday(argMultimap.getValue(PREFIX_BIRTHDAY)).get();
+        }
         ReadOnlyPerson person = new Person(name, phone, email, address, remark, birthday, tagList, picture,
                 favourite);
         return new AddCommand(person);
