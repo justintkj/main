@@ -155,7 +155,7 @@ public class Birthday implements Comparable {
             return INDEX_ONE;
         }
         return this.year * SCALE_YEAR + this.month * SCALE_MONTH + this.day
-                - (comparedBirthday.getYear() * SCALE_YEAR + comparedBirthday.getMonth() * SCALE_MONTH +
-                        comparedBirthday.getDay());
+                - (comparedBirthday.getYear() * SCALE_YEAR + comparedBirthday.getMonth() * SCALE_MONTH
+                        + comparedBirthday.getDay());
     }
 }
