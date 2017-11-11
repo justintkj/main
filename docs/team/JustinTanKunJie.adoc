@@ -36,6 +36,7 @@ Vice versa, multiple `redo` is made to undo multiple number of undo.
 include::../DeveloperGuide.adoc[tag=multipleundoredo]
 
 #End of Extract#
+
 ---
 
 === Enhancement Added: `Sort`
