@@ -1,13 +1,15 @@
 package seedu.address.model.person;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.ParserUtil.SORTADD_ARG;
-import static seedu.address.logic.parser.ParserUtil.SORTBIRTHDAY_ARG;
-import static seedu.address.logic.parser.ParserUtil.SORTEMAIL_ARG;
-import static seedu.address.logic.parser.ParserUtil.SORTFAVOURITE_ARG;
-import static seedu.address.logic.parser.ParserUtil.SORTNAME_ARG;
-import static seedu.address.logic.parser.ParserUtil.SORTNUM_ARG;
-import static seedu.address.logic.parser.ParserUtil.SORTREMARK_ARG;
+import static seedu.address.logic.parser.ParserUtil.SORTADD_ARGS;
+import static seedu.address.logic.parser.ParserUtil.SORTBIRTHDAY_ARGS;
+import static seedu.address.logic.parser.ParserUtil.SORTEMAIL_ARGS;
+import static seedu.address.logic.parser.ParserUtil.SORTFAVOURITE_ARGS;
+import static seedu.address.logic.parser.ParserUtil.SORTNAME_ARGS;
+import static seedu.address.logic.parser.ParserUtil.SORTNUMTIMESSEARCHED_ARGS;
+import static seedu.address.logic.parser.ParserUtil.SORTNUM_ARGS;
+import static seedu.address.logic.parser.ParserUtil.SORTREMARK_ARGS;
+import static seedu.address.logic.parser.ParserUtil.stringContainsItemFromList;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,13 +46,27 @@ public class UniquePersonList implements Iterable<Person> {
      */
     public UniquePersonList () {
         comparatorMap = new HashMap<String, Comparator<Person>>();
-        comparatorMap.put(SORTNAME_ARG, Comparator.comparing(Person::getName));
-        comparatorMap.put(SORTNUM_ARG, Comparator.comparing(Person::getPhone));
-        comparatorMap.put(SORTADD_ARG, Comparator.comparing(Person::getAddress));
-        comparatorMap.put(SORTEMAIL_ARG, Comparator.comparing(Person::getEmail));
-        comparatorMap.put(SORTREMARK_ARG, Comparator.comparing(Person::getRemark));
-        comparatorMap.put(SORTBIRTHDAY_ARG, Comparator.comparing(Person::getBirthday));
-        comparatorMap.put(SORTFAVOURITE_ARG, Comparator.comparing(Person::getFavourite));
+        for (String arg:SORTNAME_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getName));
+        }
+        for (String arg:SORTNUM_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getPhone));
+        }
+        for (String arg:SORTADD_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getAddress));
+        }
+        for (String arg:SORTEMAIL_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getEmail));
+        }
+        for (String arg:SORTREMARK_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getRemark));
+        }
+        for (String arg:SORTBIRTHDAY_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getBirthday));
+        }
+        for (String arg:SORTFAVOURITE_ARGS) {
+            comparatorMap.put(arg, Comparator.comparing(Person::getFavourite));
+        }
     }
     //@@author
 
@@ -66,7 +82,12 @@ public class UniquePersonList implements Iterable<Person> {
      * Sorts the internalList as declared by the arguments
      */
     public void sort(String sortType) {
-        Collections.sort(internalList, comparatorMap.get(sortType));
+        if (stringContainsItemFromList(sortType, SORTNUMTIMESSEARCHED_ARGS)) {
+            Collections.sort(internalList, (Person p1, Person p2) ->
+                    p2.getNumTimesSearched().getValue() - p1.getNumTimesSearched().getValue());
+        } else {
+            Collections.sort(internalList, comparatorMap.get(sortType));
+        }
     }
     //@@author
 

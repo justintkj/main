@@ -98,6 +98,32 @@ public class EditPersonDescriptorBuilder {
         return this;
     }
 
+    /**
+     * Parses the {@code tags} into a {@code Set<Tag>} and set it to the {@code EditPersonDescriptor}
+     * that we are building.
+     */
+    /*public EditPersonDescriptorBuilder withRemark(Remark remark) {
+        try {
+            ParserUtil.parseRemark(Optional.of(remark)).ifPresent(descriptor::setRemark);
+        } catch (IllegalValueException ive) {
+            throw new IllegalArgumentException("remark is expected to be unique");
+        }
+        return this;
+    }*/
+
+    /**
+     * Parses the {@code tags} into a {@code Set<Tag>} and set it to the {@code EditPersonDescriptor}
+     * that we are building.
+     */
+    /*public EditPersonDescriptorBuilder withBirthday(Birthday birthday) {
+        try {
+            ParserUtil.parseBirthday(Optional.of(birthday)).ifPresent(descriptor::setBirthday);
+        } catch (IllegalValueException ive) {
+            throw new IllegalArgumentException("birthday is expected to be unique");
+        }
+        return this;
+    }*/
+
     public EditPersonDescriptor build() {
         return descriptor;
     }

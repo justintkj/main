@@ -9,6 +9,8 @@ import static seedu.address.commons.core.Messages.MESSAGE_MISSING_PERSON;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
+import static seedu.address.logic.commands.RemoveTagCommand.FROM;
+import static seedu.address.logic.parser.RemoveTagCommandParserTest.FIRST_INDEX;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import org.junit.Rule;
@@ -17,6 +19,7 @@ import org.junit.rules.ExpectedException;
 
 import javafx.collections.ObservableList;
 
+import seedu.address.commons.core.index.Index;
 import seedu.address.logic.CommandHistory;
 import seedu.address.logic.UndoRedoStack;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -35,6 +38,8 @@ import seedu.address.testutil.ModelStub;
 public class RemoveTagCommandTest {
     private static final String INVALID_TAG = "a";
     private static final int FIRST_TAG = 1;
+    private static final String ALL = "all";
+    private static final String INDEX = "1";
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -42,18 +47,30 @@ public class RemoveTagCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
+    public void execute_validTagRemoveAll_success() throws Exception {
+        Tag firstTag = model.getAddressBook().getTagList().get(FIRST_TAG);
+        RemoveTagCommand removeTagCommand = prepareDeleteAllCommand(firstTag);
+
+        String expectedMessage = String.format(RemoveTagCommand.MESSAGE_REMOVE_TAG_SUCCESS, firstTag, FROM, ALL);
+
+        assertEquals(removeTagCommand.executeUndoableCommand().feedbackToUser, expectedMessage);
+    }
+
+    @Test
     public void execute_validTagRemove_success() throws Exception {
         Tag firstTag = model.getAddressBook().getTagList().get(FIRST_TAG);
-        RemoveTagCommand removeTagCommand = prepareCommand(firstTag);
+        RemoveTagCommand removeTagCommand = prepareDeleteTagCommand(FIRST_INDEX, firstTag);
 
-        String expectedMessage = String.format(RemoveTagCommand.MESSAGE_REMOVE_TAG_SUCCESS, firstTag);
+        String name =
+                model.getFilteredPersonList().get(Index.fromOneBased(FIRST_TAG).getZeroBased()).getName().fullName;
+        String expectedMessage = String.format(RemoveTagCommand.MESSAGE_REMOVE_TAG_SUCCESS, firstTag, FROM, name);
 
         assertEquals(removeTagCommand.executeUndoableCommand().feedbackToUser, expectedMessage);
     }
 
     @Test
     public void execute_notFoundTag_failure() throws Exception {
-        RemoveTagCommand removeTagCommand = prepareCommand(new Tag(INVALID_TAG));
+        RemoveTagCommand removeTagCommand = prepareDeleteAllCommand(new Tag(INVALID_TAG));
 
         assertCommandFailure(removeTagCommand, model, RemoveTagCommand.MESSAGE_TAG_NOT_FOUND);
     }
@@ -82,10 +99,10 @@ public class RemoveTagCommandTest {
 
     @Test
     public void equals() throws Exception {
-        final RemoveTagCommand standardCommand = new RemoveTagCommand(new Tag(VALID_TAG_FRIEND));
+        final RemoveTagCommand standardCommand = new RemoveTagCommand(ALL, new Tag(VALID_TAG_FRIEND));
 
         // same values -> returns true
-        RemoveTagCommand commandWithSameValues = new RemoveTagCommand(new Tag(VALID_TAG_FRIEND));
+        RemoveTagCommand commandWithSameValues = new RemoveTagCommand(ALL, new Tag(VALID_TAG_FRIEND));
         assertTrue(standardCommand.equals(commandWithSameValues));
 
         // same object -> returns true
@@ -98,14 +115,27 @@ public class RemoveTagCommandTest {
         assertFalse(standardCommand.equals(new ClearCommand()));
 
         // different descriptor -> returns false
-        assertFalse(standardCommand.equals(new RemoveTagCommand(new Tag(VALID_TAG_HUSBAND))));
+        assertFalse(standardCommand.equals(new RemoveTagCommand(ALL, new Tag(VALID_TAG_HUSBAND))));
+
+        // different index - > returns false
+        assertFalse(standardCommand.equals(new RemoveTagCommand(INDEX, new Tag(VALID_TAG_FRIEND))));
     }
 
     /**
-     * Returns an {@code BirthdayCommand} with parameters {@code index} and {@code birthday}
+     * Returns a {@code RemoveTagCommand} with {@code index} and tag to delete tag from person of index
      */
-    private RemoveTagCommand prepareCommand(Tag target) {
-        RemoveTagCommand removeTagCommand = new RemoveTagCommand(target);
+    private RemoveTagCommand prepareDeleteTagCommand(String index, Tag target) {
+        RemoveTagCommand removeTagCommand = new RemoveTagCommand(index, target);
+        removeTagCommand.setData(model, new CommandHistory(), new UndoRedoStack());
+
+        return removeTagCommand;
+    }
+
+    /**
+     * Returns {@code RemoveTagCommand} with {@code Tag} that deletes tag from all persons
+     */
+    private RemoveTagCommand prepareDeleteAllCommand(Tag target) {
+        RemoveTagCommand removeTagCommand = new RemoveTagCommand(ALL, target);
         removeTagCommand.setData(model, new CommandHistory(), new UndoRedoStack());
         return removeTagCommand;
     }
@@ -115,7 +145,7 @@ public class RemoveTagCommandTest {
      * to test {@code DuplicatePersonException}
      */
     private RemoveTagCommand prepareCommandForDuplicateException(Tag tag) {
-        RemoveTagCommand removeTagCommand = new RemoveTagCommand(tag);
+        RemoveTagCommand removeTagCommand = new RemoveTagCommand(ALL, tag);
         removeTagCommand.setData(new ModelStubThrowingDuplicatePersonException(), new CommandHistory(),
                 new UndoRedoStack());
         return removeTagCommand;
@@ -126,7 +156,7 @@ public class RemoveTagCommandTest {
      * to test {@code PersonNotFoundException}
      */
     private RemoveTagCommand prepareCommandForNotFoundException(Tag tag) {
-        RemoveTagCommand removeTagCommand = new RemoveTagCommand(tag);
+        RemoveTagCommand removeTagCommand = new RemoveTagCommand(ALL, tag);
         removeTagCommand.setData(new ModelStubThrowingPersonNotFoundException(), new CommandHistory(),
                 new UndoRedoStack());
         return removeTagCommand;

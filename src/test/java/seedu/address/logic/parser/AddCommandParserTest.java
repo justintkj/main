@@ -95,6 +95,18 @@ public class AddCommandParserTest {
     }
     //@@author
 
+    //@@author bokwoon95
+    @Test
+    public void parse_remarkAndBirthdayFieldPresent() {
+        Person expectedPerson = new PersonBuilder().withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
+                .withEmail(VALID_EMAIL_BOB).withAddress(VALID_ADDRESS_BOB).withRemark("Likes Trains")
+                .withTags().withBirthday("11-11-2010").build();
+        //test if adding remarks and birthday via 'r/' and 'b/' respectively works
+        assertParseSuccess(parser, "add n/Bob Choo p/22222222 a/Block 123, Bobby Street 3, #01-123 "
+                + "e/bob@example.com " + "r/Likes Trains " + "b/11-11-2010", new AddCommand(expectedPerson));
+    }
+    //@@author
+
     @Test
     public void parse_allFieldsPresent_success() {
         Person expectedPerson = new PersonBuilder().withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)

@@ -58,7 +58,7 @@ public class AddressBookParser {
 
         final String commandWord = matcher.group("commandWord");
         final String arguments = matcher.group("arguments");
-        switch (commandWord) {
+        switch (commandWord.toLowerCase()) {
 
         case EmailCommand.COMMAND_WORD:
             Command emailCommand = new EmailCommandParser().parse(arguments);

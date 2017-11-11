@@ -20,7 +20,7 @@ public class SortCommandParserTest {
     public static final String PARAM_BIRTHDAY = "birthday";
     public static final String PARAM_REMARK = "remark";
     public static final String PARAM_CAMEL_CASE = "NuMbEr";
-    public static final String INVALID_ARG = "a";
+    public static final String INVALID_ARG = "x";
     public static final String MULTIPLE_VALID_PARAM = "number name";
     private SortCommandParser parser = new SortCommandParser();
 

@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.core.Messages.MESSAGE_DUPLICATE_PERSON;
 import static seedu.address.commons.core.Messages.MESSAGE_MISSING_PERSON;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
@@ -30,19 +31,69 @@ public class RemoveTagCommand extends UndoableCommand {
 
     public static final String MESSAGE_TAG_NOT_FOUND = "Specified tag is not found";
 
-    public static final String MESSAGE_REMOVE_TAG_SUCCESS = "Removed Tag: %1$s";
+    public static final String MESSAGE_REMOVE_TAG_SUCCESS = "Removed Tag: %s %s %3$s";
+    public static final String ALL = "all";
+    public static final String FROM = "from";
+    private static final String MESSAGE_TAG_NOT_FOUND_IN_PERSON = "Tag not found in selected person";
 
     public final Tag target;
+    public final String index;
 
-    public RemoveTagCommand(Tag target) {
+    public RemoveTagCommand(String index, Tag target) {
+        requireNonNull(index);
+        requireNonNull(target);
+
         this.target = target;
+        this.index = index;
     }
 
     @Override
     public CommandResult executeUndoableCommand() throws CommandException {
-        removeTagFromAllPerson();
-        removeTagFromModel();
-        return new CommandResult(String.format(MESSAGE_REMOVE_TAG_SUCCESS, target));
+        String result;
+        if (index.equals(ALL)) {
+            removeTagFromAllPerson();
+            removeTagFromModel();
+            result = ALL;
+        } else {
+            result = removeTagFromPerson(Integer.parseInt(index) - 1);
+        }
+        return new CommandResult(String.format(MESSAGE_REMOVE_TAG_SUCCESS, target, FROM, result));
+    }
+
+    /**
+     * Removes selected {@code Tag} from selected {@code Person} in address book
+     *
+     * @throws CommandException When selected {@code Tag} is not found in address book
+     */
+    private String removeTagFromPerson(int index) throws CommandException {
+        List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
+        ReadOnlyPerson person = lastShownList.get(index);
+        boolean result = removeAndUpdate(person);
+        if (!result) {
+            throw new CommandException(MESSAGE_TAG_NOT_FOUND_IN_PERSON);
+        }
+        return person.getName().fullName;
+    }
+
+    /**
+     * Removes selected {@code Tag} from person and updates address book
+     *
+     * @param person person selected
+     * @return true when tag is found in person
+     * @throws CommandException when selected Tag is not found
+     */
+    private boolean removeAndUpdate(ReadOnlyPerson person) throws CommandException {
+        if (person.getTags().contains(target)) {
+            Set<Tag> updatedTags = new HashSet<>(person.getTags());
+
+            updatedTags.remove(target);
+
+            Person editedPerson = getEditedPerson(person, updatedTags);
+
+            updateModel(person, editedPerson);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -53,15 +104,7 @@ public class RemoveTagCommand extends UndoableCommand {
     private void removeTagFromAllPerson() throws CommandException {
         List<ReadOnlyPerson> lastShownList = model.getFilteredPersonList();
         for (ReadOnlyPerson person: lastShownList) {
-            if (person.getTags().contains(target)) {
-                Set<Tag> updatedTags = new HashSet<>(person.getTags());
-
-                updatedTags.remove(target);
-
-                Person editedPerson = getEditedPerson(person, updatedTags);
-
-                updateModel(person, editedPerson);
-            }
+            removeAndUpdate(person);
         }
     }
 
@@ -94,6 +137,7 @@ public class RemoveTagCommand extends UndoableCommand {
             throw new AssertionError(MESSAGE_MISSING_PERSON);
         }
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        model.updateListToShowAll();
     }
 
     /**
@@ -113,6 +157,7 @@ public class RemoveTagCommand extends UndoableCommand {
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof RemoveTagCommand // instanceof handles nulls
-                && this.target.equals(((RemoveTagCommand) other).target)); // state check
+                && this.target.equals(((RemoveTagCommand) other).target)
+                && this.index.equals(((RemoveTagCommand) other).index)); // state check
     }
 }

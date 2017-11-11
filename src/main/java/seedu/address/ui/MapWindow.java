@@ -17,12 +17,12 @@ import seedu.address.model.person.ReadOnlyPerson;
  */
 public class MapWindow extends UiPart<Region> {
 
-    public static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
-    public static final String GOOGLE_SEARCH_URL_SUFFIX = "&cad=h";
-
     public static final String TITLE = "Map";
     public static final String SPACE = " ";
     public static final String PLUS = "+";
+
+    private static final String GOOGLE_MAPS_URL_PREFIX = "https://www.google.com.sg/maps?safe=off&q=";
+    private static final String GOOGLE_SEARCH_URL_SUFFIX = "&cad=h";
     private static final Logger logger = LogsCenter.getLogger(MapWindow.class);
     private static final String ICON = "/images/help_icon.png";
     private static final String FXML = "MapWindow.fxml";
@@ -37,10 +37,26 @@ public class MapWindow extends UiPart<Region> {
         super(FXML);
         Scene scene = new Scene(getRoot());
         //Null passed as the parent stage to make it non-modal.
-        dialogStage = createDialogStage(TITLE, null, scene);
+        dialogStage = setupStage(scene);
+        displayMap(person);
+    }
+
+    /**
+     * Setup stage for browser pop-up
+     */
+    private Stage setupStage(Scene scene) {
+        Stage dialogStage = createDialogStage(TITLE, null, scene);
         dialogStage.setMaximized(false);
         FxViewUtil.setStageIcon(dialogStage, ICON);
+        return dialogStage;
+    }
 
+    /**
+     * Displays map of selected person on pop-up browser
+     *
+     * @param person Selected person to map
+     */
+    private void displayMap(ReadOnlyPerson person) {
         String mapUrl = GOOGLE_MAPS_URL_PREFIX + person.getAddress().getMapableAddress().replaceAll(SPACE, PLUS)
                 + GOOGLE_SEARCH_URL_SUFFIX;
         map.getEngine().load(mapUrl);

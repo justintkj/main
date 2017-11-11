@@ -55,11 +55,12 @@ public class MainApp extends Application {
     private static final Version VERSION = new Version(1, 3, 0, true);
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
-    private static final String TRAY_ICON = "images/address_book_15.png";
+    private static final String TRAY_ICON = "images/PocketBookLogo.png";
     private static final String MESSAGE_TRAY_UNSUPPORTED = "SystemTray is not supported";
     private static final String APP_NAME = "PocketBook";
     private static final String EXIT = "Exit";
     private static final String MESSAGE_ADD_TRAY_ICON_FAIL = "TrayIcon could not be added.";
+    private static final int ICON_SIZE = 16;
 
     protected Ui ui;
     protected Logic logic;
@@ -105,15 +106,48 @@ public class MainApp extends Application {
             logger.warning(MESSAGE_TRAY_UNSUPPORTED);
             return;
         }
-        Image image = new Image(TRAY_ICON);
+        initTrayIcon();
+        try {
+            tray = SystemTray.getSystemTray();
+            tray.add(trayIcon);
+        } catch (AWTException e) {
+            logger.warning(MESSAGE_ADD_TRAY_ICON_FAIL);
+        }
+    }
 
+    /**
+     * Initialize the tray icon for the app
+     */
+    private void initTrayIcon() {
+        Image image = new Image(TRAY_ICON, ICON_SIZE, ICON_SIZE, true, true);
         PopupMenu popup = new PopupMenu();
-        trayIcon = new TrayIcon(SwingFXUtils.fromFXImage(image, null), APP_NAME, popup);
-        tray = SystemTray.getSystemTray();
 
+        setupTrayIcon(image, popup);
+        setupPopupMenu(popup);
+        setupMouseListener();
+    }
+
+    /**
+     * Sets up the tray icon
+     */
+    private void setupTrayIcon(Image image, PopupMenu popup) {
+        trayIcon = new TrayIcon(SwingFXUtils.fromFXImage(image, null), APP_NAME, popup);
+        trayIcon.setPopupMenu(popup);
+    }
+
+    /**
+     * Sets up the pop-up menu of the tray icon
+     */
+    private void setupPopupMenu(PopupMenu popup) {
         MenuItem exitItem = new MenuItem(EXIT);
         exitItem.addActionListener(e -> Platform.runLater(this::stop));
+        popup.add(exitItem);
+    }
 
+    /**
+     * Sets up the mouse listener for the tray icon
+     */
+    private void setupMouseListener() {
         trayIcon.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -127,14 +161,6 @@ public class MainApp extends Application {
                 }
             }
         });
-        popup.add(exitItem);
-        trayIcon.setPopupMenu(popup);
-
-        try {
-            tray.add(trayIcon);
-        } catch (AWTException e) {
-            logger.warning(MESSAGE_ADD_TRAY_ICON_FAIL);
-        }
     }
     //@@author
 

@@ -20,7 +20,9 @@ public class SortCommand extends UndoableCommand {
             + "Example: " + COMMAND_WORD + " remark"
             + "Example: " + COMMAND_WORD + " email"
             + "Example: " + COMMAND_WORD + " favourite"
-            + "Example: " + COMMAND_WORD + " birthday";
+            + "Example: " + COMMAND_WORD + " birthday"
+            + "Example: " + COMMAND_WORD + " numTimesSearched";
+
 
 
     private String sortType;
