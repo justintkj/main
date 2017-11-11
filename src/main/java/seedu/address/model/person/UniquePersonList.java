@@ -84,7 +84,7 @@ public class UniquePersonList implements Iterable<Person> {
      * Sorts the internalList as declared by the arguments
      */
     public String sort (String sortType) {
-        if(internalList.size() == INDEX_ZERO) {
+        if (internalList.size() == INDEX_ZERO) {
             return EMPTY_LIST;
         }
         Collections.sort(internalList, comparatorMap.get(sortType));
