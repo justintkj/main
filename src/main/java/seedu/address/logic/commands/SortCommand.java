@@ -36,7 +36,7 @@ public class SortCommand extends UndoableCommand {
     @Override
     public CommandResult executeUndoableCommand() throws CommandException {
         String fullsortname = model.sortPerson(sortType);
-        if(fullsortname.equals(EMPTY_LIST)) {
+        if (fullsortname.equals(EMPTY_LIST)) {
             throw new CommandException(EMPTY_LIST_EXCEPTION_MESSAGE);
         }
         return new CommandResult(MESSAGE_SORT_SUCCESS + fullsortname);
