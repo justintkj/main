@@ -24,6 +24,7 @@ import seedu.address.model.UserPrefs;
 public class RedoCommandTest {
     private static final CommandHistory EMPTY_COMMAND_HISTORY = new CommandHistory();
     private static final UndoRedoStack EMPTY_STACK = new UndoRedoStack();
+    public static final int TWO_REDO = 2;
 
     private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
     private final DeleteCommand deleteCommandOne = new DeleteCommand(new Index[]{INDEX_FIRST_PERSON});
@@ -60,7 +61,7 @@ public class RedoCommandTest {
     public void alternative() throws Exception {
         UndoRedoStack undoRedoStack = prepareStack(
                 Collections.emptyList(), Arrays.asList(deleteCommandOne, deleteCommandOne));
-        RedoCommand redoCommand = new RedoCommand(2);
+        RedoCommand redoCommand = new RedoCommand(TWO_REDO);
         redoCommand.setData(model, EMPTY_COMMAND_HISTORY, undoRedoStack);
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
