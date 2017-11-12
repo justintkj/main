@@ -654,10 +654,10 @@ return new AddCommand(person);
 ==== Design Considerations
 
 **Aspect:** Adding a person to pocketBook(Alternative) +
-**Alternative 1 (current choice):** searches the string given for valid regex. +
+**Alternative 1 (current choice):** Searches the string given for valid regex. +
 **Pros:** No strict format to remember, natural for users to add user +
 **Cons:** Users may not be familiar with independent fields constraints. +
-**Alternative 2:** uses a prefix for each individual field. +
+**Alternative 2:** Uses a prefix for each individual field. +
 **Pros:** Less constraints on individual fields +
 **Cons:** Users have to refer for different prefixes meaning and how to use them.
 
