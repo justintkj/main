@@ -94,7 +94,7 @@ Format: `list`/`l`
 === Editing a person : `edit`/`e`
 
 Edits an existing person in the address book. +
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...` + 
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...` +
 	`e INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
 ****
@@ -118,7 +118,7 @@ Edits the name of the 2nd person to be `Donald Pua` and clears all existing tags
 
 Finds persons whose names contain any of the given keywords. +
 Can also be used to find all members of a specified tag. +
-Format: `find (KEYWORD [MORE_KEYWORDS] | t/KEYWORD)` + 
+Format: `find (KEYWORD [MORE_KEYWORDS] | t/KEYWORD)` +
 	`f KEYWORD [MORE_KEYWORDS]`
 
 ****
@@ -363,7 +363,7 @@ Pop-up shows the first person's address on Google Maps
 
 Adds/edits/removes selected person's birthday +
 Format: `birthday INDEX DATE` `birthday INDEX remove`
- 
+
 ****
 * Adds/Edits/Removes the birthday of person at the specified `INDEX`.
 * The index refers to the index numbers shown in the most recent listing.
