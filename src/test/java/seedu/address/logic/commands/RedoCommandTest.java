@@ -22,9 +22,10 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 
 public class RedoCommandTest {
+    public static final int TWO_REDO = 2;
+    
     private static final CommandHistory EMPTY_COMMAND_HISTORY = new CommandHistory();
     private static final UndoRedoStack EMPTY_STACK = new UndoRedoStack();
-    public static final int TWO_REDO = 2;
 
     private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
     private final DeleteCommand deleteCommandOne = new DeleteCommand(new Index[]{INDEX_FIRST_PERSON});
