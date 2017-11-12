@@ -31,7 +31,7 @@ public class RemarkCommandParser implements Parser<RemarkCommand> {
         Index index;
         try {
             index = ParserUtil.parseIndex(splitArgs[INDEX_ZERO]);
-            remark = new Remark(args.replaceFirst(splitArgs[INDEX_ZERO],EMPTY_STRING).trim());
+            remark = new Remark(args.replaceFirst(splitArgs[INDEX_ZERO], EMPTY_STRING).trim());
         } catch (IllegalValueException ive) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, RemarkCommand.MESSAGE_USAGE));
         }
