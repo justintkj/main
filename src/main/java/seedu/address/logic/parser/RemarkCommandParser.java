@@ -19,7 +19,6 @@ import seedu.address.model.person.Remark;
 public class RemarkCommandParser implements Parser<RemarkCommand> {
     /**
      * Parses the given {@code String} of arguments in the context of the RemarkCommand
-     * and returns a RemarkCommand object for execution.
      * Prefix is not needed for execution.
      *
      * @throws ParseException if the user input does not conform the expected format
