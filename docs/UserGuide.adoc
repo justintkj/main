@@ -486,6 +486,7 @@ The `redo` command fails as there are no `undo` commands executed previously.
 Clears all entries from the address book. +
 Format: `clear`
 	`c`
+
 // tag::background[]
 === Program running in background
 
@@ -579,4 +580,3 @@ e.g.`select 2`
 * *Sort* `sort name` + `sort number` + `sort address` + `sort email` + `sort remark` + `sort birthday` + `sort favourite`
 * *Undo* : `undo (Optional:NUMBER)`
 e.g. `Undo 2`
-
