@@ -73,7 +73,7 @@ Unit : #(1 to 2 digits)-(1-3 digits)(Optional:Character). Example: #01-111B +
 Street : (1 Word) street (1 to 2 digits). Example : Jurong Street 11 +
 Number : (8 digits). Example: ,11111111, or 11111111 +
 Email : (1 alphanumericword)@(1 alphanumericword).(1 alphanumericword). Example: Jason@example.com +
-(Optional) Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldn't be in the future and has to be a valid date.Example :Singapore 655900+
+(Optional) Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldn't be in the future and has to be a valid date. Example : 12-12-2012
 (Optional) Postal Code: singapore (6digits). Example :Singapore 655900 +
 
 Examples:
