@@ -23,7 +23,6 @@ import seedu.address.model.UserPrefs;
 
 public class RedoCommandTest {
     public static final int TWO_REDO = 2;
-    
     private static final CommandHistory EMPTY_COMMAND_HISTORY = new CommandHistory();
     private static final UndoRedoStack EMPTY_STACK = new UndoRedoStack();
 
