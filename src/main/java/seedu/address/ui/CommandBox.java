@@ -35,10 +35,10 @@ public class CommandBox extends UiPart<Region> {
     public static final String STORAGE_FILE_NAME = "Autocomplete.xml";
     public static final String ERROR_MESSAGE_CREATE_FILE_FAILED = "Unable to create file Autocomplete.xml";
 
-    private static final String FXML = "CommandBox.fxml";
     public static final AddressBookStorage NULL_ADDRESSBOOK_STORAGE = null;
     public static final UserPrefsStorage NULL_USER_PREFS_STORAGE = null;
 
+    private static final String FXML = "CommandBox.fxml";
     private static ArrayList<String> mainPossibleSuggestion;
     private final Logger logger = LogsCenter.getLogger(CommandBox.class);
     private final Logic logic;
