@@ -1,6 +1,5 @@
 ﻿
 = PocketBook - User Guide
-
 :toc:
 :toc-title:
 :toc-placement: preamble
@@ -12,7 +11,7 @@ ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
 endif::[]
-:repoURL: https://github.com/se-edu/addressbook-level4
+:repoURL: https://github.com/CS2103AUG2017-F09-B3/main
 
 By: `F09-B3`      Since: `Jun 2016`      Licence: `MIT`
 
@@ -24,7 +23,7 @@ By: `F09-B3`      Since: `Jun 2016`      Licence: `MIT`
 Having any Java 8 version is not enough. +
 This app will not work with earlier versions of Java 8.
 +
-.  Download the latest `addressbook.jar` link:{repoURL}/releases[here].
+.  Download the latest `PocketBook.jar` link:{repoURL}/releases[here].
 .  Copy the file to the folder you want to use as the home folder for your Address Book.
 .  Double-click the file to start the app. The GUI should appear in a few seconds.
 +
@@ -58,7 +57,7 @@ e.g. typing *`help`* and pressing kbd:[Enter] will open the help window.
 Format: `help`
 
 // tag::add[]
-=== Adding a person: `add`/'a'
+=== Adding a person: `add`/`a`
 
 Adds a person to the address book +
 Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]... r/REMARK b/BIRTHDAY` +
@@ -66,7 +65,7 @@ Alternative Format : `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL BIRTHDAY`
 
 [TIP]
 A person can have any number of tags (including 0) +
-For alternative format, name needs to be the first field followed by ','. The rest do not need to be in any order. +
+For alternative format, name needs to be the first field followed by `,`. The rest do not need to be in any order. +
 Fields have to follow these formats: +
 Commas and spacebars do not affect the acceptance of the fields. +
 Block : Block (1 to 3 digits). Example : Block 1, Block 11, Block 111 +
@@ -90,12 +89,12 @@ Examples:
 === Listing all persons : `list`
 
 Shows a list of all persons in the address book. +
-Format: `list`/ 'l'
+Format: `list`/`l`
 
-=== Editing a person : `edit`/ 'e'
+=== Editing a person : `edit`/`e`
 
 Edits an existing person in the address book. +
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...` + 
 	`e INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
 ****
@@ -119,7 +118,7 @@ Edits the name of the 2nd person to be `Donald Pua` and clears all existing tags
 
 Finds persons whose names contain any of the given keywords. +
 Can also be used to find all members of a specified tag. +
-Format: `find (KEYWORD [MORE_KEYWORDS] | t/KEYWORD)`
+Format: `find (KEYWORD [MORE_KEYWORDS] | t/KEYWORD)` + 
 	`f KEYWORD [MORE_KEYWORDS]`
 
 ****
@@ -138,16 +137,33 @@ Examples:
 Returns `john` and `John Doe`
 * `find Betsy Tim John` +
 Returns any person having names `Betsy`, `Tim`, or `John`
-* `find t/enemies`
-Returns all persons in the tag `enemies`
 * `f Alpha Bravo Charlie` +
 Returns any person having names `Alpha`, `Bravo`, or `Charlie`
 
-=== Deleting one or more person(s) : `delete` 'd'
+// tag::findbytag[]
+=== Locating persons by tag: `find`
+
+Finds all persons who are members of a specified tag. +
+Format: `find t/KEYWORD`
+
+****
+* The search is case insensitive. e.g `friends` will match `Friends`
+* Only full words will be matched e.g. `Han` will not match `Hans`
+* Only one tag may be searched for at a time e.g. `find t/friends t/colleagues` is invalid
+* The command cannot search by both tag and name simultaneously, e.g. `find John t/enemies` is invalid
+****
+
+Examples:
+
+* `find t/enemies`
+Returns all persons in the tag `enemies`
+// end::findbytag[]
+
+// tag::delete[]
+=== Deleting one or more person(s) : `delete`/`d`
 
 Deletes the specified person(s) from the address book. +
-Format: `delete INDEX(ES)`
-	`d INDEX(ES)`
+Format: `delete INDEX...` `d INDEX...`
 
 ****
 * Deletes the person at the specified `INDEX(ES)`.
@@ -160,11 +176,15 @@ Examples:
 * `list` +
 `delete 2` +
 Deletes the 2nd person in the address book.
+
 * `find Betsy` +
 `delete 1 2 3` +
-Deletes the 1st, 2nd and 3rd persons in the results of the `find` command.
+Deletes the 1st, 2nd and 3rd persons in the results of the `find Betsy` command.
+
+* `find` +
 `d 3` +
 Deletes the 3rd person in the results of the `find` command.
+// end::delete[]
 
 === Selecting a person : `select`
 
@@ -192,16 +212,22 @@ Selects the 1st person in the results of the `find` command.
 // tag::sort[]
 
 === Sort all persons : `sort`
-Note : While Jo did the numsearched fields for sort, i refractored to use streams to
-reduce excessive "for loops".
 Sort all the persons according to their names in alphabetical order. +
 Cannot sort if list is empty +
+
 Format: `sort ARGUMENT`
 ****
 * Sorts the storage list of all persons in ascending order
 * Sorting is permanent, will be updated into storage.
-* Valid Arguments are: `name`, `number`, `address`, `email`, `remark`, `birthday`, `favourite`, `numtimessearched`.
-* CamelCase arguments are allowed `NamE`, `NuMbEr`, `AddResS`, `EmAIL`, `REMARK`, `BiRtHDAY`, `FavouRITE`
+* Valid Arguments are:
+** `name` (alt: `n`)
+** `number` (alt: `num`, `no`)
+** `address` (alt: `addr`, `add`, `a`)
+** `email` (alt: `e`)
+** `remark` (alt: `r`)
+** `birthday` (alt: `bday`, `b`)
+** `numtimessearched` (alt: `timessearched`, `numsearches`, `searches`, `s`)
+* Arguments are case insensitive, e.g. valid examples include `NamE`, `NuMbEr`, `AddResS`, `EmAIL`, `REMARK`, `BiRtHDAY`
 ****
 
 Examples:
@@ -272,13 +298,15 @@ Emails the 2nd person in the address book list with "this is my subject" as subj
 
 // end::email[]
 
-=== Removing a tag from all persons in addressbook : `removetag`
+// tag::removetag[]
+=== Removing a tag from selected/all persons: `removetag`
 
-Removes the tag that you have entered from all the persons in your addressbook. +
-Format: `removetag TAG`
+Removes the tag that you have entered from specified/all persons. +
+Format: `removetag [INDEX] TAG`
 
 ****
-* Finds all the persons with the tag you entered and removes that tag from all persons
+* If INDEX is specified, delete TAG from specified person.
+* Else, finds and removes that tag from all persons.
 * The tag refers to the tag shown with users
 * The tag *must be a valid tag that is already in the addressbook*
 ****
@@ -286,13 +314,15 @@ Format: `removetag TAG`
 Examples:
 
 * `removetag friends` +
-Removes the tag 'friends' from all persons in addressbook
-* `removetag NUS` +
-Removes the tag 'NUS' from all persons in addressbook
+Removes the tag `friends` from all persons
+* `removetag 1 NUS` +
+Removes the tag `NUS` from first person
+// end::removetag[]
 
-=== Adding a Profile picture to a user : `image`
+// tag::image[]
+=== Adding a Profile picture to a person : `image`
 
-Opens a window for you to choose which picture you would like to add as a profile picture to the selected person or removes the profile picture of the selected person. +
+Opens a file browser for you to choose which picture you would like to add as a profile picture to the selected person or removes the profile picture of the selected person. +
 Format: `image INDEX` `image INDEX remove`
 
 ****
@@ -307,11 +337,13 @@ Examples:
 Opens a window for user to choose picture for 1st person in list.
 
 * `image 1 remove` +
-Removes profile picture from the selected person.
+Removes profile picture from the selected person and sets default picture.
+// end::image[]
 
+// tag::map[]
 === Showing address on Google Maps : `map`
 
-Shows a person's address on Google Maps on browser
+Shows a person's address on Google Maps on pop-up browser. +
 Format: `map INDEX`
 
 ****
@@ -323,15 +355,17 @@ Format: `map INDEX`
 Examples:
 
 * `map 1` +
-Selects the 1st person in the results of the `find` command.
+Pop-up shows the first person's address on Google Maps
+// end::map[]
 
-=== Adding/Editing Birthday to person : `birthday`
+// tag::birthday[]
+=== Adding/Editing/Removing Birthday to person : `birthday`
 
-Adds or edits selected person's birthday +
-Format: `birthday INDEX DATE`
-
+Adds/edits/removes selected person's birthday +
+Format: `birthday INDEX DATE` `birthday INDEX remove`
+ 
 ****
-* Adds/Edits the birthday of person at the specified `INDEX`.
+* Adds/Edits/Removes the birthday of person at the specified `INDEX`.
 * The index refers to the index numbers shown in the most recent listing.
 * The index *must be a positive integers* 1, 2, 3, ...
 * The date refers to the birthday to be added/edited to person.
@@ -349,6 +383,7 @@ Removes the birthday of the 3rd person in the address book.
 
 When you first start the app, the app will check through all the birthdays of your contacts and notify you if there
 are any birthdays on that day.
+// end::birthday[]
 
 // tag::remark[]
 
@@ -451,12 +486,18 @@ The `redo` command fails as there are no `undo` commands executed previously.
 Clears all entries from the address book. +
 Format: `clear`
 	`c`
-
+// tag::background[]
 === Program running in background
 
 Closing the app will reduce the app to the background instead of closing it. +
 To open/close the app window, double click on the app icon in the system tray. +
-To exit the app fully, go to File menu and press Exit or right click on the icon in system tray and press Exit.
+To exit the app fully, +
+
+* Enter the `exit` command or +
+* Go to File menu and press Exit or +
+* Right click on the icon in system tray and press Exit.
+
+// end::background[]
 
 === Exiting the program : `exit`
 
@@ -503,9 +544,13 @@ Sound will be played whenever an invalid command triggers ParseException or Comm
 e.g. `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
 * *Add* `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL BIRTHDAY` +
 e.g. `add Jason, Block 11 Jurong Street 88 #01-11 22224444 jassie@example.com 12-09-1994`
+* *Birthday* : `birthday INDEX` `birthday INDEX remove` +
+e.g. `birthday 5` +
+e.g. `birthday 3 remove`
 * *Clear* : `clear`
-* *Delete* : `delete INDEX` +
-e.g. `delete 3`
+* *Delete* : `delete INDEX(ES)` +
+e.g. `delete 3` +
+e.g. `delete 3 5`
 * *Edit* : `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...` +
 e.g. `edit 2 n/James Lee e/jameslee@example.com`
 * *Email* : `email INDEX, Subject, Body`
@@ -515,16 +560,23 @@ e.g. `favourite 1`
 * *Find* : `find (KEYWORD [MORE_KEYWORDS] | t\KEYWORD)` +
 e.g. `find James Jake` +
 e.g. `find t/friends`
-* *List* : `list`
 * *Help* : `help`
-* *Select* : `select INDEX` +
-e.g.`select 2`
 * *History* : `history`
-* *Undo* : `undo (Optional:NUMBER)`
-e.g. `Undo 2`
+* *Image* : `image INDEX` `image INDEX remove` +
+e.g. `image 3` +
+e.g. `image 4 remove`
+* *List* : `list`
+* *Map* : `map INDEX` +
+e.g. `map 2`
 * *Redo* : `redo (Optional:NUMBER)`
 e.g. `Redo 2`
 * *Remark* : `remark INDEX, r/MESSAGE`
 e.g. `Remark 2, r/remark`
-* *Sort* `sort name` + `sort number` + `sort address` + `sort email` + `sort remark` + `sort birthday` + `sort favourite` + `sort numtimessearched`
+* *RemoveTag* : `removetag TAG` +
+e.g. `removetag friends`
+* *Select* : `select INDEX` +
+e.g.`select 2`
+* *Sort* `sort name` + `sort number` + `sort address` + `sort email` + `sort remark` + `sort birthday` + `sort favourite`
+* *Undo* : `undo (Optional:NUMBER)`
+e.g. `Undo 2`
 
