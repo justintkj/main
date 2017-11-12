@@ -65,7 +65,7 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
         /* Adds a person AMY to the addressBook */
         addAmyToModel(model);
 
-        /* Case: Sort all persons by number */
+        /* Case: Sort all persons by phone number */
         sortExecuteSuccess(model, PARAM_NUMBER);
 
         /* Case: Sort all persons by favourite */
