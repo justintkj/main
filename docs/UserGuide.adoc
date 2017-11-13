@@ -48,7 +48,7 @@ e.g. typing *`help`* and pressing kbd:[Enter] will open the help window.
 * Words in `UPPER_CASE` are the parameters to be supplied by the user e.g. in `add n/NAME`, `NAME` is a parameter which can be used as `add n/John Doe`.
 * Items in square brackets are optional e.g `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
 * Items with `…`​ after them can be used multiple times including zero times e.g. `[t/TAG]...` can be used as `{nbsp}` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
-* All commands can word with cammel case e.g. add and AdD are both acceptable.
+* All commands can work with camel case e.g. add and AdD are both acceptable.
 * Parameters can be in any order e.g. if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 ====
 
@@ -60,8 +60,8 @@ Format: `help`
 === Adding a person: `add`/`a`
 
 Adds a person to the address book +
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]... r/REMARK b/BIRTHDAY` +
-Alternative Format : `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL BIRTHDAY`
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]... [r/REMARK] [b/BIRTHDAY`] +
+Alternative Format : `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL [BIRTHDAY] [POSTAL CODE]`
 
 [TIP]
 A person can have any number of tags (including 0) +
@@ -71,8 +71,8 @@ Commas and spacebars do not affect the acceptance of the fields. +
 Block : Block (1 to 3 digits). Example : Block 1, Block 11, Block 111 +
 Unit : #(1 to 2 digits)-(1-3 digits)(Optional:Character). Example: #01-111B +
 Street : (1 Word) street (1 to 2 digits). Example : Jurong Street 11 +
-Number : (8 digits). Example: ,11111111, or 11111111 +
-Email : (1 alphanumericword)@(1 alphanumericword).(1 alphanumericword). Example: Jason@example.com +
+Number : (8 digits). Example: 11111111 +
+Email : (1 alphanumeric word)@(1 alphanumeric word).(1 alphanumeric word). Example: Jason@example.com +
 (Optional) Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldn't be in the future and has to be a valid date. Example : 12-12-2012
 (Optional) Postal Code: singapore (6digits). Example :Singapore 655900 +
 
@@ -86,7 +86,7 @@ Examples:
 
 // end::add[]
 
-=== Listing all persons : `list`
+=== Listing all persons : `list`/`l`
 
 Shows a list of all persons in the address book. +
 Format: `list`/`l`
@@ -162,7 +162,8 @@ Returns all persons in the tag `enemies`
 // tag::fuzzyfind[]
 === Locating persons by substring: `fuzzyfind`
 
-Finds all persons who are members of a specified tag. +
+Finds all persons whose names contains the specified keyword. +
+
 Format: `fuzzyfind KEYWORD [MORE KEYWORDS]`
 
 ****
@@ -208,7 +209,7 @@ Deletes the 1st, 2nd and 3rd persons in the results of the `find Betsy` command.
 Deletes the 3rd person in the results of the `find` command.
 // end::delete[]
 
-=== Selecting a person : `select`
+=== Selecting a person : `select`/`s`
 
 Selects the person identified by the index number used in the last person listing. +
 Format: `select INDEX`
@@ -404,10 +405,6 @@ Adds/Edits the birthday of the 2nd person in the address book.
 * `birthday 3 remove` +
 Removes the birthday of the 3rd person in the address book.
 
-=== Birthday pop-up
-
-When you first start the app, the app will check through all the birthdays of your contacts and notify you if there
-are any birthdays on that day.
 // end::birthday[]
 
 // tag::remark[]
@@ -438,7 +435,7 @@ Format: `history`
 	`h`
 [NOTE]
 ====
-Pressing the kbd:[&uarr;] and kbd:[&darr;] arrows will display the previous and next input respectively in the command box.
+Pressing the kbd:[&uarr;] and kbd:[&darr;] arrows when autocomplete is not active will display the previous and next input respectively in the command box.
 ====
 
 // tag::undoredo[]
@@ -448,8 +445,8 @@ Pressing the kbd:[&uarr;] and kbd:[&darr;] arrows will display the previous and 
 Restores the address book to the state before the previous _undoable_ command was executed. +
 Format: `undo`
 	`u`
-	`undo (NUMBER)`
-	`u (NUMBER)`
+	`undo [NUMBER]`
+	`u [NUMBER]`
 [NOTE]
 ====
 Undoable commands: those commands that modify the address book's content (`add`, `delete`, `edit`, `clear`,`image`, `sort`, `favourite`, `birthday`, `remark`, `map`, `removeTag`).
@@ -479,9 +476,9 @@ The `undo` command fails as there are no undoable commands executed previously.
 
 Reverses the most recent `undo` command. +
 Format: `redo`
-	`redo (NUMBER)`
+	`redo [NUMBER]`
 	`r`
-	`r (NUMBER)`
+	`r [NUMBER]`
 
 Examples:
 
@@ -512,6 +509,13 @@ The `redo` command fails as there are no `undo` commands executed previously.
 Clears all entries from the address book. +
 Format: `clear`
 	`c`
+// tag::birthdaypopup[]
+
+=== Birthday pop-up
+
+When you first start the app, the app will check through all the birthdays of your contacts and notify you if there
+are any birthdays on that day.
+// end::birthdaypopup[]
 
 // tag::background[]
 === Program running in background
@@ -544,7 +548,7 @@ There is no need to save manually.
 === AutoComplete
 
 A drop-down list of valid input prompts are filtered as when user types a command. +
-Users can navigate between the filtered command with the +
+Users can navigate between the filtered command with the [&uarr;] and [&darr;] when the drop down box is active +
 All valid commands will be saved and updated in the storage, expanding the list of recommended inputs for the user. +
 Autocomplete data are saved in the XML automatically after any valid new command that user uses. +
 There is no need to save manually. A new empty Autcomplete.xml file will be created if deleted.

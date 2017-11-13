@@ -1,0 +1,136 @@
+= TestScript
+:relfileprefix: team/
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
+:stylesDir: stylesheets
+
+== Setup
+. Put `PocketBook.jar` in a new folder.
+. Create a folder `data` in the same folder.
+. Rename the `SampleData.xml` file in this directory to `addressbook.xml`.
+. Move `addressbook.xml` to the `data` folder.
+. You can proceed to testing. Cheers~
+
+== Testing
+* Run the app by double-clicking `PocketBook.jar`
+* Turn on your volume for maximum experience.
+
+=== Birthday Notifier
+* A birthday notification should appear at the bottom right corner of your screen when you run the app.
+* It will contain the names of persons having birthdays.
+* Testing:
+** Edit the birthday of the person that you want to show on the pop-up to the current date.
+** Exit and reopen the app and the pop-up will show the name.
+
+=== Autocomplete Function
+* Testing: A list of relevant command will appear when typing a valid command.
+** Format: [&uarr;] and [&darr;] to navigate the list of command. [ENTER] to select.
+
+=== Add Function
+* Testing: A new person will be added to the bottom of the list after every command.
+** Method 1:
+*** Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]... [r/REMARK] [b/BIRTHDAY]`
+**** `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 r/Handsome b/11-11-2011`
+**** `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal r/Swimmer b/ 09-09-2012`
+**** `add n/Donald Pua t/friend e/donana@example.com a/Porsche street p/3153357 t/cleaner`
+** Method 2:
+*** Format : `add NAME, BLOCK STREET UNIT PHONENUMBER EMAIL [BIRTHDAY] [POSTAL CODE]`
+**** `add Jason, Block 111 jurong street 55 #01-111 92008822 jason@example.com 11-11-2011`
+**** `add Dexter,jurong street 15 Block 12 #01-111 singapore 666999 92008822 jason@example.com 92008822 11-11-2011`
+***** This command will fail as there is already a person with the same parameters in the address book.
+
+=== Edit Function
+* Testing: The selected person in the command below will be edited.
+** Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
+*** `edit 1 p/91234567 e/johndoe@example.com`
+*** `edit 2 n/Betsy Crower t/`
+*** `edit 2 n/Donald Pua t/`
+
+=== Delete Function
+* Testing: The selected person in the command below will be deleted from the addressbook.
+** Format: `delete INDEX...`
+*** `delete 1 2 3`
+*** `delete 2`
+
+=== Undo Function
+* Testing: Undoes the previous command if there is any.
+** Format: `undo [NUMBER]`
+*** `undo 2`
+*** `undo`
+
+=== Redo Function
+* Testing; Redoes the undone command if there is any.
+** Format: `redo [NUMBER]`
+*** `redo`
+*** `redo 2`
+
+=== Favourite Function
+* Testing: Highlights/unhighlight the selected person.
+** Format: `favourite INDEX`
+*** `favourite 1` (Highlights first person)
+*** `favourite 1` (Unhighlight first person)
+
+=== Removetag Function
+* Testing: Removes specified tag from selected or all persons
+** Format: `removetag [INDEX] TAG`
+*** `removetag 3 friends`
+*** `removetag swimmer`
+
+=== Find Function
+* Testing: Searches and lists the persons found with specified search parameter (name and tags)
+** Format: `find KEYWORD`
+*** `find jason`
+*** `list` (to list all the persons in address book)
+*** `find t/swimmer`
+*** `list`
+
+=== Fuzzyfind Function
+* Testing: Searches and lists the persons that contains the specified text (name)
+** Format: `fuzzyfind KEYWORD`
+*** `fuzzyfind jo`
+*** `list`
+*** `fuzzyfind li`
+*** `list`
+
+=== Sort Function
+* Testing: Sorts all the persons in the address book according to the specified parameter +
+(name, number, address, email, birthday, remark, numtimessearched)
+** Format: `sort PARAMETER`
+*** `sort name`
+*** `sort email`
+*** `sort birthday`
+
+=== Image Function
+* Testing: Opens a file chooser for the user to choose an image for a person
+** Format: `image INDEX` `image INDEX remove`
+*** `image 2`
+*** `image 2 remove`
+
+=== Map Function
+* Testing: Searches the selected person's address on Google Map
+** Format: `map INDEX`
+*** `map 1`
+*** `map 2`
+
+=== Email Function
+* Testing: Sends an email to the selected person's email address
+** Format: `email INDEX, TITLE, BODY` (only two commas allowed)
+*** Add your email address to one of the persons
+*** Send the email to your email address with this format:
+**** `email INDEX, testing, Hello. I LUB YOU.`
+
+=== Birthday Function
+* Testing: Adds/ Edits/ Removes the birthday of selected person
+** Format: `birthday INDEX BIRTHDAY` `birthday INDEX remove`
+*** `birthday 2 11-11-2011`
+*** `birthday 2 remove`
+
+=== Remark Function
+* Testing: Adds/ Edits/ Removes the remark of selected person
+** Format: `remark INDEX REMARK` `remark INDEX`
+*** `remark 2 sucks my dick`
+*** `remark 2`
+
+=== Background Function
+* Testing: Let's the program run in the background
+** Double click the tray icon to close or open the app
+** Right click the tray icon to open the menu to exit the app

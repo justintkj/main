@@ -106,6 +106,7 @@ include::../DeveloperGuide.adoc[tag=RemoveTag]
 #Start of Extract [from: User Guide]#
 
 include::../UserGuide.adoc[tag=birthday]
+include::../UserGUide.adoc[tag=birthdaypopup]
 
 #End of Extract#
 
@@ -215,6 +216,7 @@ When the user calls the `tutorial` function or when the user opens the app for t
 
 === Other contributions
 
+* Code consolidation and review for team repo
 * Updated the GUI color scheme and layout (Pull requests https://github.com/CS2103AUG2017-F09-B3/main/pull/88[#88])
 * Wrote additional tests to increase coverage (Pull requests https://github.com/CS2103AUG2017-F09-B3/main/pull/95[#95], https://github.com/CS2103AUG2017-F09-B3/main/pull/104[#104], https://github.com/CS2103AUG2017-F09-B3/main/pull/107[#107])
 * Highlighted bugs: https://github.com/CS2103AUG2017-T09-B2/main/issues/179[#179]

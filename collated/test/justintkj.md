@@ -159,7 +159,7 @@ public class FavouriteCommandTest {
     public void alternative() throws Exception {
         UndoRedoStack undoRedoStack = prepareStack(
                 Collections.emptyList(), Arrays.asList(deleteCommandOne, deleteCommandOne));
-        RedoCommand redoCommand = new RedoCommand(2);
+        RedoCommand redoCommand = new RedoCommand(TWO_REDO);
         redoCommand.setData(model, EMPTY_COMMAND_HISTORY, undoRedoStack);
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
@@ -177,6 +177,8 @@ public class FavouriteCommandTest {
 ``` java
 public class RemarkCommandTest {
 
+    public static final Object NULL = null;
+
     @Test
     public void equals() {
         final RemarkCommand standardCommand = new RemarkCommand(INDEX_FIRST_PERSON, VALID_REMARK_AMY);
@@ -186,7 +188,7 @@ public class RemarkCommandTest {
         // same object -> returns true
         assertTrue(standardCommand.equals(standardCommand));
         // null -> returns false
-        assertFalse(standardCommand.equals(null));
+        assertFalse(standardCommand.equals(NULL));
         // different types -> returns false
         assertFalse(standardCommand.equals(new ClearCommand()));
         // different index -> returns false
@@ -269,7 +271,7 @@ public class SortCommandTest {
     public void alternative() throws Exception {
         UndoRedoStack undoRedoStack = prepareStack(
                 Arrays.asList(deleteCommandOne, deleteCommandTwo), Collections.emptyList());
-        UndoCommand undoCommand = new UndoCommand(2);
+        UndoCommand undoCommand = new UndoCommand(TWO_UNDO);
         undoCommand.setData(model, EMPTY_COMMAND_HISTORY, undoRedoStack);
         deleteCommandOne.execute();
         deleteCommandTwo.execute();
@@ -441,12 +443,12 @@ public class FavouriteCommandParserTest {
  */
 public class RedoCommandParserTest {
 
-    public static final int NUMBER_ONE = 1;
+    public static final int ONE_REDO = 1;
     private RedoCommandParser parser = new RedoCommandParser();
 
     @Test
     public void parse_validArgs_returnsRedoCommand() {
-        assertParseSuccess(parser, INDEX_ONE, new RedoCommand(NUMBER_ONE));
+        assertParseSuccess(parser, INDEX_ONE, new RedoCommand(ONE_REDO));
     }
 
     @Test
@@ -467,12 +469,12 @@ public class RemarkCommandParserTest {
 
         //Have remarks
         Index targetIndex = INDEX_FIRST_PERSON;
-        String userInput = targetIndex.getOneBased() + SPACE_STRING + PREFIX_REMARK + SPACE_STRING + remark;
+        String userInput = targetIndex.getOneBased() + SPACE_STRING + remark;
         RemarkCommand expectedCommand = new RemarkCommand(INDEX_FIRST_PERSON, remark);
         assertParseSuccess(parser, userInput, expectedCommand);
 
         //No remarks
-        userInput = targetIndex.getOneBased() + SPACE_STRING + PREFIX_REMARK;
+        userInput = targetIndex.getOneBased() + SPACE_STRING;
         expectedCommand = new RemarkCommand(INDEX_FIRST_PERSON, EMPTY_STRING);
         assertParseSuccess(parser, userInput, expectedCommand);
     }
@@ -586,11 +588,12 @@ public class SortCommandParserTest {
  */
 public class UndoCommandParserTest {
 
+    public static final int ONE_UNDO = 1;
     private UndoCommandParser parser = new UndoCommandParser();
 
     @Test
     public void parse_validArgs_returnsUndoCommand() {
-        assertParseSuccess(parser, INDEX_ONE, new UndoCommand(1));
+        assertParseSuccess(parser, INDEX_ONE, new UndoCommand(ONE_UNDO));
     }
 
     @Test
@@ -611,6 +614,8 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
     public static final String PARAM_INVALID = " xxx";
     public static final String PARAM_NUMBER = " number";
     public static final String PARAM_FAVOURITE = " favourite";
+    public static final String NEW_LINE = " \n";
+    public static final String DUPLICATE_EXCEPTION_MESSAGE = "toAdd already exists in the model.";
 
     @Test
     public void sort() throws Exception {
@@ -645,7 +650,7 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
         /* Adds a person AMY to the addressBook */
         addAmyToModel(model);
 
-        /* Case: Sort all persons by number */
+        /* Case: Sort all persons by phone number */
         sortExecuteSuccess(model, PARAM_NUMBER);
 
         /* Case: Sort all persons by favourite */
@@ -677,7 +682,7 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
         String command;
         String expectedResultMessage;
         command = SortCommand.COMMAND_WORD + message;
-        expectedResultMessage = SortCommand.MESSAGE_SORT_FAILURE + " \n" + SortCommand.MESSAGE_USAGE;
+        expectedResultMessage = SortCommand.MESSAGE_SORT_FAILURE + NEW_LINE + SortCommand.MESSAGE_USAGE;
         assertCommandFailure(command, expectedResultMessage);
     }
 
@@ -703,7 +708,7 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
      */
     private void assertCommandSuccess(String command, Model expectedModel, String expectedResultMessage) {
         executeCommand(command);
-        assertApplicationDisplaysExpected("", expectedResultMessage, expectedModel);
+        assertApplicationDisplaysExpected(EMPTY_STRING, expectedResultMessage, expectedModel);
         assertSelectedCardUnchanged();
         assertCommandBoxShowsDefaultStyle();
     }
@@ -718,7 +723,7 @@ public class SortCommandSystemTest extends AddressBookSystemTest {
         try {
             expectedModel.addPerson(toAdd);
         } catch (DuplicatePersonException dpe) {
-            throw new IllegalArgumentException("toAdd already exists in the model.");
+            throw new IllegalArgumentException(DUPLICATE_EXCEPTION_MESSAGE);
         }
         String expectedResultMessage = String.format(AddCommand.MESSAGE_SUCCESS, toAdd);
 

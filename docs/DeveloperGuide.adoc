@@ -744,7 +744,7 @@ private String deleteAllSelectedPersonFromAddressBook() throws CommandException 
 // end::DeleteMultiple[]
 
 // tag::Map[]
-=== Addressing Mapping Mechanism
+=== Mapping Mechanism
 
 The mapping mechanism is facilitated by `MapWindow` and `MapCommand`, which resides within `UI` and `Model` component respectively.
 It creates a new pop-up browser showing the `Address` of the selected `Person` on Google Maps.
@@ -2146,14 +2146,6 @@ Name of the application
 
 ....
 PocketBook
-....
-
-
-[[Format]]
-The specific method for input in the command Line.
-
-....
-sort, list, add n/John Doe p/98765432 e/johnd@example.com a/311, Clementi Ave 2, #02-25 t/friends t/owesMoney
 ....
 
 [[UI]]

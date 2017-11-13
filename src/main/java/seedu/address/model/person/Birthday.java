@@ -23,9 +23,9 @@ public class Birthday implements Comparable {
     private static final int SCALE_MONTH = 100;
     private static final String DASH = "-";
     private static final int DEFAULT_VALUE = 0;
-    private static final String NOT_SET = "Not Set";
+    private static final String NOT_SET = "NOT SET";
     private static final String EMPTY = "";
-    private static final String REMOVE = "remove";
+    private static final String REMOVE = "REMOVE";
     private static final int MIN_MONTHS = 1;
     private static final int MAX_MONTHS = 12;
     private static final int MIN_DAYS = 1;
@@ -46,7 +46,7 @@ public class Birthday implements Comparable {
      */
     public Birthday(String birthday) throws IllegalValueException {
         requireNonNull(birthday);
-        String trimmedBirthday = birthday.trim();
+        String trimmedBirthday = birthday.trim().toUpperCase();
 
         if (isDefault(trimmedBirthday)) {
             value = NOT_SET;
