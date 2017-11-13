@@ -57,12 +57,12 @@ public class EmailCommandParser implements Parser<EmailCommand> {
      */
     private void checkValidNumberOfArguments(String messages) throws ParseException {
         int commas = 0;
-        for(int i = INDEX_ZERO; i < messages.length(); i++) {
-            if(messages.charAt(i) == COMMA_CHAR) {
+        for (int i = INDEX_ZERO; i < messages.length(); i++) {
+            if (messages.charAt(i) == COMMA_CHAR) {
                 commas++;
             }
         }
-        if(commas != TWO_COMMA) {
+        if (commas != TWO_COMMA) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EmailCommand.MESSAGE_USAGE));
         }
 
