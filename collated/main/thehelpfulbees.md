@@ -114,26 +114,6 @@ public class FindCommandParser implements Parser<FindCommand> {
         return false;
     }
 
-    /**
-     * Parses {@code sortType}returns it. Leading and trailing whitespaces will be
-     * trimmed.
-     * @throws IllegalValueException if the specified index is invalid (not valid sorting type).
-     */
-    public static String parseSortType(String sortType) throws IllegalValueException {
-        String toSort = sortType.trim().toLowerCase();
-        if (!stringContainsItemFromList(toSort, SORTNAME_ARGS)
-                && !stringContainsItemFromList(toSort, SORTNUM_ARGS)
-                && !stringContainsItemFromList(toSort, SORTADD_ARGS)
-                && !stringContainsItemFromList(toSort, SORTEMAIL_ARGS)
-                && !stringContainsItemFromList(toSort, SORTREMARK_ARGS)
-                && !stringContainsItemFromList(toSort, SORTBIRTHDAY_ARGS)
-                && !stringContainsItemFromList(toSort, SORTREMARK_ARGS)
-                && !stringContainsItemFromList(toSort, SORTFAVOURITE_ARGS)
-                && !stringContainsItemFromList(toSort, SORTNUMTIMESSEARCHED_ARGS)) {
-            throw new IllegalValueException(MESSAGE_INVALID_SORT);
-        }
-        return toSort;
-    }
 ```
 ###### \java\seedu\address\model\person\NumTimesSearched.java
 ``` java
@@ -141,7 +121,7 @@ public class FindCommandParser implements Parser<FindCommand> {
  * Counts number of times a person has been searched for
  * Guarantees: immutable;
  */
-public class NumTimesSearched {
+public class NumTimesSearched implements Comparable {
 
     public static final String MESSAGE_NUM_TIMES_SEARCHED_CONSTRAINTS =
             "Initial value of NumTimesSearched should be >= 0";
@@ -199,7 +179,7 @@ public class NumTimesSearched {
                 || (other instanceof NumTimesSearched // instanceof handles nulls
                 && this.value == ((NumTimesSearched) other).value); // state check
     }
-}
+
 ```
 ###### \java\seedu\address\model\person\Person.java
 ``` java

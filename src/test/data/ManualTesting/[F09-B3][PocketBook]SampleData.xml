@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addressbook>
+    <persons>
+        <name>Jason</name>
+        <phone>98771222</phone>
+        <email>jason@example.com</email>
+        <address>Block 111, jurong street 55, #01-111</address>
+        <remark></remark>
+        <birthday>14-11-2011</birthday>
+        <image>default</image>
+        <favourite>true</favourite>
+    </persons>
+    <persons>
+        <name>twain keen</name>
+        <phone>35115360</phone>
+        <email>tawkee@example.com</email>
+        <address>block 63, stronyspring street 34, #04-26</address>
+        <remark></remark>
+        <birthday>15-11-2011</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Alex Yeoh</name>
+        <phone>87438807</phone>
+        <email>alexyeoh@example.com</email>
+        <address>Blk 30 Geylang Street 29, #06-40</address>
+        <remark>is handsome</remark>
+        <birthday>16-11-1994</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>friends</tagged>
+    </persons>
+    <persons>
+        <name>Caltex Tan</name>
+        <phone>88146255</phone>
+        <email>Caltex@example.com</email>
+        <address>110 Sengkang Road</address>
+        <remark>My date</remark>
+        <birthday>17-11-2004</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>swimmer</tagged>
+    </persons>
+    <persons>
+        <name>jason teo</name>
+        <phone>88230648</phone>
+        <email>jason@example.com</email>
+        <address>block 22, bukitbatok street 21, #02-58b</address>
+        <remark></remark>
+        <birthday>18-11-2015</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Li Cheng Cai</name>
+        <phone>88996532</phone>
+        <email>ChengCai@example.com</email>
+        <address>Sims street 09 #08-6 Block 1</address>
+        <remark></remark>
+        <birthday>19-11-2011</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Lee Shao Li</name>
+        <phone>89557291</phone>
+        <email>ShaoLi@example.com</email>
+        <address>Chinatown street 77 #01-6 Block 1</address>
+        <remark></remark>
+        <birthday>20-11-2015</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Jingyi Guo</name>
+        <phone>90081234</phone>
+        <email>Jingyi@example.com</email>
+        <address>Smith street 11 #05-11 Block 22</address>
+        <remark></remark>
+        <birthday>21-11-2002</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Guiying Liao</name>
+        <phone>90082285</phone>
+        <email>Guiying@example.com</email>
+        <address>Bali Street 55 Block 74 #01-23</address>
+        <remark></remark>
+        <birthday>22-11-1984</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>model</tagged>
+    </persons>
+    <persons>
+        <name>Lui Sha Bao</name>
+        <phone>90088112</phone>
+        <email>ShaBao@example.com</email>
+        <address>Basin street 02 #05-72 Block 65</address>
+        <remark></remark>
+        <birthday>23-11-2002</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>guanting zhen</name>
+        <phone>90481182</phone>
+        <email>guanting@example.com</email>
+        <address>170 upper bukit timah road, 03-02 bukit timah shopping centre 588179</address>
+        <remark></remark>
+        <birthday>24-11-1997</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>friends</tagged>
+    </persons>
+    <persons>
+        <name>David Li</name>
+        <phone>91031282</phone>
+        <email>lidavid@example.com</email>
+        <address>Blk 436 Serangoon Gardens Street 26, #16-43</address>
+        <remark>sibei humsum</remark>
+        <birthday>25-11-1997</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>family</tagged>
+    </persons>
+    <persons>
+        <name>Lui Tian</name>
+        <phone>91284224</phone>
+        <email>Luitian@example.com</email>
+        <address>Dunearn street 12 #01-12 Block 52</address>
+        <remark></remark>
+        <birthday>26-11-2000</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Justin</name>
+        <phone>92008654</phone>
+        <email>kunjie_1992@hotmail.com</email>
+        <address>NUS street 22 Block 01 #01-11</address>
+        <remark>Send Email to him</remark>
+        <birthday>27-11-2011</birthday>
+        <image>Justin.png</image>
+        <favourite>false</favourite>
+        <tagged>Creator</tagged>
+    </persons>
+    <persons>
+        <name>Dexter</name>
+        <phone>92008822</phone>
+        <email>jason@example.com</email>
+        <address>Block 12, jurong street 15, #01-111, singapore 666999</address>
+        <remark></remark>
+        <birthday>28-11-2011</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Irfan Ibrahim</name>
+        <phone>92492021</phone>
+        <email>irfan@example.com</email>
+        <address>Blk 47 Tampines Street 20, #17-35</address>
+        <remark>owe $ pay $</remark>
+        <birthday>29-11-1998</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>classmates</tagged>
+    </persons>
+    <persons>
+        <name>Roy Balakrishnan</name>
+        <phone>92624417</phone>
+        <email>royb@example.com</email>
+        <address>Blk 45 Aljunied Street 85, #11-31</address>
+        <remark>He likes to swim</remark>
+        <birthday>30-11-2011</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>colleagues</tagged>
+    </persons>
+    <persons>
+        <name>Pauli Tan</name>
+        <phone>92634864</phone>
+        <email>PauliTan@example.com</email>
+        <address>block 11, clementi street 11, #02-111</address>
+        <remark></remark>
+        <birthday>01-12-1995</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>anderson</name>
+        <phone>92658162</phone>
+        <email>anderson@example.com.sg</email>
+        <address>block 21, jurongeast street 11, #07-812</address>
+        <remark></remark>
+        <birthday>02-12-2002</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <persons>
+        <name>Charlotte Oliveiro</name>
+        <phone>93210283</phone>
+        <email>charlotte@example.com</email>
+        <address>Blk 11 Ang Mo Kio Street 74, #11-04</address>
+        <remark>sibei chio</remark>
+        <birthday>03-12-1996</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>neighbours</tagged>
+    </persons>
+    <persons>
+        <name>Lai Xinyi</name>
+        <phone>98987755</phone>
+        <email>XinYi@example.com</email>
+        <address>110 Anderson Road</address>
+        <remark>Owes me money</remark>
+        <birthday>04-12-1994</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>classmate</tagged>
+    </persons>
+    <persons>
+        <name>Bernice Yu</name>
+        <phone>99272758</phone>
+        <email>berniceyu@example.com</email>
+        <address>Blk 30 Lorong 3 Serangoon Gardens, #07-18</address>
+        <remark>is pretty</remark>
+        <birthday>05-12-1995</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+        <tagged>colleagues</tagged>
+        <tagged>friends</tagged>
+    </persons>
+    <persons>
+        <name>Bobby Po</name>
+        <phone>99667722</phone>
+        <email>bobby@example.com</email>
+        <address>Block 23, Changi Street 11, #01-12B</address>
+        <remark></remark>
+        <birthday>06-12-2002</birthday>
+        <image>default</image>
+        <favourite>false</favourite>
+    </persons>
+    <tags>colleagues</tags>
+    <tags>cleaner</tags>
+    <tags>friend</tags>
+    <tags>classmates</tags>
+    <tags>neighbours</tags>
+    <tags>classmate</tags>
+    <tags>swimmer</tags>
+    <tags>model</tags>
+    <tags>Creator</tags>
+    <tags>family</tags>
+    <tags>friends</tags>
+</addressbook>

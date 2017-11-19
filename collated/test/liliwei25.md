@@ -60,7 +60,6 @@ public class PersonInfoPanelHandle extends NodeHandle<Node> {
     private static final String REMARK_FIELD_ID = "#remark";
     private static final String TAGS_FIELD_ID = "#tags";
 
-
     private final Label nameLabel;
     private final Label addressLabel;
     private final Label phoneLabel;
@@ -68,7 +67,6 @@ public class PersonInfoPanelHandle extends NodeHandle<Node> {
     private final Label birthdayLabel;
     private final Label remarkLabel;
     private final List<Label> tagLabels;
-
 
     public PersonInfoPanelHandle(Node cardNode) {
         super(cardNode);
@@ -466,6 +464,7 @@ public class DeleteCommandTest {
 ``` java
 public class ImageCommandTest {
     private static final boolean REMOVE = true;
+    private static final String TEST_IMAGE = "test.png";
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -477,7 +476,7 @@ public class ImageCommandTest {
         ReadOnlyPerson person = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         ImageCommand imageCommand = prepareCommand(INDEX_FIRST_PERSON, !REMOVE);
 
-        String expectedMessage = String.format(ImageCommand.MESSAGE_IMAGE_SUCCESS, person);
+        String expectedMessage = ImageCommand.MESSAGE_CANCELLED;
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.changeImage(person);
@@ -487,13 +486,13 @@ public class ImageCommandTest {
 
     @Test
     public void execute_validIndexFilterListRemoveImage_success() throws Exception {
-        ReadOnlyPerson person = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
-        ImageCommand imageCommand = prepareCommand(INDEX_SECOND_PERSON, REMOVE);
+        ReadOnlyPerson person = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        ImageCommand imageCommand = prepareCommand(INDEX_FIRST_PERSON, REMOVE);
 
         String expectedMessage = String.format(ImageCommand.MESSAGE_IMAGE_SUCCESS, person);
-
+        person.setImage(TEST_IMAGE);
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        ReadOnlyPerson personToEdit = expectedModel.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+        ReadOnlyPerson personToEdit = expectedModel.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person editedPerson = getDefaultPerson(personToEdit);
         expectedModel.updatePerson(personToEdit, editedPerson);
 
@@ -523,7 +522,11 @@ public class ImageCommandTest {
 
     @Test
     public void execute_duplicatePerson_failure() throws Exception {
-        ImageCommand imageCommand = prepareCommandForDuplicateException(INDEX_FIRST_PERSON, REMOVE);
+        ReadOnlyPerson person = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        ReadOnlyPerson newPerson = new Person(person);
+        person.setImage(TEST_IMAGE);
+        model.addPerson(newPerson);
+        ImageCommand imageCommand = prepareCommand(INDEX_FIRST_PERSON, REMOVE);
 
         thrown.expect(CommandException.class);
         thrown.expectMessage(MESSAGE_DUPLICATE_PERSON);
@@ -587,17 +590,6 @@ public class ImageCommandTest {
 
     /**
      * Returns an {@code ImageCommand} with parameters {@code index} and {@code remove}
-     * to test {@code DuplicatePersonException}
-     */
-    private ImageCommand prepareCommandForDuplicateException(Index index, boolean remove) {
-        ImageCommand imageCommand = new ImageCommand(index, remove);
-        imageCommand.setData(new ModelStubThrowingDuplicatePersonException(), new CommandHistory(),
-                new UndoRedoStack());
-        return imageCommand;
-    }
-
-    /**
-     * Returns an {@code ImageCommand} with parameters {@code index} and {@code remove}
      * to test {@code PersonNotFoundException}
      */
     private ImageCommand prepareCommandForNotFoundException(Index index) {
@@ -605,27 +597,6 @@ public class ImageCommandTest {
         imageCommand.setData(new ModelStubThrowingPersonNotFoundException(), new CommandHistory(),
                 new UndoRedoStack());
         return imageCommand;
-    }
-
-    /**
-     * A Model stub that always throw a DuplicatePersonException when trying to edit image.
-     */
-    private class ModelStubThrowingDuplicatePersonException extends ModelStub {
-        @Override
-        public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
-            return model.getFilteredPersonList();
-        }
-
-        @Override
-        public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
-                throws DuplicatePersonException {
-            throw new DuplicatePersonException();
-        }
-
-        @Override
-        public ReadOnlyAddressBook getAddressBook() {
-            return new AddressBook();
-        }
     }
 
     /**
@@ -666,7 +637,7 @@ public class MapCommandTest {
         MapCommand mapCommand = prepareCommand(INDEX_FIRST_PERSON);
 
         String expectedMessage = String.format(MapCommand.MESSAGE_MAP_SHOWN_SUCCESS, personToMap);
-        assertEquals(mapCommand.executeUndoableCommand().feedbackToUser, expectedMessage);
+        assertEquals(mapCommand.execute().feedbackToUser, expectedMessage);
     }
 
     @Test
@@ -1043,10 +1014,11 @@ public class MapCommandParserTest {
 ###### \java\seedu\address\logic\parser\RemoveTagCommandParserTest.java
 ``` java
 public class RemoveTagCommandParserTest {
+    public static final String FIRST_INDEX = "1";
     private static final String VALID_INPUT = "test";
     private static final String VALID_FIRST_INPUT = "1 test";
     private static final String INVALID_INPUT = "";
-    public static final String FIRST_INDEX = "1";
+
     private RemoveTagCommandParser parser = new RemoveTagCommandParser();
 
     @Test
@@ -1117,67 +1089,81 @@ public class BirthdayTest {
  * A default model stub that have all of the methods failing.
  */
 public class ModelStub implements Model {
+
+    public static final String MESSAGE_FAIL = "This method should not be called.";
+
     @Override
     public void addPerson(ReadOnlyPerson person) throws DuplicatePersonException {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
     public void resetData(ReadOnlyAddressBook newData) {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
     public void updateListToShowAll() {
-        fail("Thi method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
     public ReadOnlyAddressBook getAddressBook() {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
         return null;
     }
 
     @Override
     public void deletePerson(ReadOnlyPerson target) throws PersonNotFoundException {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
-    public void sortPerson(String target) {
-        fail("This method should not be called.");
+    public String sortPerson(String target) {
+        fail(MESSAGE_FAIL);
+        return EMPTY_STRING;
     }
 
     @Override
     public void updatePerson(ReadOnlyPerson target, ReadOnlyPerson editedPerson)
             throws DuplicatePersonException , PersonNotFoundException {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
     public ObservableList<ReadOnlyPerson> getFilteredPersonList() {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
         return null;
     }
 
     @Override
     public void updateFilteredPersonList(Predicate<ReadOnlyPerson> predicate) {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
     public void removeTag(Tag tag) {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
     public void mapPerson(ReadOnlyPerson target) throws PersonNotFoundException {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
     }
 
     @Override
     public void changeImage(ReadOnlyPerson target) throws PersonNotFoundException {
-        fail("This method should not be called.");
+        fail(MESSAGE_FAIL);
+    }
+
+    @Override
+    public void removeImage(ReadOnlyPerson target) throws PersonNotFoundException {
+        fail(MESSAGE_FAIL);
+    }
+
+    @Override
+    public void clearInfoPanel() {
+        fail(MESSAGE_FAIL);
     }
 }
 ```
@@ -1294,4 +1280,43 @@ public class PersonInfoPanelTest extends GuiUnitTest {
         assertEquals(expectedPerson.getTags().stream().map(tag -> tag.tagName).collect(Collectors.toList()),
                 actualPanel.getTags());
     }
+```
+###### \java\systemtests\MapCommandSystemTest.java
+``` java
+public class MapCommandSystemTest extends AddressBookSystemTest {
+    public static final String VALID_INDEX = " 1";
+    public static final String INVALID_INDEX = " 0";
+    private final GuiRobot guiRobot = new GuiRobot();
+
+    @Test
+    public void openHelpWindow() {
+        //use command box
+        executeCommand(MapCommand.COMMAND_WORD);
+        assertMapWindowNotOpen();
+
+        executeCommand(MapCommand.COMMAND_WORD + VALID_INDEX);
+        assertMapWindowOpen();
+
+        executeCommand(MapCommand.COMMAND_WORD + INVALID_INDEX);
+        assertMapWindowNotOpen();
+    }
+
+    /**
+     * Asserts that the map window is open, and closes it after checking.
+     */
+    private void assertMapWindowOpen() {
+        assertTrue(MapWindowHandle.isWindowPresent());
+        guiRobot.pauseForHuman();
+
+        new MapWindowHandle(guiRobot.getStage(MapWindow.TITLE)).close();
+        getMainWindowHandle().focus();
+    }
+
+    /**
+     * Asserts that the map window isn't open.
+     */
+    private void assertMapWindowNotOpen() {
+        assertFalse(HelpWindowHandle.isWindowPresent());
+    }
+}
 ```
