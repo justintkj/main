@@ -48,11 +48,7 @@ e.g. typing *`help`* and pressing kbd:[Enter] will open the help window.
 * Words in `UPPER_CASE` are the parameters to be supplied by the user e.g. in `add n/NAME`, `NAME` is a parameter which can be used as `add n/John Doe`.
 * Items in square brackets are optional e.g `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
 * Items with `…`​ after them can be used multiple times including zero times e.g. `[t/TAG]...` can be used as `{nbsp}` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
-<<<<<<< HEAD
-* All commands can word with cammel case e.g. add and AdD are both acceptable.
-=======
 * All commands can work with camel case e.g. add and AdD are both acceptable.
->>>>>>> 57b5f16f8f8b1657793b3428506a4e9fe4b80b9d
 * Parameters can be in any order e.g. if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 ====
 
@@ -75,13 +71,8 @@ Commas and spacebars do not affect the acceptance of the fields. +
 Block : Block (1 to 3 digits). Example : Block 1, Block 11, Block 111 +
 Unit : #(1 to 2 digits)-(1-3 digits)(Optional:Character). Example: #01-111B +
 Street : (1 Word) street (1 to 2 digits). Example : Jurong Street 11 +
-<<<<<<< HEAD
-Number : (8 digits). Example: ,11111111, or 11111111 +
-Email : (1 alphanumericword)@(1 alphanumericword).(1 alphanumericword). Example: Jason@example.com +
-=======
 Number : (8 digits). Example: 11111111 +
 Email : (1 alphanumeric word)@(1 alphanumeric word).(1 alphanumeric word). Example: Jason@example.com +
->>>>>>> 57b5f16f8f8b1657793b3428506a4e9fe4b80b9d
 (Optional) Birthday: (1 to 2 digit)-(1 to 2 digit)-(4digit). Birthday shouldn't be in the future and has to be a valid date. Example : 12-12-2012
 (Optional) Postal Code: singapore (6digits). Example :Singapore 655900 +
 
@@ -413,13 +404,11 @@ Adds/Edits the birthday of the 2nd person in the address book.
 * `birthday 3 remove` +
 Removes the birthday of the 3rd person in the address book.
 
-<<<<<<< HEAD
 === Birthday pop-up
 
 When you first start the app, the app will check through all the birthdays of your contacts and notify you if there
 are any birthdays on that day.
-=======
->>>>>>> 57b5f16f8f8b1657793b3428506a4e9fe4b80b9d
+
 // end::birthday[]
 
 // tag::remark[]
@@ -563,11 +552,7 @@ There is no need to save manually.
 === AutoComplete
 
 A drop-down list of valid input prompts are filtered as when user types a command. +
-<<<<<<< HEAD
-Users can navigate between the filtered command with the +
-=======
 Users can navigate between the filtered command with the [&uarr;] and [&darr;] when the drop down box is active +
->>>>>>> 57b5f16f8f8b1657793b3428506a4e9fe4b80b9d
 All valid commands will be saved and updated in the storage, expanding the list of recommended inputs for the user. +
 Autocomplete data are saved in the XML automatically after any valid new command that user uses. +
 There is no need to save manually. A new empty Autcomplete.xml file will be created if deleted.

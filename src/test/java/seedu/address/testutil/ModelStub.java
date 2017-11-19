@@ -49,11 +49,7 @@ public class ModelStub implements Model {
 
     @Override
     public String sortPerson(String target) {
-<<<<<<< HEAD
-        fail("This method should not be called.");
-=======
         fail(MESSAGE_FAIL);
->>>>>>> 57b5f16f8f8b1657793b3428506a4e9fe4b80b9d
         return EMPTY_STRING;
     }
 
