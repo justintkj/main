@@ -404,11 +404,6 @@ Adds/Edits the birthday of the 2nd person in the address book.
 * `birthday 3 remove` +
 Removes the birthday of the 3rd person in the address book.
 
-=== Birthday pop-up
-
-When you first start the app, the app will check through all the birthdays of your contacts and notify you if there
-are any birthdays on that day.
-
 // end::birthday[]
 
 // tag::remark[]
