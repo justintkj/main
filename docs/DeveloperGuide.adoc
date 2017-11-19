@@ -10,9 +10,9 @@ ifdef::env-github[]
 :note-caption: :information_source:
 endif::[]
 ifdef::env-github,env-browser[:outfilesuffix: .adoc]
-:repoURL: https://github.com/se-edu/addressbook-level4/tree/master
+:repoURL: https://github.com/CS2103AUG2017-F09-B3/main
 
-By: `F09-B3`      Since: `AUG 2017`      Licence: `MIT`      Referenced from: `AddressBook-Level 4`
+By: `F09-B3`      Since: `AUG 2017`      Licence: `MIT`      Referenced from: `https://github.com/nus-cs2103-AY1718S1/addressbook-level4[AddressBook-Level 4]`
 
 == Setting up
 
@@ -744,7 +744,7 @@ private String deleteAllSelectedPersonFromAddressBook() throws CommandException 
 // end::DeleteMultiple[]
 
 // tag::Map[]
-=== Addressing Mapping Mechanism
+=== Mapping Mechanism
 
 The mapping mechanism is facilitated by `MapWindow` and `MapCommand`, which resides within `UI` and `Model` component respectively.
 It creates a new pop-up browser showing the `Address` of the selected `Person` on Google Maps.
@@ -2141,19 +2141,11 @@ Use case resumes at step 2.
 [appendix]
 == Glossary
 
-[[AddressBook]]
+[[PocketBook]]
 Name of the application
 
 ....
-AddressBook
-....
-
-
-[[Format]]
-The specific method for input in the command Line.
-
-....
-sort, list, add n/John Doe p/98765432 e/johnd@example.com a/311, Clementi Ave 2, #02-25 t/friends t/owesMoney
+PocketBook
 ....
 
 [[UI]]
